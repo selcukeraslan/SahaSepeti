@@ -13,7 +13,10 @@ import { DashboardVenues } from '@/pages/dashboard/DashboardVenues'
 import { VenueCreate } from '@/pages/dashboard/VenueCreate'
 import { VenueManage } from '@/pages/dashboard/VenueManage'
 import { DashboardReservations } from '@/pages/dashboard/DashboardReservations'
-import { Placeholder } from '@/pages/Placeholder'
+import { AdminLayout } from '@/pages/admin/AdminLayout'
+import { AdminVenueQueue } from '@/pages/admin/AdminVenueQueue'
+import { AdminVenues } from '@/pages/admin/AdminVenues'
+import { AdminReservations } from '@/pages/admin/AdminReservations'
 import { NotFound } from '@/pages/NotFound'
 
 export const router = createBrowserRouter([
@@ -47,7 +50,17 @@ export const router = createBrowserRouter([
       },
       {
         element: <RequireRole role="admin" />,
-        children: [{ path: '/admin/*', element: <Placeholder title="Admin" /> }],
+        children: [
+          {
+            path: '/admin',
+            element: <AdminLayout />,
+            children: [
+              { index: true, element: <AdminVenueQueue /> },
+              { path: 'tesisler', element: <AdminVenues /> },
+              { path: 'rezervasyonlar', element: <AdminReservations /> },
+            ],
+          },
+        ],
       },
       { path: '*', element: <NotFound /> },
     ],
