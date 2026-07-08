@@ -8,17 +8,19 @@ import { useToast } from '@/components/ui/useToast'
 import { VenueForm } from '@/features/dashboard/components/VenueForm'
 import { CourtManager } from '@/features/dashboard/components/CourtManager'
 import { OpeningHoursEditor } from '@/features/dashboard/components/OpeningHoursEditor'
+import { ImageManager } from '@/features/dashboard/components/ImageManager'
 import { useMyVenues, useVenueMutations } from '@/features/dashboard/hooks/useDashboard'
 import { VENUE_STATUS_LABELS, VENUE_STATUS_VARIANTS } from '@/features/dashboard/types'
 import { cn } from '@/lib/utils'
 import { NotFound } from '@/pages/NotFound'
 
-type Tab = 'info' | 'courts' | 'hours'
+type Tab = 'info' | 'courts' | 'hours' | 'images'
 
 const TABS: { key: Tab; label: string }[] = [
   { key: 'info', label: 'Bilgiler' },
   { key: 'courts', label: 'Sahalar & Fiyatlar' },
   { key: 'hours', label: 'Çalışma Saatleri' },
+  { key: 'images', label: 'Görseller' },
 ]
 
 export function VenueManage() {
@@ -124,6 +126,9 @@ export function VenueManage() {
         )}
         {activeTab === 'courts' && <CourtManager venueId={venue.id} />}
         {activeTab === 'hours' && <OpeningHoursEditor venueId={venue.id} />}
+        {activeTab === 'images' && (
+          <ImageManager venueId={venue.id} coverImageUrl={venue.cover_image_url} />
+        )}
       </div>
     </div>
   )
