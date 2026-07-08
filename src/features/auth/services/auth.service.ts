@@ -2,9 +2,14 @@ import { supabase } from '@/lib/supabase'
 import type { Profile } from '@/types/database.types'
 import { loginSchema, registerSchema, type LoginInput, type RegisterInput } from '../schemas'
 
-export async function signUp(input: RegisterInput): Promise<void> {
+export interface SignUpResult {
+  /** E-posta doğrulaması açıksa oturum oluşmaz; kullanıcı bilgilendirilmelidir. */
+  needsEmailConfirmation: boolean
+}
+
+export async function signUp(input: RegisterInput): Promise<SignUpResult> {
   const data = registerSchema.parse(input)
-  const { error } = await supabase.auth.signUp({
+  const { data: result, error } = await supabase.auth.signUp({
     email: data.email,
     password: data.password,
     options: {
@@ -18,6 +23,7 @@ export async function signUp(input: RegisterInput): Promise<void> {
   if (error) {
     throw new Error(translateAuthError(error.message))
   }
+  return { needsEmailConfirmation: result.session === null }
 }
 
 export async function signIn(input: LoginInput): Promise<void> {

@@ -16,11 +16,15 @@ interface VenueListRow extends Venue {
 }
 
 export async function listVenues(filters: VenueFilters): Promise<VenueListItem[]> {
+  // !inner yalnızca spor filtresi varken kullanılır; aksi halde
+  // spor ataması olmayan tesisler de listede kalır.
+  const sportJoin = filters.sport ? 'venue_sports!inner(sports!inner(*))' : 'venue_sports(sports(*))'
+
   let query = supabase
     .from('venues')
     .select(
       `*,
-       venue_sports!inner(sports!inner(*)),
+       ${sportJoin},
        courts(price_rules(price))`,
     )
     .eq('status', 'approved')

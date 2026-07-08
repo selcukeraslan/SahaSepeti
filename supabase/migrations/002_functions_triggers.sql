@@ -94,12 +94,16 @@ create trigger trg_on_auth_user_created
 
 -- ---------- Rol değişikliği koruması ----------
 -- Kullanıcı kendi rolünü değiştiremez; yalnızca admin değiştirebilir.
+-- auth.uid() null ise istek PostgREST üzerinden gelmiyordur
+-- (SQL editor / service role) — bu durumda engelleme yapılmaz.
 create or replace function prevent_role_change()
 returns trigger
 language plpgsql
 as $$
 begin
-  if new.role is distinct from old.role and not is_admin() then
+  if new.role is distinct from old.role
+     and auth.uid() is not null
+     and not is_admin() then
     raise exception 'Rol değişikliği yalnızca admin tarafından yapılabilir';
   end if;
   return new;
@@ -118,7 +122,8 @@ returns trigger
 language plpgsql
 as $$
 begin
-  if not is_admin()
+  if auth.uid() is not null
+     and not is_admin()
      and new.status is distinct from old.status
      and new.status not in ('draft', 'pending') then
     raise exception 'Bu durum geçişi yalnızca admin tarafından yapılabilir';

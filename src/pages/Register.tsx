@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
@@ -6,6 +7,7 @@ import { Container } from '@/components/layout/Container'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { useToast } from '@/components/ui/useToast'
+import { useAuth } from '@/features/auth/hooks/useAuth'
 import { registerSchema, type RegisterInput } from '@/features/auth/schemas'
 import { signUp } from '@/features/auth/services/auth.service'
 import { cn } from '@/lib/utils'
@@ -14,7 +16,15 @@ export function Register() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const { toast } = useToast()
+  const { profile } = useAuth()
   const initialRole = searchParams.get('rol') === 'tesis' ? 'venue_owner' : 'customer'
+
+  // Profil context'e yansıdığında role göre yönlendir — guard yarışı olmaz.
+  useEffect(() => {
+    if (profile) {
+      navigate(profile.role === 'venue_owner' ? '/panel' : '/', { replace: true })
+    }
+  }, [profile, navigate])
 
   const {
     register,
@@ -31,9 +41,14 @@ export function Register() {
 
   const onSubmit = async (data: RegisterInput) => {
     try {
-      await signUp(data)
-      toast('Kaydınız oluşturuldu, hoş geldiniz!', 'success')
-      navigate(data.role === 'venue_owner' ? '/panel' : '/', { replace: true })
+      const result = await signUp(data)
+      if (result.needsEmailConfirmation) {
+        toast('Kaydınız oluşturuldu — lütfen e-postanızı doğrulayın', 'info')
+        navigate('/giris')
+      } else {
+        toast('Kaydınız oluşturuldu, hoş geldiniz!', 'success')
+        // Yönlendirme, profil yüklendiğinde yukarıdaki effect ile yapılır.
+      }
     } catch (error) {
       toast(error instanceof Error ? error.message : 'Kayıt oluşturulamadı', 'error')
     }

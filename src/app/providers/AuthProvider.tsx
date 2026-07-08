@@ -10,27 +10,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  const loadProfile = useCallback(async (sessionUser: User | null) => {
-    if (!sessionUser) {
-      setProfile(null)
-      return
-    }
+  const fetchProfile = useCallback(async (sessionUser: User | null): Promise<Profile | null> => {
+    if (!sessionUser) return null
     try {
-      setProfile(await getProfile(sessionUser.id))
+      return await getProfile(sessionUser.id)
     } catch {
-      setProfile(null)
+      return null
     }
   }, [])
 
   useEffect(() => {
     let isMounted = true
 
+    // user ve profile birlikte set edilir; guard'lar hiçbir zaman
+    // "user var ama profil henüz yüklenmedi" ara durumunu görmez.
     const applySession = async (session: Session | null) => {
       if (!isMounted) return
       const sessionUser = session?.user ?? null
+      const sessionProfile = await fetchProfile(sessionUser)
+      if (!isMounted) return
       setUser(sessionUser)
-      await loadProfile(sessionUser)
-      if (isMounted) setIsLoading(false)
+      setProfile(sessionProfile)
+      setIsLoading(false)
     }
 
     void supabase.auth.getSession().then(({ data }) => applySession(data.session))
@@ -43,11 +44,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isMounted = false
       subscription.subscription.unsubscribe()
     }
-  }, [loadProfile])
+  }, [fetchProfile])
 
   const refreshProfile = useCallback(async () => {
-    await loadProfile(user)
-  }, [loadProfile, user])
+    setProfile(await fetchProfile(user))
+  }, [fetchProfile, user])
 
   const value = useMemo<AuthContextValue>(
     () => ({ user, profile, isLoading, refreshProfile }),

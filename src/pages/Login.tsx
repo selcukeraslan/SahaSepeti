@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
@@ -5,6 +6,7 @@ import { Container } from '@/components/layout/Container'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { useToast } from '@/components/ui/useToast'
+import { useAuth } from '@/features/auth/hooks/useAuth'
 import { loginSchema, type LoginInput } from '@/features/auth/schemas'
 import { signIn } from '@/features/auth/services/auth.service'
 
@@ -12,7 +14,15 @@ export function Login() {
   const navigate = useNavigate()
   const location = useLocation()
   const { toast } = useToast()
+  const { user } = useAuth()
   const from = (location.state as { from?: string } | null)?.from ?? '/'
+
+  // Oturum context'e yansıdığında yönlendir — guard yarışı olmaz.
+  useEffect(() => {
+    if (user) {
+      navigate(from, { replace: true })
+    }
+  }, [user, from, navigate])
 
   const {
     register,
@@ -24,7 +34,6 @@ export function Login() {
     try {
       await signIn(data)
       toast('Hoş geldiniz!', 'success')
-      navigate(from, { replace: true })
     } catch (error) {
       toast(error instanceof Error ? error.message : 'Giriş yapılamadı', 'error')
     }
