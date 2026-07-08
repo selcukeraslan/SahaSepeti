@@ -1,0 +1,43 @@
+@import 'tailwindcss';
+
+@theme {
+  /* Marka paleti — emerald primary, slate nötr, amber accent */
+  --color-primary-50: #ecfdf5;
+  --color-primary-100: #d1fae5;
+  --color-primary-200: #a7f3d0;
+  --color-primary-300: #6ee7b7;
+  --color-primary-400: #34d399;
+  --color-primary-500: #10b981;
+  --color-primary-600: #059669;
+  --color-primary-700: #047857;
+  --color-primary-800: #065f46;
+  --color-primary-900: #064e3b;
+  --color-primary-950: #022c22;
+
+  --color-accent-400: #fbbf24;
+  --color-accent-500: #f59e0b;
+  --color-accent-600: #d97706;
+
+  --font-sans: 'Inter', 'Inter Fallback', system-ui, -apple-system, sans-serif;
+
+  --shadow-soft: 0 2px 8px -2px rgb(15 23 42 / 0.08), 0 4px 16px -4px rgb(15 23 42 / 0.06);
+  --shadow-soft-lg: 0 4px 12px -2px rgb(15 23 42 / 0.1), 0 12px 32px -8px rgb(15 23 42 / 0.12);
+
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    @apply bg-slate-50 font-sans text-slate-900;
+  }
+
+  ::selection {
+    @apply bg-primary-200 text-primary-900;
+  }
+}
