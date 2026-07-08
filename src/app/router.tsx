@@ -1,25 +1,22 @@
 import { createBrowserRouter } from 'react-router-dom'
 import { PageShell } from '@/components/layout/PageShell'
 import { RequireAuth, RequireRole } from '@/app/guards'
+import { Landing } from '@/pages/Landing'
+import { VenueList } from '@/pages/VenueList'
+import { Login } from '@/pages/Login'
+import { Register } from '@/pages/Register'
+import { Placeholder } from '@/pages/Placeholder'
 import { NotFound } from '@/pages/NotFound'
-
-function Placeholder({ title }: { title: string }) {
-  return (
-    <div className="flex min-h-[50dvh] items-center justify-center">
-      <p className="text-lg font-medium text-slate-400">{title} — yakında</p>
-    </div>
-  )
-}
 
 export const router = createBrowserRouter([
   {
     element: <PageShell />,
     children: [
-      { path: '/', element: <Placeholder title="Ana Sayfa" /> },
-      { path: '/tesisler', element: <Placeholder title="Tesisler" /> },
+      { path: '/', element: <Landing /> },
+      { path: '/tesisler', element: <VenueList /> },
       { path: '/tesis/:slug', element: <Placeholder title="Tesis Detay" /> },
-      { path: '/giris', element: <Placeholder title="Giriş" /> },
-      { path: '/kayit', element: <Placeholder title="Kayıt" /> },
+      { path: '/giris', element: <Login /> },
+      { path: '/kayit', element: <Register /> },
       {
         element: <RequireAuth />,
         children: [
