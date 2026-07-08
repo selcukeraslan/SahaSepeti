@@ -5,6 +5,7 @@ import { useAuth } from '@/features/auth/hooks/useAuth'
 import { signOut } from '@/features/auth/services/auth.service'
 import { Button } from '@/components/ui/Button'
 import { Sheet } from '@/components/ui/Sheet'
+import { useToast } from '@/components/ui/useToast'
 import { cn } from '@/lib/utils'
 import { Container } from './Container'
 import { Logo } from './Logo'
@@ -19,12 +20,17 @@ function navLinkClass({ isActive }: { isActive: boolean }): string {
 export function Header() {
   const { user, profile } = useAuth()
   const navigate = useNavigate()
+  const { toast } = useToast()
   const [menuOpen, setMenuOpen] = useState(false)
 
   const handleSignOut = async () => {
-    await signOut()
-    setMenuOpen(false)
-    navigate('/')
+    try {
+      await signOut()
+      setMenuOpen(false)
+      navigate('/')
+    } catch (error) {
+      toast(error instanceof Error ? error.message : 'Çıkış yapılamadı', 'error')
+    }
   }
 
   const closeMenu = () => setMenuOpen(false)

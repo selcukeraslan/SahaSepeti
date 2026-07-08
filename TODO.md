@@ -93,17 +93,17 @@ VITE_SUPABASE_ANON_KEY=
 
 | Faz | Başlık | Durum |
 |---|---|---|
-| 0 | Proje Denetimi & Kurulum | ⬜ |
-| 1 | Supabase Şema & Auth Planı | ⬜ |
-| 2 | Temel Layout & Design System | ⬜ |
-| 3 | Public Sayfalar | ⬜ |
-| 4 | Tesis Detay & Uygunluk | ⬜ |
-| 5 | Rezervasyon Akışı | ⬜ |
-| 6 | Tesis Sahibi Paneli | ⬜ |
-| 7 | Admin Paneli | ⬜ |
-| 8 | Storage, Görseller & Polish | ⬜ |
-| 9 | RLS, Doğrulama & Güvenlik | ⬜ |
-| 10 | Test, Bug Fix & MVP Temizlik | ⬜ |
+| 0 | Proje Denetimi & Kurulum | ✅ |
+| 1 | Supabase Şema & Auth Planı | ✅ |
+| 2 | Temel Layout & Design System | ✅ |
+| 3 | Public Sayfalar | ✅ |
+| 4 | Tesis Detay & Uygunluk | ✅ |
+| 5 | Rezervasyon Akışı | ✅ |
+| 6 | Tesis Sahibi Paneli | ✅ |
+| 7 | Admin Paneli | ✅ |
+| 8 | Storage, Görseller & Polish | ✅ |
+| 9 | RLS, Doğrulama & Güvenlik | ✅ |
+| 10 | Test, Bug Fix & MVP Temizlik | ✅ |
 | 11 | Gelecek Yol Haritası | — |
 
 ---
