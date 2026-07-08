@@ -7,6 +7,12 @@ import { VenueDetail } from '@/pages/VenueDetail'
 import { MyReservations } from '@/pages/MyReservations'
 import { Login } from '@/pages/Login'
 import { Register } from '@/pages/Register'
+import { DashboardLayout } from '@/pages/dashboard/DashboardLayout'
+import { DashboardHome } from '@/pages/dashboard/DashboardHome'
+import { DashboardVenues } from '@/pages/dashboard/DashboardVenues'
+import { VenueCreate } from '@/pages/dashboard/VenueCreate'
+import { VenueManage } from '@/pages/dashboard/VenueManage'
+import { DashboardReservations } from '@/pages/dashboard/DashboardReservations'
 import { Placeholder } from '@/pages/Placeholder'
 import { NotFound } from '@/pages/NotFound'
 
@@ -25,7 +31,19 @@ export const router = createBrowserRouter([
       },
       {
         element: <RequireRole role="venue_owner" />,
-        children: [{ path: '/panel/*', element: <Placeholder title="Tesis Paneli" /> }],
+        children: [
+          {
+            path: '/panel',
+            element: <DashboardLayout />,
+            children: [
+              { index: true, element: <DashboardHome /> },
+              { path: 'tesisler', element: <DashboardVenues /> },
+              { path: 'tesisler/yeni', element: <VenueCreate /> },
+              { path: 'tesisler/:id', element: <VenueManage /> },
+              { path: 'rezervasyonlar', element: <DashboardReservations /> },
+            ],
+          },
+        ],
       },
       {
         element: <RequireRole role="admin" />,
