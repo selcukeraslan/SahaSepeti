@@ -55,6 +55,26 @@ export async function deleteVenueImage(image: VenueImage): Promise<void> {
   if (dbError) throw new Error('Görsel silinemedi')
 
   await supabase.storage.from(BUCKET).remove([image.storage_path])
+
+  // Silinen görsel kapak ise: kalan görsellerden ilkini kapak yap, yoksa temizle.
+  const { data: venue } = await supabase
+    .from('venues')
+    .select('cover_image_url')
+    .eq('id', image.venue_id)
+    .maybeSingle()
+
+  if (venue?.cover_image_url === image.url) {
+    const { data: remaining } = await supabase
+      .from('venue_images')
+      .select('url')
+      .eq('venue_id', image.venue_id)
+      .order('sort_order')
+      .limit(1)
+    await supabase
+      .from('venues')
+      .update({ cover_image_url: remaining?.[0]?.url ?? null })
+      .eq('id', image.venue_id)
+  }
 }
 
 /** Kapak görselini günceller (tesis kartlarında ve detayda kullanılır). */

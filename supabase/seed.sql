@@ -125,6 +125,15 @@ on conflict (venue_id, day_of_week) do nothing;
 
 -- ---------- Fiyat kuralları ----------
 -- Genel kural (tüm günler) + hafta sonu zamlı örnek
+-- (idempotentlik: demo sahaların eski kuralları önce temizlenir)
+delete from price_rules where court_id in (
+  'c0000000-0000-0000-0000-000000000001',
+  'c0000000-0000-0000-0000-000000000002',
+  'c0000000-0000-0000-0000-000000000003',
+  'c0000000-0000-0000-0000-000000000004',
+  'c0000000-0000-0000-0000-000000000005'
+);
+
 insert into price_rules (court_id, day_of_week, start_time, end_time, price) values
   ('c0000000-0000-0000-0000-000000000001', null, '09:00', '23:00', 1200),
   ('c0000000-0000-0000-0000-000000000001', 6,    '09:00', '23:00', 1500), -- Cumartesi

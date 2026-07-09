@@ -29,6 +29,7 @@ export function useVenueMutations() {
   const invalidate = () => {
     void queryClient.invalidateQueries({ queryKey: ['my-venues'] })
     void queryClient.invalidateQueries({ queryKey: ['venues'] })
+    void queryClient.invalidateQueries({ queryKey: ['venue'] })
   }
 
   const create = useMutation({
@@ -60,6 +61,8 @@ export function useCourtMutations(venueId: string | undefined) {
   const queryClient = useQueryClient()
   const invalidate = () => {
     void queryClient.invalidateQueries({ queryKey: ['venue-courts', venueId] })
+    void queryClient.invalidateQueries({ queryKey: ['venue'] })
+    void queryClient.invalidateQueries({ queryKey: ['availability'] })
   }
 
   const create = useMutation({
@@ -94,6 +97,8 @@ export function useSaveOpeningHours(venueId: string | undefined) {
     mutationFn: (hours: OpeningHourInput[]) => saveOpeningHours(venueId ?? '', hours),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['opening-hours', venueId] })
+      void queryClient.invalidateQueries({ queryKey: ['venue'] })
+      void queryClient.invalidateQueries({ queryKey: ['availability'] })
     },
   })
 }
@@ -110,6 +115,8 @@ export function usePriceRuleMutations(courtId: string | undefined) {
   const queryClient = useQueryClient()
   const invalidate = () => {
     void queryClient.invalidateQueries({ queryKey: ['price-rules', courtId] })
+    void queryClient.invalidateQueries({ queryKey: ['venue'] })
+    void queryClient.invalidateQueries({ queryKey: ['availability'] })
   }
 
   const create = useMutation({

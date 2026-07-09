@@ -57,6 +57,15 @@ describe('findSlotPrice', () => {
     const rules = [makeRule({ start_time: '10:00:00', end_time: '11:00:00' })]
     expect(findSlotPrice(rules, 1, 630, 690)).toBeNull()
   })
+
+  it('çakışan genel kurallarda deterministik (DB sıralaması ile aynı) sonuç verir', () => {
+    // Aynı start/end → price ile sıralama; düşük fiyat kazanır (DB: order by ... price)
+    const rules = [
+      makeRule({ id: 'pr-b', price: 900 }),
+      makeRule({ id: 'pr-a', price: 800 }),
+    ]
+    expect(findSlotPrice(rules, 3, 600, 660)).toBe(800)
+  })
 })
 
 describe('generateSlots', () => {

@@ -43,7 +43,9 @@ function rangesOverlap(aStart: number, aEnd: number, bStart: number, bEnd: numbe
 /**
  * Fiyat kuralı eşleştirme: slot aralığını tamamen kapsayan kurallar içinde
  * güne özel kural (day_of_week dolu) genel kuraldan (null) önceliklidir.
- * DB tarafındaki validate_reservation() ile aynı mantık.
+ * Sıralama DB'deki validate_reservation() ile birebir aynıdır
+ * (day_of_week nulls last, start_time, end_time, price) — gösterilen fiyat
+ * ile tahsil edilen fiyat asla farklı olamaz.
  */
 export function findSlotPrice(
   rules: PriceRule[],
@@ -51,15 +53,21 @@ export function findSlotPrice(
   slotStartMin: number,
   slotEndMin: number,
 ): number | null {
-  const matching = rules.filter(
-    (rule) =>
-      (rule.day_of_week === null || rule.day_of_week === dayOfWeek) &&
-      timeToMinutes(rule.start_time) <= slotStartMin &&
-      timeToMinutes(rule.end_time) >= slotEndMin,
-  )
-  if (matching.length === 0) return null
-  const specific = matching.find((rule) => rule.day_of_week !== null)
-  return (specific ?? matching[0])?.price ?? null
+  const matching = rules
+    .filter(
+      (rule) =>
+        (rule.day_of_week === null || rule.day_of_week === dayOfWeek) &&
+        timeToMinutes(rule.start_time) <= slotStartMin &&
+        timeToMinutes(rule.end_time) >= slotEndMin,
+    )
+    .sort(
+      (a, b) =>
+        Number(a.day_of_week === null) - Number(b.day_of_week === null) ||
+        a.start_time.localeCompare(b.start_time) ||
+        a.end_time.localeCompare(b.end_time) ||
+        a.price - b.price,
+    )
+  return matching[0]?.price ?? null
 }
 
 export interface GenerateSlotsInput {

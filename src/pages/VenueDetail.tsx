@@ -11,7 +11,7 @@ import { useVenue } from '@/features/venues/hooks/useVenue'
 import { useAvailability } from '@/features/venues/hooks/useAvailability'
 import { nowInIstanbul, type TimeSlot } from '@/features/venues/services/slots'
 import { ReservationDialog } from '@/features/reservations/components/ReservationDialog'
-import { formatTime, toDateString } from '@/lib/format'
+import { formatTime } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { NotFound } from '@/pages/NotFound'
 
@@ -27,7 +27,8 @@ export function VenueDetail() {
   const initialDate = useMemo(() => {
     const paramDate = searchParams.get('date')
     const today = nowInIstanbul().date
-    return paramDate && paramDate >= today ? paramDate : toDateString(new Date())
+    const isValid = paramDate !== null && /^\d{4}-\d{2}-\d{2}$/.test(paramDate)
+    return isValid && paramDate >= today ? paramDate : today
   }, [searchParams])
 
   const [date, setDate] = useState(initialDate)

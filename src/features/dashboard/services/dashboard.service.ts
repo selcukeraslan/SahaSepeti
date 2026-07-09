@@ -51,16 +51,32 @@ export async function listMyVenues(): Promise<OwnerVenue[]> {
 }
 
 async function syncVenueSports(venueId: string, sportIds: string[]): Promise<void> {
-  const { error: deleteError } = await supabase
+  // Transaction olmadan güvenli sıralama: farkı hesapla, ÖNCE ekle SONRA sil.
+  // Böylece ekleme başarısız olursa mevcut atamalar kaybolmaz (delete-all riski yok).
+  const { data: current, error: readError } = await supabase
     .from('venue_sports')
-    .delete()
+    .select('sport_id')
     .eq('venue_id', venueId)
-  if (deleteError) throw new Error('Spor türleri güncellenemedi')
+  if (readError) throw new Error('Spor türleri güncellenemedi')
 
-  const { error: insertError } = await supabase
-    .from('venue_sports')
-    .insert(sportIds.map((sportId) => ({ venue_id: venueId, sport_id: sportId })))
-  if (insertError) throw new Error('Spor türleri güncellenemedi')
+  const currentIds = current.map((row) => row.sport_id)
+  const toAdd = sportIds.filter((id) => !currentIds.includes(id))
+  const toRemove = currentIds.filter((id) => !sportIds.includes(id))
+
+  if (toAdd.length > 0) {
+    const { error } = await supabase
+      .from('venue_sports')
+      .insert(toAdd.map((sportId) => ({ venue_id: venueId, sport_id: sportId })))
+    if (error) throw new Error('Spor türleri güncellenemedi')
+  }
+  if (toRemove.length > 0) {
+    const { error } = await supabase
+      .from('venue_sports')
+      .delete()
+      .eq('venue_id', venueId)
+      .in('sport_id', toRemove)
+    if (error) throw new Error('Spor türleri güncellenemedi')
+  }
 }
 
 export async function createVenue(input: VenueInput): Promise<Venue> {

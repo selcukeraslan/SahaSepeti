@@ -176,7 +176,8 @@ begin
     raise exception 'Geçmiş bir saat için rezervasyon yapılamaz';
   end if;
 
-  -- Fiyat kuralı: spesifik gün kuralı genel (null) kuraldan önceliklidir
+  -- Fiyat kuralı: spesifik gün kuralı genel (null) kuraldan önceliklidir.
+  -- Sıralama, istemcideki findSlotPrice (slots.ts) ile birebir aynıdır.
   select price into v_rate
   from price_rules
   where court_id = new.court_id
@@ -184,7 +185,7 @@ begin
          or day_of_week = extract(dow from new.reservation_date)::int)
     and start_time <= new.start_time
     and end_time >= new.end_time
-  order by day_of_week nulls last
+  order by day_of_week nulls last, start_time, end_time, price
   limit 1;
 
   if v_rate is null then
@@ -194,9 +195,66 @@ begin
   v_hours = extract(epoch from (new.end_time - new.start_time)) / 3600.0;
   new.total_price = round(v_rate * v_hours, 2);
 
+  -- Online ödeme yok (MVP): kapora istemciden alınmaz
+  new.deposit_amount = 0;
+
   return new;
 end;
 $$;
 
 create trigger trg_reservations_validate before insert on reservations
   for each row execute function validate_reservation();
+
+-- ---------- Rezervasyon güncelleme koruması ----------
+-- RLS satır bazlıdır, kolon bazlı değildir; bu trigger UPDATE'te
+-- değişmez alanları ve durum geçişi kurallarını zorunlu kılar.
+create or replace function guard_reservation_update()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  -- SQL editor / service role serbest
+  if auth.uid() is null or is_admin() then
+    return new;
+  end if;
+
+  -- Değişmez alanlar: yalnızca durum / iptal / not alanları güncellenebilir
+  if new.customer_id is distinct from old.customer_id
+     or new.court_id is distinct from old.court_id
+     or new.venue_id is distinct from old.venue_id
+     or new.reservation_date is distinct from old.reservation_date
+     or new.start_time is distinct from old.start_time
+     or new.end_time is distinct from old.end_time
+     or new.total_price is distinct from old.total_price
+     or new.deposit_amount is distinct from old.deposit_amount then
+    raise exception 'Rezervasyonun bu alanları güncellenemez';
+  end if;
+
+  -- Terminal durumlar (iptal/tamamlandı) değiştirilemez
+  if old.status in ('cancelled', 'completed')
+     and new.status is distinct from old.status then
+    raise exception 'Tamamlanmış veya iptal edilmiş rezervasyon güncellenemez';
+  end if;
+
+  -- Müşteri (tesis sahibi değilse) yalnızca iptal edebilir,
+  -- ve yalnızca saati gelmemiş rezervasyonunu iptal edebilir
+  if auth.uid() = old.customer_id and not owns_venue(old.venue_id) then
+    if new.status is distinct from old.status and new.status <> 'cancelled' then
+      raise exception 'Bu durum geçişine yetkiniz yok';
+    end if;
+    if new.status = 'cancelled'
+       and old.status is distinct from 'cancelled'
+       and (old.reservation_date + old.start_time)
+           <= (now() at time zone 'Europe/Istanbul') then
+      raise exception 'Saati geçmiş rezervasyon iptal edilemez';
+    end if;
+  end if;
+
+  return new;
+end;
+$$;
+
+create trigger trg_reservations_update_guard before update on reservations
+  for each row execute function guard_reservation_update();

@@ -254,9 +254,18 @@ create policy "reviews: herkese açık"
   on reviews for select
   using (true);
 
+-- Yalnızca tesiste tamamlanmış rezervasyonu olan müşteri yorum yazabilir
 create policy "reviews: müşteri kendi yorumunu yazar"
   on reviews for insert
-  with check (customer_id = auth.uid());
+  with check (
+    customer_id = auth.uid()
+    and exists (
+      select 1 from reservations r
+      where r.customer_id = auth.uid()
+        and r.venue_id = reviews.venue_id
+        and r.status = 'completed'
+    )
+  );
 
 create policy "reviews: müşteri kendi yorumunu yönetir"
   on reviews for update

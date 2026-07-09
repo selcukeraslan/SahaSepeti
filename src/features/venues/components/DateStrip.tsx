@@ -2,6 +2,7 @@ import { addDays, format, isSameDay, parseISO } from 'date-fns'
 import { tr } from 'date-fns/locale'
 import { toDateString } from '@/lib/format'
 import { cn } from '@/lib/utils'
+import { nowInIstanbul } from '../services/slots'
 
 export interface DateStripProps {
   /** yyyy-MM-dd */
@@ -11,9 +12,9 @@ export interface DateStripProps {
   days?: number
 }
 
-/** Yatay kaydırmalı tarih seçici — bugün + N gün. */
+/** Yatay kaydırmalı tarih seçici — bugün + N gün (Europe/Istanbul). */
 export function DateStrip({ selected, onSelect, days = 14 }: DateStripProps) {
-  const today = new Date()
+  const today = parseISO(nowInIstanbul().date)
   const selectedDate = parseISO(selected)
 
   return (

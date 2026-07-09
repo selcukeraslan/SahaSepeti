@@ -57,12 +57,14 @@ export function ImageManager({
   const handleFiles = async (files: FileList | null) => {
     if (!files || files.length === 0) return
     setIsUploading(true)
+    // Kapak yoksa, bu partideki İLK yüklenen görsel kapak olur (döngü öncesi sabitlenir).
+    let needsCover = !coverImageUrl && (images?.length ?? 0) === 0
     try {
       for (const file of Array.from(files)) {
         const image = await uploadVenueImage(venueId, file)
-        // İlk görsel otomatik kapak olur
-        if (!coverImageUrl && images?.length === 0) {
+        if (needsCover) {
           await setCoverImage(venueId, image.url)
+          needsCover = false
         }
       }
       invalidate()

@@ -4,7 +4,7 @@ import { Search } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Select } from '@/components/ui/Select'
 import { ALL_CITY_NAMES, getDistricts } from '@/config/cities'
-import { toDateString } from '@/lib/format'
+import { nowInIstanbul } from '../services/slots'
 import { useSports } from '../hooks/useSports'
 
 /** Landing hero'sundaki arama kutusu — /tesisler sayfasına yönlendirir. */
@@ -62,7 +62,7 @@ export function VenueSearchBox() {
         type="date"
         aria-label="Tarih"
         value={date}
-        min={toDateString(new Date())}
+        min={nowInIstanbul().date}
         onChange={(event) => setDate(event.target.value)}
         className="h-11 rounded-xl border border-slate-300 bg-white px-3.5 text-sm text-slate-900 transition-colors hover:border-slate-400 focus:outline-2 focus:outline-offset--1 focus:outline-primary-600"
       />

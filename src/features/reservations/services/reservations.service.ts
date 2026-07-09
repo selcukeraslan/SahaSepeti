@@ -70,7 +70,7 @@ export async function listMyReservations(): Promise<ReservationWithVenue[]> {
 export async function cancelReservation(input: CancelReservationInput): Promise<void> {
   const data = cancelReservationSchema.parse(input)
 
-  const { error } = await supabase
+  const { data: updated, error } = await supabase
     .from('reservations')
     .update({
       status: 'cancelled',
@@ -78,8 +78,16 @@ export async function cancelReservation(input: CancelReservationInput): Promise<
       cancellation_reason: data.reason || null,
     })
     .eq('id', data.reservationId)
+    .select('id')
 
   if (error) {
+    // DB trigger'ı zamanı geçmiş rezervasyon iptalini engeller
+    if (error.message.includes('geçmiş')) {
+      throw new Error('Saati geçmiş rezervasyon iptal edilemez')
+    }
     throw new Error('Rezervasyon iptal edilemedi')
+  }
+  if (!updated || updated.length === 0) {
+    throw new Error('Rezervasyon bulunamadı veya iptal yetkiniz yok')
   }
 }

@@ -16,7 +16,8 @@ export function useCreateReservation() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: createReservation,
-    onSuccess: () => {
+    // Hata durumunda da (örn. "bu saat az önce doldu") müsaitlik tazelenir
+    onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: ['availability'] })
       void queryClient.invalidateQueries({ queryKey: ['my-reservations'] })
     },

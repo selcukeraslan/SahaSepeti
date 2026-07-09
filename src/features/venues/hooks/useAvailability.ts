@@ -22,7 +22,9 @@ export function useAvailability(venue: VenueDetail | null | undefined, date: str
       const booked = await fetchBookedSlots(venue.id, date)
       const dayOfWeek = parseISO(date).getDay()
       const now = nowInIstanbul()
-      const nowMinutes = now.date === date ? now.minutes : null
+      // Geçmiş gün: tüm slotlar 'past'; bugün: şu anki dakikaya göre; gelecek: kısıt yok
+      const nowMinutes =
+        date < now.date ? 24 * 60 : date === now.date ? now.minutes : null
       const openingHour = venue.openingHours.find((hour) => hour.day_of_week === dayOfWeek)
 
       return venue.courts.map((court) => ({
