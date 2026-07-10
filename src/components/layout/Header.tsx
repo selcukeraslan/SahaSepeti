@@ -1,6 +1,15 @@
 import { useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
-import { CalendarDays, LayoutDashboard, LogOut, Menu, ShieldCheck, User } from 'lucide-react'
+import {
+  CalendarDays,
+  Info,
+  LayoutDashboard,
+  LogOut,
+  Mail,
+  Menu,
+  ShieldCheck,
+  User,
+} from 'lucide-react'
 import { useAuth } from '@/features/auth/hooks/useAuth'
 import { signOut } from '@/features/auth/services/auth.service'
 import { Button } from '@/components/ui/Button'
@@ -44,6 +53,12 @@ export function Header() {
         <nav className="hidden items-center gap-1 md:flex" aria-label="Ana menü">
           <NavLink to="/tesisler" className={navLinkClass}>
             Tesisler
+          </NavLink>
+          <NavLink to="/hakkimizda" className={navLinkClass}>
+            Biz Kimiz
+          </NavLink>
+          <NavLink to="/iletisim" className={navLinkClass}>
+            İletişim
           </NavLink>
           {profile?.role === 'customer' && (
             <NavLink to="/rezervasyonlarim" className={navLinkClass}>
@@ -106,6 +121,22 @@ export function Header() {
           >
             <CalendarDays className="size-5 text-primary-600" aria-hidden />
             Tesisler
+          </Link>
+          <Link
+            to="/hakkimizda"
+            onClick={closeMenu}
+            className="flex items-center gap-3 rounded-xl px-3 py-3 font-medium text-slate-700 hover:bg-slate-100"
+          >
+            <Info className="size-5 text-primary-600" aria-hidden />
+            Biz Kimiz
+          </Link>
+          <Link
+            to="/iletisim"
+            onClick={closeMenu}
+            className="flex items-center gap-3 rounded-xl px-3 py-3 font-medium text-slate-700 hover:bg-slate-100"
+          >
+            <Mail className="size-5 text-primary-600" aria-hidden />
+            İletişim
           </Link>
           {profile?.role === 'customer' && (
             <Link

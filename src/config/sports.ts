@@ -1,13 +1,4 @@
-import {
-  Dumbbell,
-  Feather,
-  Volleyball,
-  CircleDot,
-  Square,
-  Box,
-  Goal,
-  type LucideIcon,
-} from 'lucide-react'
+import { Dumbbell, Feather, Volleyball, CircleDot, Goal, type LucideIcon } from 'lucide-react'
 
 /**
  * Spor türü ikon eşlemesi — sports.icon (DB) → lucide bileşeni.
@@ -18,9 +9,7 @@ const SPORT_ICONS: Record<string, LucideIcon> = {
   basketbol: Dumbbell,
   tenis: CircleDot,
   voleybol: Volleyball,
-  padel: Square,
   badminton: Feather,
-  squash: Box,
 }
 
 export function getSportIcon(slug: string): LucideIcon {

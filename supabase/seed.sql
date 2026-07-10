@@ -10,9 +10,7 @@ insert into sports (id, name, slug, icon) values
   ('a0000000-0000-0000-0000-000000000002', 'Basketbol',  'basketbol',  'dribbble'),
   ('a0000000-0000-0000-0000-000000000003', 'Tenis',      'tenis',      'circle-dot'),
   ('a0000000-0000-0000-0000-000000000004', 'Voleybol',   'voleybol',   'volleyball'),
-  ('a0000000-0000-0000-0000-000000000005', 'Padel',      'padel',      'square'),
-  ('a0000000-0000-0000-0000-000000000006', 'Badminton',  'badminton',  'feather'),
-  ('a0000000-0000-0000-0000-000000000007', 'Squash',     'squash',     'box')
+  ('a0000000-0000-0000-0000-000000000006', 'Badminton',  'badminton',  'feather')
 on conflict (slug) do nothing;
 
 -- ============================================================
@@ -77,7 +75,7 @@ values
    'approved'),
   ('b0000000-0000-0000-0000-000000000002', '11111111-1111-1111-1111-111111111111',
    'Boğaz Arena', 'bogaz-arena',
-   'Beşiktaş''ta kapalı ve açık kortlarıyla tenis ve padel tutkunlarının buluşma noktası. Deneyimli eğitmen kadrosu ve pro-shop hizmeti.',
+   'Beşiktaş''ta kapalı ve açık kortlarıyla tenis tutkunlarının buluşma noktası. Deneyimli eğitmen kadrosu ve pro-shop hizmeti.',
    'İstanbul', 'Beşiktaş', 'Sinanpaşa Mah. Kort Sok. No:5',
    '0212 555 02 02', 'https://picsum.photos/seed/tenis1/1200/800',
    array['Duş', 'Soyunma Odası', 'Otopark', 'Kafeterya', 'Tribün', 'Wi-Fi'],
@@ -95,7 +93,6 @@ on conflict (slug) do nothing;
 insert into venue_sports (venue_id, sport_id) values
   ('b0000000-0000-0000-0000-000000000001', 'a0000000-0000-0000-0000-000000000001'),
   ('b0000000-0000-0000-0000-000000000002', 'a0000000-0000-0000-0000-000000000003'),
-  ('b0000000-0000-0000-0000-000000000002', 'a0000000-0000-0000-0000-000000000005'),
   ('b0000000-0000-0000-0000-000000000003', 'a0000000-0000-0000-0000-000000000002')
 on conflict do nothing;
 
@@ -108,7 +105,7 @@ insert into courts (id, venue_id, sport_id, name, surface_type, is_indoor, capac
   ('c0000000-0000-0000-0000-000000000003', 'b0000000-0000-0000-0000-000000000002',
    'a0000000-0000-0000-0000-000000000003', 'Kort 1 (Toprak)', 'Toprak', false, 4),
   ('c0000000-0000-0000-0000-000000000004', 'b0000000-0000-0000-0000-000000000002',
-   'a0000000-0000-0000-0000-000000000005', 'Padel Kort 1', 'Sentetik', true, 4),
+   'a0000000-0000-0000-0000-000000000003', 'Kort 2 (Sert Zemin)', 'Sentetik', true, 4),
   ('c0000000-0000-0000-0000-000000000005', 'b0000000-0000-0000-0000-000000000003',
    'a0000000-0000-0000-0000-000000000002', 'Kapalı Salon', 'Parke', true, 10)
 on conflict (id) do nothing;

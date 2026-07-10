@@ -12,7 +12,7 @@ export function Footer() {
             Türkiye'nin spor tesisi rezervasyon platformu. Sahanı seç, saatini ayır, oyununu oyna.
           </p>
         </div>
-        <div className="flex gap-12">
+        <div className="flex flex-wrap gap-x-12 gap-y-6">
           <div>
             <p className="text-sm font-semibold text-slate-900">Keşfet</p>
             <ul className="mt-3 space-y-2 text-sm text-slate-500">
@@ -44,6 +44,21 @@ export function Footer() {
               <li>
                 <Link to="/panel" className="hover:text-primary-600">
                   Tesis Paneli
+                </Link>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-slate-900">Kurumsal</p>
+            <ul className="mt-3 space-y-2 text-sm text-slate-500">
+              <li>
+                <Link to="/hakkimizda" className="hover:text-primary-600">
+                  Biz Kimiz
+                </Link>
+              </li>
+              <li>
+                <Link to="/iletisim" className="hover:text-primary-600">
+                  İletişim
                 </Link>
               </li>
             </ul>

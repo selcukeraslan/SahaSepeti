@@ -7,6 +7,8 @@ import { VenueDetail } from '@/pages/VenueDetail'
 import { MyReservations } from '@/pages/MyReservations'
 import { Login } from '@/pages/Login'
 import { Register } from '@/pages/Register'
+import { About } from '@/pages/About'
+import { Contact } from '@/pages/Contact'
 import { DashboardLayout } from '@/pages/dashboard/DashboardLayout'
 import { DashboardHome } from '@/pages/dashboard/DashboardHome'
 import { DashboardVenues } from '@/pages/dashboard/DashboardVenues'
@@ -26,6 +28,8 @@ export const router = createBrowserRouter([
       { path: '/', element: <Landing /> },
       { path: '/tesisler', element: <VenueList /> },
       { path: '/tesis/:slug', element: <VenueDetail /> },
+      { path: '/hakkimizda', element: <About /> },
+      { path: '/iletisim', element: <Contact /> },
       { path: '/giris', element: <Login /> },
       { path: '/kayit', element: <Register /> },
       {
