@@ -42,9 +42,9 @@ export function Login() {
   return (
     <Container className="flex justify-center py-12 sm:py-20">
       <div className="w-full max-w-md">
-        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-soft sm:p-8">
-          <h1 className="text-2xl font-bold text-slate-900">Giriş Yap</h1>
-          <p className="mt-1 text-sm text-slate-500">
+        <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-soft sm:p-8">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50">Giriş Yap</h1>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             Rezervasyonlarınıza erişmek için giriş yapın.
           </p>
           <form onSubmit={handleSubmit(onSubmit)} className="mt-6 flex flex-col gap-4" noValidate>
@@ -69,7 +69,7 @@ export function Login() {
             </Button>
           </form>
         </div>
-        <p className="mt-4 text-center text-sm text-slate-500">
+        <p className="mt-4 text-center text-sm text-slate-500 dark:text-slate-400">
           Hesabınız yok mu?{' '}
           <Link to="/kayit" className="font-semibold text-primary-600 hover:text-primary-700">
             Kayıt olun

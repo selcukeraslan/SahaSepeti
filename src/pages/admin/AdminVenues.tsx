@@ -21,7 +21,7 @@ export function AdminVenues() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900">Tüm Tesisler</h1>
+      <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50">Tüm Tesisler</h1>
 
       <div className="mt-4 max-w-xs">
         <Select
@@ -47,7 +47,7 @@ export function AdminVenues() {
         {venues?.map((venue) => (
           <div
             key={venue.id}
-            className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-soft sm:flex-row sm:items-center"
+            className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-soft sm:flex-row sm:items-center dark:border-slate-800 dark:bg-slate-900"
           >
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
@@ -55,8 +55,8 @@ export function AdminVenues() {
                   {VENUE_STATUS_LABELS[venue.status]}
                 </Badge>
               </div>
-              <p className="mt-1.5 font-semibold text-slate-900">{venue.name}</p>
-              <p className="text-sm text-slate-500">
+              <p className="mt-1.5 font-semibold text-slate-900 dark:text-slate-50">{venue.name}</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
                 {venue.district}, {venue.city} · Sahibi: {venue.owner?.full_name || '—'}
               </p>
             </div>

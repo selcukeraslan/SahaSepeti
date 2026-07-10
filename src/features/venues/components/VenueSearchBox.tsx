@@ -31,7 +31,7 @@ export function VenueSearchBox() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-soft-lg sm:grid-cols-2 lg:grid-cols-5"
+      className="grid gap-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-soft-lg sm:grid-cols-2 lg:grid-cols-5"
     >
       <Select
         aria-label="Spor türü"
@@ -64,7 +64,7 @@ export function VenueSearchBox() {
         value={date}
         min={nowInIstanbul().date}
         onChange={(event) => setDate(event.target.value)}
-        className="h-11 rounded-xl border border-slate-300 bg-white px-3.5 text-sm text-slate-900 transition-colors hover:border-slate-400 focus:outline-2 focus:outline-offset--1 focus:outline-primary-600"
+        className="h-11 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3.5 text-sm text-slate-900 dark:text-slate-50 transition-colors hover:border-slate-400 dark:hover:border-slate-600 focus:outline-2 focus:outline-offset--1 focus:outline-primary-600"
       />
       <Button type="submit" size="md" className="w-full">
         <Search className="size-4" aria-hidden />

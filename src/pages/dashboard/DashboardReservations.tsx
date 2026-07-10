@@ -44,7 +44,7 @@ export function DashboardReservations() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900">Rezervasyonlar</h1>
+      <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50">Rezervasyonlar</h1>
 
       {/* Filtreler */}
       <div className="mt-4 grid gap-3 sm:grid-cols-3">
@@ -70,7 +70,7 @@ export function DashboardReservations() {
           aria-label="Tarih filtresi"
           value={date}
           onChange={(event) => setDate(event.target.value)}
-          className="h-11 rounded-xl border border-slate-300 bg-white px-3.5 text-sm text-slate-900 transition-colors hover:border-slate-400"
+          className="h-11 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3.5 text-sm text-slate-900 dark:text-slate-50 transition-colors hover:border-slate-400 dark:hover:border-slate-600"
         />
       </div>
 
@@ -89,32 +89,32 @@ export function DashboardReservations() {
         {reservations?.map((reservation) => (
           <div
             key={reservation.id}
-            className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-soft sm:flex-row sm:items-center"
+            className="flex flex-col gap-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-soft sm:flex-row sm:items-center"
           >
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
                 <Badge variant={RESERVATION_STATUS_VARIANTS[reservation.status]}>
                   {RESERVATION_STATUS_LABELS[reservation.status]}
                 </Badge>
-                <span className="text-sm font-semibold text-slate-900">
+                <span className="text-sm font-semibold text-slate-900 dark:text-slate-50">
                   {formatPrice(reservation.total_price)}
                 </span>
               </div>
-              <p className="mt-1.5 font-semibold text-slate-900">
+              <p className="mt-1.5 font-semibold text-slate-900 dark:text-slate-50">
                 {reservation.customer?.full_name || 'Müşteri'}
                 {reservation.customer?.phone && (
-                  <span className="ml-2 font-normal text-slate-500">
+                  <span className="ml-2 font-normal text-slate-500 dark:text-slate-400">
                     {reservation.customer.phone}
                   </span>
                 )}
               </p>
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-slate-500 dark:text-slate-400">
                 {reservation.venue?.name} · {reservation.court?.name} ·{' '}
                 {formatDateShort(reservation.reservation_date)} ·{' '}
                 {formatTime(reservation.start_time)}–{formatTime(reservation.end_time)}
               </p>
               {reservation.notes && (
-                <p className="mt-1.5 rounded-lg bg-slate-50 px-3 py-1.5 text-sm text-slate-600">
+                <p className="mt-1.5 rounded-lg bg-slate-50 dark:bg-slate-950 px-3 py-1.5 text-sm text-slate-600 dark:text-slate-300">
                   Not: {reservation.notes}
                 </p>
               )}

@@ -119,7 +119,7 @@ export function VenueForm({ defaultValues, isSaving, submitLabel, onSubmit }: Ve
 
       {/* Spor türleri */}
       <fieldset>
-        <legend className="text-sm font-medium text-slate-700">Spor Türleri</legend>
+        <legend className="text-sm font-medium text-slate-700 dark:text-slate-200">Spor Türleri</legend>
         <div className="mt-2 flex flex-wrap gap-2">
           {sports?.map((sport) => {
             const isSelected = selectedSports.includes(sport.id)
@@ -133,7 +133,7 @@ export function VenueForm({ defaultValues, isSaving, submitLabel, onSubmit }: Ve
                   'rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors',
                   isSelected
                     ? 'border-primary-600 bg-primary-600 text-white'
-                    : 'border-slate-300 bg-white text-slate-600 hover:border-primary-400',
+                    : 'border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:border-primary-400',
                 )}
               >
                 {sport.name}
@@ -146,7 +146,7 @@ export function VenueForm({ defaultValues, isSaving, submitLabel, onSubmit }: Ve
 
       {/* Olanaklar */}
       <fieldset>
-        <legend className="text-sm font-medium text-slate-700">Olanaklar</legend>
+        <legend className="text-sm font-medium text-slate-700 dark:text-slate-200">Olanaklar</legend>
         <div className="mt-2 flex flex-wrap gap-2">
           {AMENITIES.map((amenity) => {
             const isSelected = selectedAmenities.includes(amenity)
@@ -159,8 +159,8 @@ export function VenueForm({ defaultValues, isSaving, submitLabel, onSubmit }: Ve
                 className={cn(
                   'rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors',
                   isSelected
-                    ? 'border-primary-600 bg-primary-50 text-primary-700'
-                    : 'border-slate-300 bg-white text-slate-600 hover:border-primary-400',
+                    ? 'border-primary-600 bg-primary-50 dark:bg-primary-500/10 text-primary-700 dark:text-primary-300'
+                    : 'border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:border-primary-400',
                 )}
               >
                 {amenity}

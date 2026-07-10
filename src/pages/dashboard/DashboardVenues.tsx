@@ -23,7 +23,7 @@ export function DashboardVenues() {
   return (
     <div>
       <div className="flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold text-slate-900">Tesislerim</h1>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50">Tesislerim</h1>
         <Link to="/panel/tesisler/yeni">
           <Button size="sm">
             <Plus className="size-4" aria-hidden />
@@ -52,7 +52,7 @@ export function DashboardVenues() {
         {venues?.map((venue) => (
           <div
             key={venue.id}
-            className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-soft sm:flex-row sm:items-center"
+            className="flex flex-col gap-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-soft sm:flex-row sm:items-center"
           >
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
@@ -60,17 +60,17 @@ export function DashboardVenues() {
                   {VENUE_STATUS_LABELS[venue.status]}
                 </Badge>
                 {venue.sports.map((sport) => (
-                  <span key={sport.id} className="text-xs text-slate-400">
+                  <span key={sport.id} className="text-xs text-slate-400 dark:text-slate-500">
                     {sport.name}
                   </span>
                 ))}
               </div>
-              <p className="mt-1.5 font-semibold text-slate-900">{venue.name}</p>
-              <p className="text-sm text-slate-500">
+              <p className="mt-1.5 font-semibold text-slate-900 dark:text-slate-50">{venue.name}</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
                 {venue.district}, {venue.city}
               </p>
               {venue.status === 'rejected' && venue.rejection_reason && (
-                <p className="mt-2 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+                <p className="mt-2 rounded-lg bg-red-50 dark:bg-red-500/10 px-3 py-2 text-sm text-red-700 dark:text-red-300">
                   Red gerekçesi: {venue.rejection_reason}
                 </p>
               )}

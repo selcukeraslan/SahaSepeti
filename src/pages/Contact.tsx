@@ -31,8 +31,8 @@ export function Contact() {
   return (
     <Container className="py-12 sm:py-16">
       <div className="mx-auto max-w-2xl text-center">
-        <h1 className="text-3xl font-bold text-slate-900 sm:text-4xl">İletişim</h1>
-        <p className="mt-3 text-slate-500">
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-50 sm:text-4xl">İletişim</h1>
+        <p className="mt-3 text-slate-500 dark:text-slate-400">
           Sorusu, önerisi veya iş birliği talebi olan herkese kapımız açık. Aşağıdaki formu
           doldur ya da doğrudan bize ulaş.
         </p>
@@ -43,13 +43,13 @@ export function Contact() {
         <div className="space-y-3">
           {INFO.map((item) => {
             const content = (
-              <div className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-soft">
-                <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-50 text-primary-600">
+              <div className="flex items-start gap-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-soft">
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-50 dark:bg-primary-500/10 text-primary-600">
                   <item.icon className="size-5" aria-hidden />
                 </span>
                 <div>
-                  <p className="text-sm text-slate-500">{item.label}</p>
-                  <p className="font-medium text-slate-900">{item.value}</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">{item.label}</p>
+                  <p className="font-medium text-slate-900 dark:text-slate-50">{item.value}</p>
                 </div>
               </div>
             )
@@ -66,7 +66,7 @@ export function Contact() {
         {/* İletişim formu */}
         <form
           onSubmit={handleSubmit}
-          className="rounded-3xl border border-slate-200 bg-white p-6 shadow-soft"
+          className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-soft"
         >
           <div className="flex flex-col gap-4">
             <Input
@@ -95,7 +95,7 @@ export function Contact() {
               <Send className="size-4" aria-hidden />
               Mesaj Gönder
             </Button>
-            <p className="text-center text-xs text-slate-400">
+            <p className="text-center text-xs text-slate-400 dark:text-slate-500">
               Gönder'e bastığında mesajın e-posta uygulamanda hazır olarak açılır.
             </p>
           </div>

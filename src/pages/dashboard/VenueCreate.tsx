@@ -13,13 +13,13 @@ export function VenueCreate() {
     <div className="max-w-2xl">
       <Link
         to="/panel/tesisler"
-        className="flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-slate-700"
+        className="flex items-center gap-1 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
       >
         <ArrowLeft className="size-4" aria-hidden />
         Tesislerim
       </Link>
-      <h1 className="mt-2 text-2xl font-bold text-slate-900">Yeni Tesis</h1>
-      <p className="mt-1 text-sm text-slate-500">
+      <h1 className="mt-2 text-2xl font-bold text-slate-900 dark:text-slate-50">Yeni Tesis</h1>
+      <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
         Tesis bilgilerini kaydedin; ardından saha, fiyat ve çalışma saatlerini ekleyip onaya
         gönderin.
       </p>

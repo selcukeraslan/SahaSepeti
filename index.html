@@ -9,6 +9,15 @@
       content="SahaSepeti — Türkiye'nin spor tesisi rezervasyon platformu. Halı saha, basketbol, tenis ve daha fazlası için online rezervasyon."
     />
     <title>SahaSepeti — Spor Tesisi Rezervasyonu</title>
+    <!-- Tema, React yüklenmeden önce uygulanır (flash önlenir). Varsayılan: dark -->
+    <script>
+      try {
+        var t = localStorage.getItem('sahasepeti-theme')
+        if (t !== 'light') document.documentElement.classList.add('dark')
+      } catch (e) {
+        document.documentElement.classList.add('dark')
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

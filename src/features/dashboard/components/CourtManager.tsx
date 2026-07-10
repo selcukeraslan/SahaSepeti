@@ -51,11 +51,11 @@ function PriceRuleEditor({ courtId }: { courtId: string }) {
   }
 
   return (
-    <div className="border-t border-slate-100 bg-slate-50/60 px-4 py-4">
-      <p className="text-sm font-semibold text-slate-700">Fiyat Kuralları</p>
+    <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/50 px-4 py-4">
+      <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">Fiyat Kuralları</p>
       {isLoading && <Skeleton className="mt-2 h-10" />}
       {rules && rules.length === 0 && (
-        <p className="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-700">
+        <p className="mt-2 rounded-lg bg-amber-50 dark:bg-amber-500/10 px-3 py-2 text-sm text-amber-700 dark:text-amber-300">
           Fiyat kuralı olmayan saha rezervasyona kapalıdır. En az bir kural ekleyin.
         </p>
       )}
@@ -63,18 +63,18 @@ function PriceRuleEditor({ courtId }: { courtId: string }) {
         {rules?.map((rule) => (
           <li
             key={rule.id}
-            className="flex items-center justify-between gap-2 rounded-lg bg-white px-3 py-2 text-sm"
+            className="flex items-center justify-between gap-2 rounded-lg bg-white dark:bg-slate-900 px-3 py-2 text-sm"
           >
-            <span className="text-slate-600">
+            <span className="text-slate-600 dark:text-slate-300">
               {rule.day_of_week === null ? 'Tüm günler' : DAY_NAMES_TR[rule.day_of_week]} ·{' '}
               {formatTime(rule.start_time)}–{formatTime(rule.end_time)} ·{' '}
-              <span className="font-semibold text-slate-900">{formatPrice(rule.price)}/saat</span>
+              <span className="font-semibold text-slate-900 dark:text-slate-50">{formatPrice(rule.price)}/saat</span>
             </span>
             <button
               type="button"
               aria-label="Kuralı sil"
               onClick={() => remove.mutate(rule.id)}
-              className="rounded-md p-1 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600"
+              className="rounded-md p-1 text-slate-400 dark:text-slate-500 transition-colors hover:bg-red-50 hover:text-red-600"
             >
               <Trash2 className="size-4" />
             </button>
@@ -192,10 +192,10 @@ function CourtDialog({
             })}
           />
         </div>
-        <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
+        <label className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-200">
           <input
             type="checkbox"
-            className="size-4 rounded border-slate-300 accent-primary-600"
+            className="size-4 rounded border-slate-300 dark:border-slate-700 accent-primary-600"
             {...register('isIndoor')}
           />
           Kapalı saha
@@ -252,7 +252,7 @@ export function CourtManager({ venueId }: { venueId: string }) {
   return (
     <div>
       <div className="flex items-center justify-between">
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-slate-500 dark:text-slate-400">
           Sahalarınızı tanımlayın ve her biri için saatlik fiyat kuralları ekleyin.
         </p>
         <Button
@@ -283,15 +283,15 @@ export function CourtManager({ venueId }: { venueId: string }) {
           return (
             <div
               key={court.id}
-              className="overflow-hidden rounded-2xl border border-slate-200 bg-white"
+              className="overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900"
             >
               <div className="flex items-center justify-between gap-3 px-4 py-3">
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <p className="font-semibold text-slate-900">{court.name}</p>
+                    <p className="font-semibold text-slate-900 dark:text-slate-50">{court.name}</p>
                     {!court.is_active && <Badge variant="danger">Pasif</Badge>}
                   </div>
-                  <p className="text-sm text-slate-500">
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
                     {court.sport?.name}
                     {court.surface_type && ` · ${court.surface_type}`}
                     {court.is_indoor ? ' · Kapalı' : ' · Açık'}
@@ -315,7 +315,7 @@ export function CourtManager({ venueId }: { venueId: string }) {
                       setEditingCourt(court)
                       setDialogOpen(true)
                     }}
-                    className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+                    className="rounded-lg p-2 text-slate-400 dark:text-slate-500 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600 dark:hover:text-slate-300"
                   >
                     <Pencil className="size-4" />
                   </button>
@@ -324,7 +324,7 @@ export function CourtManager({ venueId }: { venueId: string }) {
                     aria-label={isExpanded ? 'Fiyatları gizle' : 'Fiyatları göster'}
                     aria-expanded={isExpanded}
                     onClick={() => setExpandedCourtId(isExpanded ? null : court.id)}
-                    className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+                    className="rounded-lg p-2 text-slate-400 dark:text-slate-500 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600 dark:hover:text-slate-300"
                   >
                     <ChevronDown
                       className={cn('size-4 transition-transform', isExpanded && 'rotate-180')}

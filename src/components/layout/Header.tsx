@@ -14,6 +14,7 @@ import { useAuth } from '@/features/auth/hooks/useAuth'
 import { signOut } from '@/features/auth/services/auth.service'
 import { Button } from '@/components/ui/Button'
 import { Sheet } from '@/components/ui/Sheet'
+import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { useToast } from '@/components/ui/useToast'
 import { cn } from '@/lib/utils'
 import { Container } from './Container'
@@ -22,7 +23,9 @@ import { Logo } from './Logo'
 function navLinkClass({ isActive }: { isActive: boolean }): string {
   return cn(
     'rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-    isActive ? 'text-primary-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
+    isActive
+      ? 'text-primary-700 dark:text-primary-300'
+      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-50',
   )
 }
 
@@ -45,7 +48,7 @@ export function Header() {
   const closeMenu = () => setMenuOpen(false)
 
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-900/90">
       <Container className="flex h-16 items-center justify-between gap-4">
         <Logo />
 
@@ -78,9 +81,10 @@ export function Header() {
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
+          <ThemeToggle />
           {user ? (
             <>
-              <span className="max-w-40 truncate text-sm font-medium text-slate-700">
+              <span className="max-w-40 truncate text-sm font-medium text-slate-700 dark:text-slate-200">
                 {profile?.full_name || user.email}
               </span>
               <Button variant="ghost" size="sm" onClick={handleSignOut}>
@@ -100,15 +104,18 @@ export function Header() {
           )}
         </div>
 
-        {/* Mobil menü butonu */}
-        <button
-          type="button"
-          onClick={() => setMenuOpen(true)}
-          aria-label="Menüyü aç"
-          className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 md:hidden"
-        >
-          <Menu className="size-6" />
-        </button>
+        {/* Mobil: tema + menü */}
+        <div className="flex items-center gap-1 md:hidden">
+          <ThemeToggle />
+          <button
+            type="button"
+            onClick={() => setMenuOpen(true)}
+            aria-label="Menüyü aç"
+            className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+          >
+            <Menu className="size-6" />
+          </button>
+        </div>
       </Container>
 
       {/* Mobil menü */}
@@ -117,7 +124,7 @@ export function Header() {
           <Link
             to="/tesisler"
             onClick={closeMenu}
-            className="flex items-center gap-3 rounded-xl px-3 py-3 font-medium text-slate-700 hover:bg-slate-100"
+            className="flex items-center gap-3 rounded-xl px-3 py-3 font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
           >
             <CalendarDays className="size-5 text-primary-600" aria-hidden />
             Tesisler
@@ -125,7 +132,7 @@ export function Header() {
           <Link
             to="/hakkimizda"
             onClick={closeMenu}
-            className="flex items-center gap-3 rounded-xl px-3 py-3 font-medium text-slate-700 hover:bg-slate-100"
+            className="flex items-center gap-3 rounded-xl px-3 py-3 font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
           >
             <Info className="size-5 text-primary-600" aria-hidden />
             Biz Kimiz
@@ -133,7 +140,7 @@ export function Header() {
           <Link
             to="/iletisim"
             onClick={closeMenu}
-            className="flex items-center gap-3 rounded-xl px-3 py-3 font-medium text-slate-700 hover:bg-slate-100"
+            className="flex items-center gap-3 rounded-xl px-3 py-3 font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
           >
             <Mail className="size-5 text-primary-600" aria-hidden />
             İletişim
@@ -142,7 +149,7 @@ export function Header() {
             <Link
               to="/rezervasyonlarim"
               onClick={closeMenu}
-              className="flex items-center gap-3 rounded-xl px-3 py-3 font-medium text-slate-700 hover:bg-slate-100"
+              className="flex items-center gap-3 rounded-xl px-3 py-3 font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
             >
               <User className="size-5 text-primary-600" aria-hidden />
               Rezervasyonlarım
@@ -152,7 +159,7 @@ export function Header() {
             <Link
               to="/panel"
               onClick={closeMenu}
-              className="flex items-center gap-3 rounded-xl px-3 py-3 font-medium text-slate-700 hover:bg-slate-100"
+              className="flex items-center gap-3 rounded-xl px-3 py-3 font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
             >
               <LayoutDashboard className="size-5 text-primary-600" aria-hidden />
               Tesis Paneli
@@ -162,14 +169,14 @@ export function Header() {
             <Link
               to="/admin"
               onClick={closeMenu}
-              className="flex items-center gap-3 rounded-xl px-3 py-3 font-medium text-slate-700 hover:bg-slate-100"
+              className="flex items-center gap-3 rounded-xl px-3 py-3 font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
             >
               <ShieldCheck className="size-5 text-primary-600" aria-hidden />
               Admin
             </Link>
           )}
 
-          <div className="mt-4 border-t border-slate-100 pt-4">
+          <div className="mt-4 border-t border-slate-100 pt-4 dark:border-slate-800">
             {user ? (
               <Button variant="outline" className="w-full" onClick={handleSignOut}>
                 <LogOut className="size-4" aria-hidden />

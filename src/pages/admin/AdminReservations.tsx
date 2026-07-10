@@ -22,8 +22,8 @@ export function AdminReservations() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900">Rezervasyonlar</h1>
-      <p className="mt-1 text-sm text-slate-500">Platformdaki tüm rezervasyonlar (salt okunur).</p>
+      <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50">Rezervasyonlar</h1>
+      <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Platformdaki tüm rezervasyonlar (salt okunur).</p>
 
       <div className="mt-4 grid max-w-lg gap-3 sm:grid-cols-2">
         <Select
@@ -41,7 +41,7 @@ export function AdminReservations() {
           aria-label="Tarih filtresi"
           value={date}
           onChange={(event) => setDate(event.target.value)}
-          className="h-11 rounded-xl border border-slate-300 bg-white px-3.5 text-sm text-slate-900"
+          className="h-11 rounded-xl border border-slate-300 bg-white px-3.5 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-50"
         />
       </div>
 
@@ -56,14 +56,14 @@ export function AdminReservations() {
         {reservations?.map((reservation) => (
           <div
             key={reservation.id}
-            className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3"
+            className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 dark:border-slate-800 dark:bg-slate-900"
           >
             <div className="min-w-0">
-              <p className="truncate text-sm font-medium text-slate-900">
+              <p className="truncate text-sm font-medium text-slate-900 dark:text-slate-50">
                 {reservation.customer?.full_name || 'Müşteri'} — {reservation.venue?.name} ·{' '}
                 {reservation.court?.name}
               </p>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 {formatDateShort(reservation.reservation_date)} ·{' '}
                 {formatTime(reservation.start_time)}–{formatTime(reservation.end_time)} ·{' '}
                 {formatPrice(reservation.total_price)}

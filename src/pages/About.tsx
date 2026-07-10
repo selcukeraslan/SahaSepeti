@@ -58,8 +58,8 @@ export function About() {
       <section className="py-14 sm:py-20">
         <Container>
           <div className="mx-auto max-w-3xl">
-            <h2 className="text-2xl font-bold text-slate-900">Neden SahaSepeti?</h2>
-            <p className="mt-3 leading-relaxed text-slate-600">
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-50">Neden SahaSepeti?</h2>
+            <p className="mt-3 leading-relaxed text-slate-600 dark:text-slate-300">
               Halı saha, tenis kortu, basketbol sahası… Türkiye'de spor yapmak isteyen milyonlarca
               insan var; ama uygun sahayı bulmak, müsait saati öğrenmek ve yer ayırtmak çoğu zaman
               zahmetli. Biz bu süreci tek bir platformda topladık: oyuncular kolayca keşfedip
@@ -73,13 +73,13 @@ export function About() {
             {VALUES.map((value) => (
               <div
                 key={value.title}
-                className="rounded-2xl border border-slate-200 bg-white p-6 shadow-soft"
+                className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-soft"
               >
-                <span className="flex size-11 items-center justify-center rounded-xl bg-primary-50 text-primary-600">
+                <span className="flex size-11 items-center justify-center rounded-xl bg-primary-50 dark:bg-primary-500/10 text-primary-600">
                   <value.icon className="size-5" aria-hidden />
                 </span>
-                <h3 className="mt-4 font-semibold text-slate-900">{value.title}</h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-slate-500">{value.text}</p>
+                <h3 className="mt-4 font-semibold text-slate-900 dark:text-slate-50">{value.title}</h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-slate-500 dark:text-slate-400">{value.text}</p>
               </div>
             ))}
           </div>
@@ -87,16 +87,16 @@ export function About() {
       </section>
 
       {/* İstatistikler */}
-      <section className="bg-white py-14">
+      <section className="bg-white dark:bg-slate-900 py-14">
         <Container>
           <div className="grid gap-6 sm:grid-cols-3">
             {STATS.map((stat) => (
               <div key={stat.label} className="flex flex-col items-center text-center">
-                <span className="flex size-12 items-center justify-center rounded-2xl bg-primary-50 text-primary-600">
+                <span className="flex size-12 items-center justify-center rounded-2xl bg-primary-50 dark:bg-primary-500/10 text-primary-600">
                   <stat.icon className="size-6" aria-hidden />
                 </span>
-                <p className="mt-3 text-2xl font-bold text-slate-900">{stat.value}</p>
-                <p className="text-sm text-slate-500">{stat.label}</p>
+                <p className="mt-3 text-2xl font-bold text-slate-900 dark:text-slate-50">{stat.value}</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">{stat.label}</p>
               </div>
             ))}
           </div>
@@ -118,11 +118,7 @@ export function About() {
                 </Button>
               </Link>
               <Link to="/kayit?rol=tesis">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="w-full border-slate-600 bg-transparent text-white hover:bg-slate-800 sm:w-auto"
-                >
+                <Button size="lg" className="w-full sm:w-auto">
                   Tesisini Ekle
                 </Button>
               </Link>

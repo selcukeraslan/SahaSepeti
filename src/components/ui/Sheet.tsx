@@ -40,19 +40,19 @@ export function Sheet({ open, onClose, title, children, side = 'right' }: SheetP
         aria-label={title}
         onClick={(event) => event.stopPropagation()}
         className={cn(
-          'fixed flex flex-col bg-white shadow-soft-lg',
+          'fixed flex flex-col bg-white dark:bg-slate-900 shadow-soft-lg',
           side === 'right'
             ? 'inset-y-0 right-0 w-full max-w-sm'
             : 'inset-x-0 bottom-0 max-h-[85dvh] rounded-t-3xl',
         )}
       >
-        <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
-          {title && <h2 className="text-base font-semibold text-slate-900">{title}</h2>}
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 px-5 py-4">
+          {title && <h2 className="text-base font-semibold text-slate-900 dark:text-slate-50">{title}</h2>}
           <button
             type="button"
             onClick={onClose}
             aria-label="Kapat"
-            className="rounded-lg p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+            className="rounded-lg p-1 text-slate-400 dark:text-slate-500 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600 dark:hover:text-slate-300"
           >
             <X className="size-5" />
           </button>

@@ -39,18 +39,18 @@ export function Dialog({ open, onClose, title, children, className }: DialogProp
         aria-label={title}
         onClick={(event) => event.stopPropagation()}
         className={cn(
-          'max-h-[90dvh] w-full overflow-y-auto rounded-t-3xl bg-white p-6 shadow-soft-lg',
+          'max-h-[90dvh] w-full overflow-y-auto rounded-t-3xl bg-white dark:bg-slate-900 p-6 shadow-soft-lg',
           'sm:max-w-lg sm:rounded-3xl',
           className,
         )}
       >
         <div className="mb-4 flex items-start justify-between gap-4">
-          {title && <h2 className="text-lg font-semibold text-slate-900">{title}</h2>}
+          {title && <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-50">{title}</h2>}
           <button
             type="button"
             onClick={onClose}
             aria-label="Kapat"
-            className="rounded-lg p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+            className="rounded-lg p-1 text-slate-400 dark:text-slate-500 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600 dark:hover:text-slate-300"
           >
             <X className="size-5" />
           </button>

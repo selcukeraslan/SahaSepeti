@@ -1,5 +1,8 @@
 @import 'tailwindcss';
 
+/* Manuel tema anahtarı: <html class="dark"> olduğunda dark: varyantları uygulanır */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   /* Marka paleti — emerald primary, slate nötr, amber accent */
   --color-primary-50: #ecfdf5;
@@ -33,11 +36,16 @@
     -webkit-font-smoothing: antialiased;
   }
 
+  /* Form kontrolleri (date/time input, scrollbar) tema ile uyumlu render edilsin */
+  html.dark {
+    color-scheme: dark;
+  }
+
   body {
-    @apply bg-slate-50 font-sans text-slate-900;
+    @apply bg-slate-50 font-sans text-slate-900 dark:bg-slate-950 dark:text-slate-100;
   }
 
   ::selection {
-    @apply bg-primary-200 text-primary-900;
+    @apply bg-primary-200 text-primary-900 dark:bg-primary-800 dark:text-primary-50;
   }
 }
