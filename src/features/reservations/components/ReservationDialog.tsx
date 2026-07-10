@@ -67,23 +67,23 @@ export function ReservationDialog({
 
   return (
     <Dialog open={open} onClose={onClose} title="Rezervasyon Özeti">
-      <div className="flex flex-col gap-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 p-4">
-        <p className="font-semibold text-slate-900 dark:text-slate-50">{venue.name}</p>
-        <p className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+      <div className="flex flex-col gap-3 rounded-2xl bg-slate-50 dark:bg-ink-800/50 p-4">
+        <p className="font-semibold text-slate-900 dark:text-ink-50">{venue.name}</p>
+        <p className="flex items-center gap-2 text-sm text-slate-600 dark:text-ink-300">
           <MapPin className="size-4 shrink-0 text-primary-600" aria-hidden />
           {venue.district}, {venue.city} — {court.name}
         </p>
-        <p className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+        <p className="flex items-center gap-2 text-sm text-slate-600 dark:text-ink-300">
           <CalendarDays className="size-4 shrink-0 text-primary-600" aria-hidden />
           {formatDateLong(date)}
         </p>
-        <p className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+        <p className="flex items-center gap-2 text-sm text-slate-600 dark:text-ink-300">
           <Clock className="size-4 shrink-0 text-primary-600" aria-hidden />
           {slot.startTime} – {slot.endTime}
         </p>
-        <div className="flex items-center justify-between border-t border-slate-200 dark:border-slate-800 pt-3">
-          <span className="text-sm text-slate-500 dark:text-slate-400">Toplam</span>
-          <span className="text-lg font-bold text-slate-900 dark:text-slate-50">
+        <div className="flex items-center justify-between border-t border-slate-200 dark:border-ink-800 pt-3">
+          <span className="text-sm text-slate-500 dark:text-ink-400">Toplam</span>
+          <span className="text-lg font-bold text-slate-900 dark:text-ink-50">
             {slot.price !== null ? formatPrice(slot.price) : '—'}
           </span>
         </div>
@@ -100,7 +100,7 @@ export function ReservationDialog({
               onChange={(event) => setNotes(event.target.value)}
             />
           </div>
-          <p className="mt-3 text-xs text-slate-400 dark:text-slate-500">
+          <p className="mt-3 text-xs text-slate-400 dark:text-ink-500">
             Rezervasyonunuz tesis onayına gönderilir. Ödeme tesiste yapılır; online ödeme yakında.
           </p>
           <div className="mt-4 flex gap-2">
@@ -118,7 +118,7 @@ export function ReservationDialog({
         </>
       ) : (
         <div className="mt-4 flex flex-col gap-2">
-          <p className="text-center text-sm text-slate-500 dark:text-slate-400">
+          <p className="text-center text-sm text-slate-500 dark:text-ink-400">
             Rezervasyon yapmak için giriş yapmanız gerekiyor.
           </p>
           <Button size="lg" onClick={handleLoginRedirect}>

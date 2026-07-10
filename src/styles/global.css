@@ -21,6 +21,20 @@
   --color-accent-500: #f59e0b;
   --color-accent-600: #d97706;
 
+  /* Koyu tema nötrleri — zümrüt markayla uyumlu, hafif yeşile çalan koyu gri
+     (mavi "slate" yerine). Yüzeyler koyu, metin açık near-white. */
+  --color-ink-50: #eef3f1;
+  --color-ink-100: #dde8e3;
+  --color-ink-200: #c3d4cc;
+  --color-ink-300: #9db3aa;
+  --color-ink-400: #6f8a80;
+  --color-ink-500: #506b62;
+  --color-ink-600: #3a534b;
+  --color-ink-700: #294036;
+  --color-ink-800: #1c2e27;
+  --color-ink-900: #12211c;
+  --color-ink-950: #0b1512;
+
   --font-sans: 'Inter', 'Inter Fallback', system-ui, -apple-system, sans-serif;
 
   --shadow-soft: 0 2px 8px -2px rgb(15 23 42 / 0.08), 0 4px 16px -4px rgb(15 23 42 / 0.06);
@@ -42,7 +56,7 @@
   }
 
   body {
-    @apply bg-slate-50 font-sans text-slate-900 dark:bg-slate-950 dark:text-slate-100;
+    @apply bg-slate-50 font-sans text-slate-900 dark:bg-ink-950 dark:text-ink-50;
   }
 
   ::selection {

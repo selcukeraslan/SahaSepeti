@@ -43,14 +43,14 @@ export function VenueManage() {
     <div className="max-w-3xl">
       <Link
         to="/panel/tesisler"
-        className="flex items-center gap-1 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+        className="flex items-center gap-1 text-sm font-medium text-slate-500 dark:text-ink-400 hover:text-slate-700 dark:hover:text-ink-200"
       >
         <ArrowLeft className="size-4" aria-hidden />
         Tesislerim
       </Link>
       <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50">{venue.name}</h1>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-ink-50">{venue.name}</h1>
           <Badge variant={VENUE_STATUS_VARIANTS[venue.status]}>
             {VENUE_STATUS_LABELS[venue.status]}
           </Badge>
@@ -78,7 +78,7 @@ export function VenueManage() {
       )}
 
       {/* Sekmeler */}
-      <div className="mt-5 flex gap-1 border-b border-slate-200 dark:border-slate-800" role="tablist">
+      <div className="mt-5 flex gap-1 border-b border-slate-200 dark:border-ink-800" role="tablist">
         {TABS.map((tab) => (
           <button
             key={tab.key}
@@ -90,7 +90,7 @@ export function VenueManage() {
               '-mb-px border-b-2 px-4 py-2.5 text-sm font-medium transition-colors',
               activeTab === tab.key
                 ? 'border-primary-600 text-primary-700 dark:text-primary-300'
-                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200',
+                : 'border-transparent text-slate-500 dark:text-ink-400 hover:text-slate-700 dark:hover:text-ink-200',
             )}
           >
             {tab.label}

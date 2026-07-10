@@ -11,7 +11,7 @@ export interface SlotGridProps {
 export function SlotGrid({ slots, onSelect }: SlotGridProps) {
   if (slots.length === 0) {
     return (
-      <p className="rounded-xl bg-slate-50 dark:bg-slate-800/50 px-4 py-6 text-center text-sm text-slate-500 dark:text-slate-400">
+      <p className="rounded-xl bg-slate-50 dark:bg-ink-800/50 px-4 py-6 text-center text-sm text-slate-500 dark:text-ink-400">
         Bu tarihte tesis kapalı.
       </p>
     )
@@ -32,20 +32,20 @@ export function SlotGrid({ slots, onSelect }: SlotGridProps) {
               'flex flex-col items-center rounded-xl border px-2 py-2.5 transition-colors',
               isAvailable &&
                 'border-primary-200 bg-primary-50/50 hover:border-primary-500 hover:bg-primary-50',
-              slot.status === 'booked' && 'cursor-not-allowed border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800 opacity-60',
+              slot.status === 'booked' && 'cursor-not-allowed border-slate-200 dark:border-ink-800 bg-slate-100 dark:bg-ink-800 opacity-60',
               (slot.status === 'past' || slot.status === 'unpriced') &&
-                'cursor-not-allowed border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 opacity-40',
+                'cursor-not-allowed border-slate-100 dark:border-ink-800 bg-slate-50 dark:bg-ink-800/50 opacity-40',
             )}
           >
             <span
               className={cn(
                 'text-sm font-semibold',
-                isAvailable ? 'text-slate-900 dark:text-slate-50' : 'text-slate-400 dark:text-slate-500',
+                isAvailable ? 'text-slate-900 dark:text-ink-50' : 'text-slate-400 dark:text-ink-500',
               )}
             >
               {slot.startTime}
             </span>
-            <span className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+            <span className="mt-0.5 text-xs text-slate-500 dark:text-ink-400">
               {slot.status === 'booked' && 'Dolu'}
               {slot.status === 'past' && 'Geçti'}
               {slot.status === 'unpriced' && '—'}

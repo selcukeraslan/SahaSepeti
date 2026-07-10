@@ -80,7 +80,7 @@ export function ImageManager({
   return (
     <div>
       <div className="flex items-center justify-between gap-4">
-        <p className="text-sm text-slate-500 dark:text-slate-400">
+        <p className="text-sm text-slate-500 dark:text-ink-400">
           JPG, PNG veya WebP — en fazla 2MB. Yıldıza tıklayarak kapak görseli seçin.
         </p>
         <Button size="sm" isLoading={isUploading} onClick={() => fileInputRef.current?.click()}>
@@ -142,7 +142,7 @@ export function ImageManager({
                         type="button"
                         aria-label="Kapak yap"
                         onClick={() => makeCover.mutate(image.url)}
-                        className="rounded-lg bg-white/90 dark:bg-slate-900/90 p-1.5 text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-900"
+                        className="rounded-lg bg-white/90 dark:bg-ink-900/90 p-1.5 text-slate-700 dark:text-ink-200 hover:bg-white dark:hover:bg-ink-900"
                       >
                         <Star className="size-4" />
                       </button>
@@ -151,7 +151,7 @@ export function ImageManager({
                       type="button"
                       aria-label="Görseli sil"
                       onClick={() => deleteImage.mutate(image)}
-                      className="rounded-lg bg-white/90 dark:bg-slate-900/90 p-1.5 text-red-600 hover:bg-white dark:hover:bg-slate-900"
+                      className="rounded-lg bg-white/90 dark:bg-ink-900/90 p-1.5 text-red-600 hover:bg-white dark:hover:bg-ink-900"
                     >
                       <Trash2 className="size-4" />
                     </button>

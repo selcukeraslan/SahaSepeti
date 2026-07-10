@@ -35,27 +35,27 @@ function ReservationCard({
   onCancel?: (reservation: ReservationWithVenue) => void
 }) {
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-soft sm:flex-row sm:items-center">
+    <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 dark:border-ink-800 bg-white dark:bg-ink-900 p-4 shadow-soft sm:flex-row sm:items-center">
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
           <Badge variant={RESERVATION_STATUS_VARIANTS[reservation.status]}>
             {RESERVATION_STATUS_LABELS[reservation.status]}
           </Badge>
-          <span className="text-sm font-semibold text-slate-900 dark:text-slate-50">
+          <span className="text-sm font-semibold text-slate-900 dark:text-ink-50">
             {formatPrice(reservation.total_price)}
           </span>
         </div>
         {reservation.venue ? (
           <Link
             to={`/tesis/${reservation.venue.slug}`}
-            className="mt-1.5 block truncate font-semibold text-slate-900 dark:text-slate-50 hover:text-primary-700"
+            className="mt-1.5 block truncate font-semibold text-slate-900 dark:text-ink-50 hover:text-primary-700"
           >
             {reservation.venue.name}
           </Link>
         ) : (
-          <p className="mt-1.5 font-semibold text-slate-900 dark:text-slate-50">Tesis</p>
+          <p className="mt-1.5 font-semibold text-slate-900 dark:text-ink-50">Tesis</p>
         )}
-        <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-500 dark:text-slate-400">
+        <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-500 dark:text-ink-400">
           {reservation.venue && (
             <span className="flex items-center gap-1">
               <MapPin className="size-3.5" aria-hidden />
@@ -106,7 +106,7 @@ export function MyReservations() {
 
   return (
     <Container className="py-8 sm:py-10">
-      <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50 sm:text-3xl">Rezervasyonlarım</h1>
+      <h1 className="text-2xl font-bold text-slate-900 dark:text-ink-50 sm:text-3xl">Rezervasyonlarım</h1>
 
       {isLoading && (
         <div className="mt-6 space-y-3">
@@ -133,7 +133,7 @@ export function MyReservations() {
 
       {upcoming.length > 0 && (
         <section className="mt-6">
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-50">Yaklaşan</h2>
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-ink-50">Yaklaşan</h2>
           <div className="mt-3 space-y-3">
             {upcoming.map((reservation) => (
               <ReservationCard
@@ -148,7 +148,7 @@ export function MyReservations() {
 
       {past.length > 0 && (
         <section className="mt-8">
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-50">Geçmiş</h2>
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-ink-50">Geçmiş</h2>
           <div className="mt-3 space-y-3">
             {past.map((reservation) => (
               <ReservationCard key={reservation.id} reservation={reservation} />
@@ -163,7 +163,7 @@ export function MyReservations() {
         onClose={() => setCancelTarget(null)}
         title="Rezervasyonu İptal Et"
       >
-        <p className="text-sm text-slate-600 dark:text-slate-300">
+        <p className="text-sm text-slate-600 dark:text-ink-300">
           {cancelTarget?.venue?.name} tesisindeki{' '}
           {cancelTarget && formatDateShort(cancelTarget.reservation_date)}{' '}
           {cancelTarget && formatTime(cancelTarget.start_time)} rezervasyonunuzu iptal etmek

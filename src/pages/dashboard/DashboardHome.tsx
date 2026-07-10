@@ -34,7 +34,7 @@ export function DashboardHome() {
   return (
     <div>
       <div className="flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50">Genel Bakış</h1>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-ink-50">Genel Bakış</h1>
         <Link to="/panel/tesisler/yeni">
           <Button size="sm">
             <Plus className="size-4" aria-hidden />
@@ -54,8 +54,8 @@ export function DashboardHome() {
                     <stat.icon className="size-5" aria-hidden />
                   </span>
                   <div>
-                    <p className="text-2xl font-bold leading-none text-slate-900 dark:text-slate-50">{stat.value}</p>
-                    <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{stat.label}</p>
+                    <p className="text-2xl font-bold leading-none text-slate-900 dark:text-ink-50">{stat.value}</p>
+                    <p className="mt-1 text-sm text-slate-500 dark:text-ink-400">{stat.label}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -65,7 +65,7 @@ export function DashboardHome() {
       {/* Son rezervasyonlar */}
       <div className="mt-8">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-50">Son Rezervasyonlar</h2>
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-ink-50">Son Rezervasyonlar</h2>
           <Link
             to="/panel/rezervasyonlar"
             className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:hover:text-primary-300"
@@ -85,13 +85,13 @@ export function DashboardHome() {
           {reservations?.slice(0, 5).map((reservation) => (
             <div
               key={reservation.id}
-              className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-3"
+              className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 dark:border-ink-800 bg-white dark:bg-ink-900 px-4 py-3"
             >
               <div className="min-w-0">
-                <p className="truncate text-sm font-medium text-slate-900 dark:text-slate-50">
+                <p className="truncate text-sm font-medium text-slate-900 dark:text-ink-50">
                   {reservation.customer?.full_name || 'Müşteri'} — {reservation.court?.name}
                 </p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
+                <p className="text-xs text-slate-500 dark:text-ink-400">
                   {formatDateShort(reservation.reservation_date)} ·{' '}
                   {formatTime(reservation.start_time)} · {formatPrice(reservation.total_price)}
                 </p>

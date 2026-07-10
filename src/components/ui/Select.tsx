@@ -24,7 +24,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
   return (
     <div className="flex flex-col gap-1.5">
       {label && (
-        <label htmlFor={selectId} className="text-sm font-medium text-slate-700 dark:text-slate-200">
+        <label htmlFor={selectId} className="text-sm font-medium text-slate-700 dark:text-ink-200">
           {label}
         </label>
       )}
@@ -34,9 +34,9 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
           id={selectId}
           aria-invalid={error ? true : undefined}
           className={cn(
-            'h-11 w-full appearance-none rounded-xl border bg-white dark:bg-slate-900 px-3.5 pr-10 text-sm text-slate-900 dark:text-slate-50',
+            'h-11 w-full appearance-none rounded-xl border bg-white dark:bg-ink-900 px-3.5 pr-10 text-sm text-slate-900 dark:text-ink-50',
             'transition-colors focus:outline-2 focus:outline-offset--1 focus:outline-primary-600',
-            error ? 'border-red-400' : 'border-slate-300 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-600',
+            error ? 'border-red-400' : 'border-slate-300 dark:border-ink-700 hover:border-slate-400 dark:hover:border-ink-600',
             className,
           )}
           {...props}
@@ -49,7 +49,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
           ))}
         </select>
         <ChevronDown
-          className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-slate-400 dark:text-slate-500"
+          className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-slate-400 dark:text-ink-500"
           aria-hidden
         />
       </div>

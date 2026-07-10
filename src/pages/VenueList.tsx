@@ -48,8 +48,8 @@ export function VenueList() {
     <Container className="py-8 sm:py-10">
       <div className="flex items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50 sm:text-3xl">Spor Tesisleri</h1>
-          <p className="mt-1 text-slate-500 dark:text-slate-400">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-ink-50 sm:text-3xl">Spor Tesisleri</h1>
+          <p className="mt-1 text-slate-500 dark:text-ink-400">
             {venues ? `${venues.length} tesis bulundu` : 'Tesisler yükleniyor...'}
           </p>
         </div>
@@ -73,9 +73,9 @@ export function VenueList() {
       <div className="mt-6 grid gap-8 lg:grid-cols-[260px_1fr]">
         {/* Masaüstü filtre paneli */}
         <aside className="hidden lg:block">
-          <div className="sticky top-24 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-soft">
+          <div className="sticky top-24 rounded-2xl border border-slate-200 dark:border-ink-800 bg-white dark:bg-ink-900 p-5 shadow-soft">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="font-semibold text-slate-900 dark:text-slate-50">Filtreler</h2>
+              <h2 className="font-semibold text-slate-900 dark:text-ink-50">Filtreler</h2>
               {activeFilterCount > 0 && (
                 <button
                   type="button"

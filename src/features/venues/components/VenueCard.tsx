@@ -8,9 +8,9 @@ export function VenueCard({ venue }: { venue: VenueListItem }) {
   return (
     <Link
       to={`/tesis/${venue.slug}`}
-      className="group overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-soft transition-shadow hover:shadow-soft-lg"
+      className="group overflow-hidden rounded-2xl border border-slate-200 dark:border-ink-800 bg-white dark:bg-ink-900 shadow-soft transition-shadow hover:shadow-soft-lg"
     >
-      <div className="relative aspect-[3/2] overflow-hidden bg-slate-100 dark:bg-slate-800">
+      <div className="relative aspect-[3/2] overflow-hidden bg-slate-100 dark:bg-ink-800">
         {venue.cover_image_url ? (
           <img
             src={venue.cover_image_url}
@@ -20,19 +20,19 @@ export function VenueCard({ venue }: { venue: VenueListItem }) {
           />
         ) : (
           <div className="flex size-full items-center justify-center">
-            <ImageOff className="size-8 text-slate-300 dark:text-slate-600" aria-hidden />
+            <ImageOff className="size-8 text-slate-300 dark:text-ink-600" aria-hidden />
           </div>
         )}
         {venue.minPrice !== null && (
-          <span className="absolute bottom-3 right-3 rounded-full bg-white/95 dark:bg-slate-900/95 px-3 py-1 text-sm font-semibold text-slate-900 dark:text-slate-50 shadow-soft">
+          <span className="absolute bottom-3 right-3 rounded-full bg-white/95 dark:bg-ink-900/95 px-3 py-1 text-sm font-semibold text-slate-900 dark:text-ink-50 shadow-soft">
             {formatPrice(venue.minPrice)}
-            <span className="font-normal text-slate-500 dark:text-slate-400"> / saat'ten</span>
+            <span className="font-normal text-slate-500 dark:text-ink-400"> / saat'ten</span>
           </span>
         )}
       </div>
       <div className="p-4">
-        <h3 className="font-semibold text-slate-900 dark:text-slate-50 group-hover:text-primary-700">{venue.name}</h3>
-        <p className="mt-1 flex items-center gap-1 text-sm text-slate-500 dark:text-slate-400">
+        <h3 className="font-semibold text-slate-900 dark:text-ink-50 group-hover:text-primary-700">{venue.name}</h3>
+        <p className="mt-1 flex items-center gap-1 text-sm text-slate-500 dark:text-ink-400">
           <MapPin className="size-3.5 shrink-0" aria-hidden />
           {venue.district}, {venue.city}
         </p>

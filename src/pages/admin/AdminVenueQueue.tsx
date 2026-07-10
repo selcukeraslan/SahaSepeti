@@ -44,8 +44,8 @@ export function AdminVenueQueue() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50">Onay Kuyruğu</h1>
-      <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+      <h1 className="text-2xl font-bold text-slate-900 dark:text-ink-50">Onay Kuyruğu</h1>
+      <p className="mt-1 text-sm text-slate-500 dark:text-ink-400">
         Onay bekleyen tesisleri inceleyin, yayına alın veya gerekçeyle reddedin.
       </p>
 
@@ -64,7 +64,7 @@ export function AdminVenueQueue() {
         {venues?.map((venue) => (
           <div
             key={venue.id}
-            className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-soft dark:border-slate-800 dark:bg-slate-900"
+            className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-soft dark:border-ink-800 dark:bg-ink-900"
           >
             <div className="flex flex-col gap-4 sm:flex-row">
               {venue.cover_image_url && (
@@ -75,24 +75,24 @@ export function AdminVenueQueue() {
                 />
               )}
               <div className="min-w-0 flex-1">
-                <p className="font-semibold text-slate-900 dark:text-slate-50">{venue.name}</p>
-                <p className="text-sm text-slate-500 dark:text-slate-400">
+                <p className="font-semibold text-slate-900 dark:text-ink-50">{venue.name}</p>
+                <p className="text-sm text-slate-500 dark:text-ink-400">
                   {venue.district}, {venue.city}
                   {venue.address && ` — ${venue.address}`}
                 </p>
-                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                <p className="mt-1 text-sm text-slate-500 dark:text-ink-400">
                   Sahibi: {venue.owner?.full_name || '—'}
                   {venue.owner?.phone && ` · ${venue.owner.phone}`}
                 </p>
                 {venue.description && (
-                  <p className="mt-2 line-clamp-3 text-sm text-slate-600 dark:text-slate-300">{venue.description}</p>
+                  <p className="mt-2 line-clamp-3 text-sm text-slate-600 dark:text-ink-300">{venue.description}</p>
                 )}
                 {venue.amenities.length > 0 && (
-                  <p className="mt-2 text-xs text-slate-400 dark:text-slate-500">{venue.amenities.join(' · ')}</p>
+                  <p className="mt-2 text-xs text-slate-400 dark:text-ink-500">{venue.amenities.join(' · ')}</p>
                 )}
               </div>
             </div>
-            <div className="flex justify-end gap-2 border-t border-slate-100 pt-3 dark:border-slate-800">
+            <div className="flex justify-end gap-2 border-t border-slate-100 pt-3 dark:border-ink-800">
               <Button
                 variant="outline"
                 size="sm"

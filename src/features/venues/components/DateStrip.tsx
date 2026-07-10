@@ -33,13 +33,13 @@ export function DateStrip({ selected, onSelect, days = 14 }: DateStripProps) {
               'flex min-w-16 shrink-0 flex-col items-center rounded-xl border px-3 py-2.5 transition-colors',
               isSelected
                 ? 'border-primary-600 bg-primary-600 text-white'
-                : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:border-primary-300',
+                : 'border-slate-200 dark:border-ink-800 bg-white dark:bg-ink-900 text-slate-700 dark:text-ink-200 hover:border-primary-300',
             )}
           >
             <span
               className={cn(
                 'text-xs font-medium uppercase',
-                isSelected ? 'text-primary-100' : 'text-slate-400 dark:text-slate-500',
+                isSelected ? 'text-primary-100' : 'text-slate-400 dark:text-ink-500',
               )}
             >
               {index === 0 ? 'Bugün' : format(date, 'EEE', { locale: tr })}
@@ -48,7 +48,7 @@ export function DateStrip({ selected, onSelect, days = 14 }: DateStripProps) {
             <span
               className={cn(
                 'mt-0.5 text-xs',
-                isSelected ? 'text-primary-100' : 'text-slate-400 dark:text-slate-500',
+                isSelected ? 'text-primary-100' : 'text-slate-400 dark:text-ink-500',
               )}
             >
               {format(date, 'MMM', { locale: tr })}

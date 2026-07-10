@@ -45,8 +45,8 @@ export function Landing() {
       {/* Spor kategorileri */}
       <section className="py-14 sm:py-20">
         <Container>
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-50">Spor Türleri</h2>
-          <p className="mt-1 text-slate-500 dark:text-slate-400">Hangi sporu yapmak istiyorsun?</p>
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-ink-50">Spor Türleri</h2>
+          <p className="mt-1 text-slate-500 dark:text-ink-400">Hangi sporu yapmak istiyorsun?</p>
           <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
             {sportsLoading &&
               Array.from({ length: 7 }, (_, index) => (
@@ -58,12 +58,12 @@ export function Landing() {
                 <Link
                   key={sport.id}
                   to={`/tesisler?sport=${sport.slug}`}
-                  className="group flex flex-col items-center gap-2.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-soft transition-all hover:-translate-y-0.5 hover:border-primary-300 hover:shadow-soft-lg"
+                  className="group flex flex-col items-center gap-2.5 rounded-2xl border border-slate-200 dark:border-ink-800 bg-white dark:bg-ink-900 p-5 shadow-soft transition-all hover:-translate-y-0.5 hover:border-primary-300 hover:shadow-soft-lg"
                 >
                   <span className="flex size-11 items-center justify-center rounded-xl bg-primary-50 dark:bg-primary-500/10 text-primary-600 transition-colors group-hover:bg-primary-600 group-hover:text-white">
                     <Icon className="size-5" aria-hidden />
                   </span>
-                  <span className="text-sm font-medium text-slate-700 dark:text-slate-200">{sport.name}</span>
+                  <span className="text-sm font-medium text-slate-700 dark:text-ink-200">{sport.name}</span>
                 </Link>
               )
             })}
@@ -72,12 +72,12 @@ export function Landing() {
       </section>
 
       {/* Öne çıkan tesisler */}
-      <section className="bg-white dark:bg-slate-900 py-14 sm:py-20">
+      <section className="bg-white dark:bg-ink-900 py-14 sm:py-20">
         <Container>
           <div className="flex items-end justify-between">
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-50">Öne Çıkan Tesisler</h2>
-              <p className="mt-1 text-slate-500 dark:text-slate-400">En yeni eklenen tesislere göz at</p>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-ink-50">Öne Çıkan Tesisler</h2>
+              <p className="mt-1 text-slate-500 dark:text-ink-400">En yeni eklenen tesislere göz at</p>
             </div>
             <Link to="/tesisler" className="hidden sm:block">
               <Button variant="outline" size="sm">
@@ -91,7 +91,7 @@ export function Landing() {
             {venues?.slice(0, 6).map((venue) => <VenueCard key={venue.id} venue={venue} />)}
           </div>
           {venues && venues.length === 0 && (
-            <p className="mt-6 text-center text-slate-500 dark:text-slate-400">
+            <p className="mt-6 text-center text-slate-500 dark:text-ink-400">
               Henüz tesis eklenmemiş — çok yakında burada olacaklar!
             </p>
           )}
@@ -108,7 +108,7 @@ export function Landing() {
       {/* Nasıl çalışır */}
       <section className="py-14 sm:py-20">
         <Container>
-          <h2 className="text-center text-2xl font-bold text-slate-900 dark:text-slate-50">Nasıl Çalışır?</h2>
+          <h2 className="text-center text-2xl font-bold text-slate-900 dark:text-ink-50">Nasıl Çalışır?</h2>
           <div className="mx-auto mt-8 grid max-w-4xl gap-6 sm:grid-cols-3">
             {[
               {
@@ -131,8 +131,8 @@ export function Landing() {
                 <span className="flex size-14 items-center justify-center rounded-2xl bg-primary-50 dark:bg-primary-500/10 text-primary-600">
                   <step.icon className="size-6" aria-hidden />
                 </span>
-                <h3 className="mt-4 font-semibold text-slate-900 dark:text-slate-50">{step.title}</h3>
-                <p className="mt-1.5 text-sm text-slate-500 dark:text-slate-400">{step.text}</p>
+                <h3 className="mt-4 font-semibold text-slate-900 dark:text-ink-50">{step.title}</h3>
+                <p className="mt-1.5 text-sm text-slate-500 dark:text-ink-400">{step.text}</p>
               </div>
             ))}
           </div>
@@ -142,7 +142,7 @@ export function Landing() {
       {/* Tesis sahibi CTA */}
       <section className="pb-14 sm:pb-20">
         <Container>
-          <div className="relative overflow-hidden rounded-3xl bg-slate-900 px-6 py-12 text-center sm:px-12 sm:py-16">
+          <div className="relative overflow-hidden rounded-3xl bg-ink-900 px-6 py-12 text-center sm:px-12 sm:py-16">
             <div
               aria-hidden
               className="absolute inset-0 opacity-20"
@@ -156,7 +156,7 @@ export function Landing() {
               <h2 className="mt-4 text-2xl font-bold text-white sm:text-3xl">
                 Tesis Sahibi misiniz?
               </h2>
-              <p className="mx-auto mt-2 max-w-xl text-slate-300">
+              <p className="mx-auto mt-2 max-w-xl text-ink-200">
                 Tesisinizi SahaSepeti'ne ekleyin, rezervasyonlarınızı tek panelden yönetin ve
                 doluluk oranınızı artırın. Üstelik tamamen ücretsiz.
               </p>

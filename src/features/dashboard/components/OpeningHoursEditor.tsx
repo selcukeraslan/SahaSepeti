@@ -64,30 +64,30 @@ export function OpeningHoursEditor({ venueId }: { venueId: string }) {
 
   return (
     <div>
-      <p className="text-sm text-slate-500 dark:text-slate-400">
+      <p className="text-sm text-slate-500 dark:text-ink-400">
         Tesisinizin haftalık çalışma saatlerini belirleyin. Rezervasyon slotları bu saatlere göre
         oluşturulur.
       </p>
-      <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+      <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200 dark:border-ink-800 bg-white dark:bg-ink-900">
         {WEEK_DAY_ORDER.map((day) => {
           const hour = hours.find((item) => item.dayOfWeek === day)
           if (!hour) return null
           return (
             <div
               key={day}
-              className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 px-4 py-3 last:border-0"
+              className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 dark:border-ink-800 px-4 py-3 last:border-0"
             >
-              <label className="flex min-w-32 items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-200">
+              <label className="flex min-w-32 items-center gap-2 text-sm font-medium text-slate-700 dark:text-ink-200">
                 <input
                   type="checkbox"
                   checked={!hour.isClosed}
                   onChange={(event) => updateDay(day, { isClosed: !event.target.checked })}
-                  className="size-4 rounded border-slate-300 dark:border-slate-700 accent-primary-600"
+                  className="size-4 rounded border-slate-300 dark:border-ink-700 accent-primary-600"
                 />
                 {DAY_NAMES_TR[day]}
               </label>
               {hour.isClosed ? (
-                <span className="text-sm text-slate-400 dark:text-slate-500">Kapalı</span>
+                <span className="text-sm text-slate-400 dark:text-ink-500">Kapalı</span>
               ) : (
                 <div className="flex items-center gap-2">
                   <input
@@ -95,15 +95,15 @@ export function OpeningHoursEditor({ venueId }: { venueId: string }) {
                     aria-label={`${DAY_NAMES_TR[day]} açılış`}
                     value={hour.openTime}
                     onChange={(event) => updateDay(day, { openTime: event.target.value })}
-                    className="h-10 rounded-lg border border-slate-300 dark:border-slate-700 px-2.5 text-sm"
+                    className="h-10 rounded-lg border border-slate-300 dark:border-ink-700 px-2.5 text-sm"
                   />
-                  <span className="text-slate-400 dark:text-slate-500">–</span>
+                  <span className="text-slate-400 dark:text-ink-500">–</span>
                   <input
                     type="time"
                     aria-label={`${DAY_NAMES_TR[day]} kapanış`}
                     value={hour.closeTime}
                     onChange={(event) => updateDay(day, { closeTime: event.target.value })}
-                    className="h-10 rounded-lg border border-slate-300 dark:border-slate-700 px-2.5 text-sm"
+                    className="h-10 rounded-lg border border-slate-300 dark:border-ink-700 px-2.5 text-sm"
                   />
                 </div>
               )}

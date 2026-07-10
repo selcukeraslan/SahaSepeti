@@ -57,9 +57,9 @@ export function Register() {
   return (
     <Container className="flex justify-center py-12 sm:py-20">
       <div className="w-full max-w-md">
-        <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-soft sm:p-8">
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50">Kayıt Ol</h1>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Ücretsiz hesabınızı oluşturun.</p>
+        <div className="rounded-3xl border border-slate-200 dark:border-ink-800 bg-white dark:bg-ink-900 p-6 shadow-soft sm:p-8">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-ink-50">Kayıt Ol</h1>
+          <p className="mt-1 text-sm text-slate-500 dark:text-ink-400">Ücretsiz hesabınızı oluşturun.</p>
 
           {/* Rol seçimi */}
           <div className="mt-6 grid grid-cols-2 gap-2" role="radiogroup" aria-label="Hesap türü">
@@ -79,7 +79,7 @@ export function Register() {
                   'flex flex-col items-center gap-1.5 rounded-2xl border-2 px-3 py-4 text-sm font-medium transition-colors',
                   role === option.value
                     ? 'border-primary-600 bg-primary-50 dark:bg-primary-500/10 text-primary-700 dark:text-primary-300'
-                    : 'border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-600',
+                    : 'border-slate-200 dark:border-ink-800 text-slate-600 dark:text-ink-300 hover:border-slate-300 dark:hover:border-ink-600',
                 )}
               >
                 <option.icon className="size-5" aria-hidden />
@@ -125,7 +125,7 @@ export function Register() {
             </Button>
           </form>
         </div>
-        <p className="mt-4 text-center text-sm text-slate-500 dark:text-slate-400">
+        <p className="mt-4 text-center text-sm text-slate-500 dark:text-ink-400">
           Zaten hesabınız var mı?{' '}
           <Link to="/giris" className="font-semibold text-primary-600 hover:text-primary-700">
             Giriş yapın

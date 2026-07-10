@@ -63,7 +63,7 @@ export function VenueDetail() {
   return (
     <>
       {/* Galeri */}
-      <section className="bg-slate-900">
+      <section className="bg-ink-900">
         <Container className="py-0">
           <div className="grid gap-1 sm:grid-cols-3">
             <div className="relative aspect-[3/2] overflow-hidden sm:col-span-2 sm:aspect-auto">
@@ -74,7 +74,7 @@ export function VenueDetail() {
                   className="size-full object-cover"
                 />
               ) : (
-                <div className="flex size-full min-h-64 items-center justify-center bg-slate-800">
+                <div className="flex size-full min-h-64 items-center justify-center bg-ink-800">
                   <ImageOff className="size-10 text-slate-600" aria-hidden />
                 </div>
               )}
@@ -91,7 +91,7 @@ export function VenueDetail() {
                     className="size-full object-cover"
                   />
                 ) : (
-                  <div key={index} className="flex items-center justify-center bg-slate-800">
+                  <div key={index} className="flex items-center justify-center bg-ink-800">
                     <ImageOff className="size-6 text-slate-600" aria-hidden />
                   </div>
                 )
@@ -110,14 +110,14 @@ export function VenueDetail() {
                 <Badge key={sport.id}>{sport.name}</Badge>
               ))}
             </div>
-            <h1 className="mt-3 text-3xl font-bold text-slate-900 dark:text-slate-50">{venue.name}</h1>
-            <p className="mt-2 flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
+            <h1 className="mt-3 text-3xl font-bold text-slate-900 dark:text-ink-50">{venue.name}</h1>
+            <p className="mt-2 flex items-center gap-1.5 text-slate-500 dark:text-ink-400">
               <MapPin className="size-4 shrink-0 text-primary-600" aria-hidden />
               {venue.address ? `${venue.address}, ` : ''}
               {venue.district}, {venue.city}
             </p>
             {venue.phone && (
-              <p className="mt-1 flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
+              <p className="mt-1 flex items-center gap-1.5 text-slate-500 dark:text-ink-400">
                 <Phone className="size-4 shrink-0 text-primary-600" aria-hidden />
                 {venue.phone}
               </p>
@@ -125,8 +125,8 @@ export function VenueDetail() {
 
             {venue.description && (
               <div className="mt-6">
-                <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-50">Tesis Hakkında</h2>
-                <p className="mt-2 whitespace-pre-line leading-relaxed text-slate-600 dark:text-slate-300">
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-ink-50">Tesis Hakkında</h2>
+                <p className="mt-2 whitespace-pre-line leading-relaxed text-slate-600 dark:text-ink-300">
                   {venue.description}
                 </p>
               </div>
@@ -134,10 +134,10 @@ export function VenueDetail() {
 
             {venue.amenities.length > 0 && (
               <div className="mt-6">
-                <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-50">Olanaklar</h2>
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-ink-50">Olanaklar</h2>
                 <ul className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
                   {venue.amenities.map((amenity) => (
-                    <li key={amenity} className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+                    <li key={amenity} className="flex items-center gap-2 text-sm text-slate-600 dark:text-ink-300">
                       <span className="flex size-5 items-center justify-center rounded-full bg-primary-50 dark:bg-primary-500/10">
                         <Check className="size-3 text-primary-600" aria-hidden />
                       </span>
@@ -149,17 +149,17 @@ export function VenueDetail() {
             )}
 
             <div className="mt-6">
-              <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-50">Çalışma Saatleri</h2>
-              <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800">
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-ink-50">Çalışma Saatleri</h2>
+              <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200 dark:border-ink-800">
                 {DAY_ORDER.map((day) => {
                   const hour = venue.openingHours.find((item) => item.day_of_week === day)
                   return (
                     <div
                       key={day}
-                      className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-2.5 text-sm last:border-0"
+                      className="flex items-center justify-between border-b border-slate-100 dark:border-ink-800 bg-white dark:bg-ink-900 px-4 py-2.5 text-sm last:border-0"
                     >
-                      <span className="font-medium text-slate-700 dark:text-slate-200">{DAY_NAMES[day]}</span>
-                      <span className="text-slate-500 dark:text-slate-400">
+                      <span className="font-medium text-slate-700 dark:text-ink-200">{DAY_NAMES[day]}</span>
+                      <span className="text-slate-500 dark:text-ink-400">
                         {!hour || hour.is_closed
                           ? 'Kapalı'
                           : `${formatTime(hour.open_time)} – ${formatTime(hour.close_time)}`}
@@ -173,8 +173,8 @@ export function VenueDetail() {
 
           {/* Sağ: rezervasyon paneli */}
           <div>
-            <div className="sticky top-24 rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-soft">
-              <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-50">Müsait Saatler</h2>
+            <div className="sticky top-24 rounded-3xl border border-slate-200 dark:border-ink-800 bg-white dark:bg-ink-900 p-5 shadow-soft">
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-ink-50">Müsait Saatler</h2>
               <div className="mt-4">
                 <DateStrip selected={date} onSelect={setDate} />
               </div>
@@ -207,7 +207,7 @@ export function VenueDetail() {
                             'shrink-0 rounded-xl border px-3.5 py-2 text-sm font-medium transition-colors',
                             isActive
                               ? 'border-primary-600 bg-primary-600 text-white'
-                              : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:border-primary-300',
+                              : 'border-slate-200 dark:border-ink-800 bg-white dark:bg-ink-900 text-slate-600 dark:text-ink-300 hover:border-primary-300',
                           )}
                         >
                           {court.name}
@@ -215,7 +215,7 @@ export function VenueDetail() {
                             <span
                               className={cn(
                                 'ml-1.5 text-xs',
-                                isActive ? 'text-primary-100' : 'text-slate-400 dark:text-slate-500',
+                                isActive ? 'text-primary-100' : 'text-slate-400 dark:text-ink-500',
                               )}
                             >
                               (Kapalı)

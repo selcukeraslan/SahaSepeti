@@ -25,7 +25,7 @@ function navLinkClass({ isActive }: { isActive: boolean }): string {
     'rounded-lg px-3 py-2 text-sm font-medium transition-colors',
     isActive
       ? 'text-primary-700 dark:text-primary-300'
-      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-50',
+      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-ink-300 dark:hover:bg-ink-800 dark:hover:text-ink-50',
   )
 }
 
@@ -48,7 +48,7 @@ export function Header() {
   const closeMenu = () => setMenuOpen(false)
 
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-900/90">
+    <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 backdrop-blur dark:border-ink-800 dark:bg-ink-900/90">
       <Container className="flex h-16 items-center justify-between gap-4">
         <Logo />
 
@@ -84,7 +84,7 @@ export function Header() {
           <ThemeToggle />
           {user ? (
             <>
-              <span className="max-w-40 truncate text-sm font-medium text-slate-700 dark:text-slate-200">
+              <span className="max-w-40 truncate text-sm font-medium text-slate-700 dark:text-ink-200">
                 {profile?.full_name || user.email}
               </span>
               <Button variant="ghost" size="sm" onClick={handleSignOut}>
@@ -111,7 +111,7 @@ export function Header() {
             type="button"
             onClick={() => setMenuOpen(true)}
             aria-label="Menüyü aç"
-            className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+            className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 dark:text-ink-300 dark:hover:bg-ink-800"
           >
             <Menu className="size-6" />
           </button>
@@ -124,7 +124,7 @@ export function Header() {
           <Link
             to="/tesisler"
             onClick={closeMenu}
-            className="flex items-center gap-3 rounded-xl px-3 py-3 font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
+            className="flex items-center gap-3 rounded-xl px-3 py-3 font-medium text-slate-700 hover:bg-slate-100 dark:text-ink-200 dark:hover:bg-ink-800"
           >
             <CalendarDays className="size-5 text-primary-600" aria-hidden />
             Tesisler
@@ -132,7 +132,7 @@ export function Header() {
           <Link
             to="/hakkimizda"
             onClick={closeMenu}
-            className="flex items-center gap-3 rounded-xl px-3 py-3 font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
+            className="flex items-center gap-3 rounded-xl px-3 py-3 font-medium text-slate-700 hover:bg-slate-100 dark:text-ink-200 dark:hover:bg-ink-800"
           >
             <Info className="size-5 text-primary-600" aria-hidden />
             Biz Kimiz
@@ -140,7 +140,7 @@ export function Header() {
           <Link
             to="/iletisim"
             onClick={closeMenu}
-            className="flex items-center gap-3 rounded-xl px-3 py-3 font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
+            className="flex items-center gap-3 rounded-xl px-3 py-3 font-medium text-slate-700 hover:bg-slate-100 dark:text-ink-200 dark:hover:bg-ink-800"
           >
             <Mail className="size-5 text-primary-600" aria-hidden />
             İletişim
@@ -149,7 +149,7 @@ export function Header() {
             <Link
               to="/rezervasyonlarim"
               onClick={closeMenu}
-              className="flex items-center gap-3 rounded-xl px-3 py-3 font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
+              className="flex items-center gap-3 rounded-xl px-3 py-3 font-medium text-slate-700 hover:bg-slate-100 dark:text-ink-200 dark:hover:bg-ink-800"
             >
               <User className="size-5 text-primary-600" aria-hidden />
               Rezervasyonlarım
@@ -159,7 +159,7 @@ export function Header() {
             <Link
               to="/panel"
               onClick={closeMenu}
-              className="flex items-center gap-3 rounded-xl px-3 py-3 font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
+              className="flex items-center gap-3 rounded-xl px-3 py-3 font-medium text-slate-700 hover:bg-slate-100 dark:text-ink-200 dark:hover:bg-ink-800"
             >
               <LayoutDashboard className="size-5 text-primary-600" aria-hidden />
               Tesis Paneli
@@ -169,14 +169,14 @@ export function Header() {
             <Link
               to="/admin"
               onClick={closeMenu}
-              className="flex items-center gap-3 rounded-xl px-3 py-3 font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
+              className="flex items-center gap-3 rounded-xl px-3 py-3 font-medium text-slate-700 hover:bg-slate-100 dark:text-ink-200 dark:hover:bg-ink-800"
             >
               <ShieldCheck className="size-5 text-primary-600" aria-hidden />
               Admin
             </Link>
           )}
 
-          <div className="mt-4 border-t border-slate-100 pt-4 dark:border-slate-800">
+          <div className="mt-4 border-t border-slate-100 pt-4 dark:border-ink-800">
             {user ? (
               <Button variant="outline" className="w-full" onClick={handleSignOut}>
                 <LogOut className="size-4" aria-hidden />
