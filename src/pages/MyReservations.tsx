@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { CalendarX2, Clock, MapPin } from 'lucide-react'
+import { CalendarX2, Clock, MapPin, Star } from 'lucide-react'
 import { Container } from '@/components/layout/Container'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
@@ -17,6 +17,7 @@ import {
   RESERVATION_STATUS_VARIANTS,
   type ReservationWithVenue,
 } from '@/features/reservations/types'
+import { ReviewDialog } from '@/features/reviews/components/ReviewDialog'
 import { nowInIstanbul } from '@/features/venues/services/slots'
 import { formatDateShort, formatPrice, formatTime } from '@/lib/format'
 
@@ -30,9 +31,11 @@ function isUpcoming(reservation: ReservationWithVenue, today: string): boolean {
 function ReservationCard({
   reservation,
   onCancel,
+  onReview,
 }: {
   reservation: ReservationWithVenue
   onCancel?: (reservation: ReservationWithVenue) => void
+  onReview?: (reservation: ReservationWithVenue) => void
 }) {
   return (
     <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 dark:border-ink-800 bg-white dark:bg-ink-900 p-4 shadow-soft sm:flex-row sm:items-center">
@@ -75,6 +78,12 @@ function ReservationCard({
           İptal Et
         </Button>
       )}
+      {onReview && reservation.status === 'completed' && (
+        <Button variant="secondary" size="sm" onClick={() => onReview(reservation)}>
+          <Star className="size-4" aria-hidden />
+          Değerlendir
+        </Button>
+      )}
     </div>
   )
 }
@@ -84,6 +93,7 @@ export function MyReservations() {
   const cancelReservation = useCancelReservation()
   const { toast } = useToast()
   const [cancelTarget, setCancelTarget] = useState<ReservationWithVenue | null>(null)
+  const [reviewTarget, setReviewTarget] = useState<ReservationWithVenue | null>(null)
 
   const today = useMemo(() => nowInIstanbul().date, [])
 
@@ -151,7 +161,11 @@ export function MyReservations() {
           <h2 className="text-lg font-semibold text-slate-900 dark:text-ink-50">Geçmiş</h2>
           <div className="mt-3 space-y-3">
             {past.map((reservation) => (
-              <ReservationCard key={reservation.id} reservation={reservation} />
+              <ReservationCard
+                key={reservation.id}
+                reservation={reservation}
+                onReview={setReviewTarget}
+              />
             ))}
           </div>
         </section>
@@ -183,6 +197,17 @@ export function MyReservations() {
           </Button>
         </div>
       </Dialog>
+
+      {/* Değerlendirme */}
+      {reviewTarget && (
+        <ReviewDialog
+          open={reviewTarget !== null}
+          onClose={() => setReviewTarget(null)}
+          venueId={reviewTarget.venue_id}
+          venueName={reviewTarget.venue?.name ?? 'Tesis'}
+          reservationId={reviewTarget.id}
+        />
+      )}
     </Container>
   )
 }

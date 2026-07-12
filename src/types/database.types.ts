@@ -553,6 +553,16 @@ export interface Database {
           end_time: string
         }[]
       }
+      get_venue_reviews: {
+        Args: { p_venue_id: string }
+        Returns: {
+          id: string
+          rating: number
+          comment: string | null
+          created_at: string
+          reviewer_name: string
+        }[]
+      }
     }
     Enums: {
       user_role: 'customer' | 'venue_owner' | 'admin'
@@ -583,6 +593,8 @@ export type Court = Tables<'courts'>
 export type OpeningHour = Tables<'opening_hours'>
 export type PriceRule = Tables<'price_rules'>
 export type Reservation = Tables<'reservations'>
+export type Review = Tables<'reviews'>
+export type Favorite = Tables<'favorites'>
 export type UserRole = Enums<'user_role'>
 export type VenueStatus = Enums<'venue_status'>
 export type ReservationStatus = Enums<'reservation_status'>

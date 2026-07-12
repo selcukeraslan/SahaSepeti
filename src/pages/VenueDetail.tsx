@@ -3,6 +3,7 @@ import { useParams, useSearchParams } from 'react-router-dom'
 import { Check, ImageOff, MapPin, Phone } from 'lucide-react'
 import { Container } from '@/components/layout/Container'
 import { Badge } from '@/components/ui/Badge'
+import { RatingStars } from '@/components/ui/RatingStars'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { DateStrip } from '@/features/venues/components/DateStrip'
@@ -11,6 +12,10 @@ import { useVenue } from '@/features/venues/hooks/useVenue'
 import { useAvailability } from '@/features/venues/hooks/useAvailability'
 import { nowInIstanbul, type TimeSlot } from '@/features/venues/services/slots'
 import { ReservationDialog } from '@/features/reservations/components/ReservationDialog'
+import { FavoriteButton } from '@/features/favorites/components/FavoriteButton'
+import { ReviewList } from '@/features/reviews/components/ReviewList'
+import { useVenueReviews } from '@/features/reviews/hooks/useReviews'
+import { summarizeReviews } from '@/features/reviews/services/reviews.service'
 import { formatTime } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { NotFound } from '@/pages/NotFound'
@@ -36,6 +41,7 @@ export function VenueDetail() {
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null)
 
   const { data: availability, isLoading: slotsLoading } = useAvailability(venue, date)
+  const { data: reviews } = useVenueReviews(venue?.id)
 
   if (isLoading) {
     return (
@@ -59,6 +65,7 @@ export function VenueDetail() {
   const activeCourt = venue.courts.find((court) => court.id === activeCourtId) ?? venue.courts[0]
   const activeSlots =
     availability?.find((item) => item.courtId === activeCourt?.id)?.slots ?? []
+  const ratingSummary = summarizeReviews(reviews ?? [])
 
   return (
     <>
@@ -110,7 +117,21 @@ export function VenueDetail() {
                 <Badge key={sport.id}>{sport.name}</Badge>
               ))}
             </div>
-            <h1 className="mt-3 text-3xl font-bold text-slate-900 dark:text-ink-50">{venue.name}</h1>
+            <div className="mt-3 flex items-start justify-between gap-3">
+              <h1 className="text-3xl font-bold text-slate-900 dark:text-ink-50">{venue.name}</h1>
+              <FavoriteButton venueId={venue.id} variant="plain" className="shrink-0" />
+            </div>
+            {ratingSummary.count > 0 && (
+              <div className="mt-2 flex items-center gap-2">
+                <RatingStars value={ratingSummary.average} size="md" />
+                <span className="font-semibold text-slate-900 dark:text-ink-50">
+                  {ratingSummary.average.toFixed(1)}
+                </span>
+                <span className="text-sm text-slate-500 dark:text-ink-400">
+                  ({ratingSummary.count} değerlendirme)
+                </span>
+              </div>
+            )}
             <p className="mt-2 flex items-center gap-1.5 text-slate-500 dark:text-ink-400">
               <MapPin className="size-4 shrink-0 text-primary-600" aria-hidden />
               {venue.address ? `${venue.address}, ` : ''}
@@ -168,6 +189,24 @@ export function VenueDetail() {
                   )
                 })}
               </div>
+            </div>
+
+            <div className="mt-6">
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-ink-50">
+                Değerlendirmeler
+                {ratingSummary.count > 0 && (
+                  <span className="ml-1.5 text-base font-normal text-slate-400 dark:text-ink-500">
+                    ({ratingSummary.count})
+                  </span>
+                )}
+              </h2>
+              {reviews && reviews.length > 0 ? (
+                <ReviewList reviews={reviews} />
+              ) : (
+                <p className="mt-2 text-sm text-slate-500 dark:text-ink-400">
+                  Bu tesis için henüz değerlendirme yapılmamış.
+                </p>
+              )}
             </div>
           </div>
 
