@@ -8,6 +8,7 @@
 // telefonu yazılmaz, loglara kişisel veri düşmez.
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { SMTPClient } from 'https://deno.land/x/denomailer@1.6.0/mod.ts'
 
 interface ReservationRecord {
   id: string
@@ -27,8 +28,9 @@ interface WebhookPayload {
   record: ReservationRecord | null
 }
 
-const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
-const FROM_EMAIL = Deno.env.get('NOTIFY_FROM_EMAIL') ?? 'SahaSepeti <onboarding@resend.dev>'
+const GMAIL_USER = Deno.env.get('GMAIL_USER') ?? ''
+const GMAIL_APP_PASSWORD = Deno.env.get('GMAIL_APP_PASSWORD') ?? ''
+const FROM_NAME = Deno.env.get('NOTIFY_FROM_NAME') ?? 'SahaSepeti'
 const APP_URL = Deno.env.get('APP_URL') ?? ''
 const WEBHOOK_SECRET = Deno.env.get('NOTIFY_WEBHOOK_SECRET') // opsiyonel ek güvenlik
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
@@ -93,8 +95,8 @@ Deno.serve(async (req) => {
   if (WEBHOOK_SECRET && req.headers.get('x-webhook-secret') !== WEBHOOK_SECRET) {
     return new Response('unauthorized', { status: 401 })
   }
-  if (!RESEND_API_KEY || !SUPABASE_URL || !SERVICE_ROLE_KEY) {
-    console.error('Eksik yapılandırma: RESEND_API_KEY / SUPABASE_URL / SERVICE_ROLE_KEY')
+  if (!GMAIL_USER || !GMAIL_APP_PASSWORD || !SUPABASE_URL || !SERVICE_ROLE_KEY) {
+    console.error('Eksik yapılandırma: GMAIL_USER / GMAIL_APP_PASSWORD / SUPABASE_URL / SERVICE_ROLE_KEY')
     return new Response('config error', { status: 500 })
   }
 
@@ -152,23 +154,26 @@ Deno.serve(async (req) => {
     panelUrl: APP_URL ? `${APP_URL.replace(/\/$/, '')}/panel/rezervasyonlar` : '',
   })
 
-  const emailRes = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${RESEND_API_KEY}`,
+  const client = new SMTPClient({
+    connection: {
+      hostname: 'smtp.gmail.com',
+      port: 465,
+      tls: true,
+      auth: { username: GMAIL_USER, password: GMAIL_APP_PASSWORD },
     },
-    body: JSON.stringify({
-      from: FROM_EMAIL,
-      to: ownerEmail,
-      subject: `Yeni rezervasyon onayı bekliyor — ${venue.name}`,
-      html,
-    }),
   })
 
-  if (!emailRes.ok) {
-    const detail = await emailRes.text()
-    console.error('Resend hatası:', emailRes.status, detail)
+  try {
+    await client.send({
+      from: `${FROM_NAME} <${GMAIL_USER}>`,
+      to: ownerEmail,
+      subject: `Yeni rezervasyon onayı bekliyor — ${venue.name}`,
+      content: 'Yeni bir rezervasyon onayınızı bekliyor. HTML görüntüleyici gerekli.',
+      html,
+    })
+    await client.close()
+  } catch (err) {
+    console.error('SMTP gönderim hatası:', err instanceof Error ? err.message : String(err))
     return new Response('email send failed', { status: 500 })
   }
 
