@@ -9,6 +9,7 @@ import {
   listCourtPriceRules,
   listMyVenues,
   listOwnerReservations,
+  listOwnerReservationsForStats,
   listVenueCourts,
   saveOpeningHours,
   setCourtActive,
@@ -135,6 +136,13 @@ export function useOwnerReservations(filters: OwnerReservationFilters) {
   return useQuery({
     queryKey: ['owner-reservations', filters],
     queryFn: () => listOwnerReservations(filters),
+  })
+}
+
+export function useOwnerStats(venueId?: string) {
+  return useQuery({
+    queryKey: ['owner-stats', venueId ?? 'all'],
+    queryFn: () => listOwnerReservationsForStats(venueId),
   })
 }
 

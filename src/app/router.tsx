@@ -16,6 +16,7 @@ import { DashboardVenues } from '@/pages/dashboard/DashboardVenues'
 import { VenueCreate } from '@/pages/dashboard/VenueCreate'
 import { VenueManage } from '@/pages/dashboard/VenueManage'
 import { DashboardReservations } from '@/pages/dashboard/DashboardReservations'
+import { DashboardStats } from '@/pages/dashboard/DashboardStats'
 import { AdminLayout } from '@/pages/admin/AdminLayout'
 import { AdminVenueQueue } from '@/pages/admin/AdminVenueQueue'
 import { AdminVenues } from '@/pages/admin/AdminVenues'
@@ -52,6 +53,7 @@ export const router = createBrowserRouter([
               { path: 'tesisler/yeni', element: <VenueCreate /> },
               { path: 'tesisler/:id', element: <VenueManage /> },
               { path: 'rezervasyonlar', element: <DashboardReservations /> },
+              { path: 'istatistik', element: <DashboardStats /> },
             ],
           },
         ],
