@@ -8,7 +8,12 @@ import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { BarChart, type BarChartItem } from '@/features/dashboard/components/BarChart'
 import { useMyVenues, useOwnerStats } from '@/features/dashboard/hooks/useDashboard'
-import { computeOwnerStats, type BarDatum } from '@/features/dashboard/services/stats'
+import {
+  computeOwnerStats,
+  STATS_RANGES,
+  type BarDatum,
+  type StatsRange,
+} from '@/features/dashboard/services/stats'
 import {
   RESERVATION_STATUS_LABELS,
   RESERVATION_STATUS_VARIANTS,
@@ -61,10 +66,21 @@ function KpiCard({
   )
 }
 
-function ChartCard({ title, children }: { title: string; children: React.ReactNode }) {
+function ChartCard({
+  title,
+  action,
+  children,
+}: {
+  title: string
+  action?: React.ReactNode
+  children: React.ReactNode
+}) {
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft dark:border-ink-800 dark:bg-ink-900">
-      <h2 className="text-base font-semibold text-slate-900 dark:text-ink-50">{title}</h2>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-base font-semibold text-slate-900 dark:text-ink-50">{title}</h2>
+        {action}
+      </div>
       <div className="mt-4">{children}</div>
     </div>
   )
@@ -72,20 +88,25 @@ function ChartCard({ title, children }: { title: string; children: React.ReactNo
 
 export function DashboardStats() {
   const [venueId, setVenueId] = useState('')
-  const [metric, setMetric] = useState<'count' | 'revenue'>('count')
+  const [range, setRange] = useState<StatsRange>('6m')
+  const [metric, setMetric] = useState<'count' | 'revenue'>('revenue')
   const { data: venues } = useMyVenues()
   const { data: reservations, isLoading } = useOwnerStats(venueId || undefined)
 
   const today = useMemo(() => nowInIstanbul().date, [])
-  const stats = useMemo(() => computeOwnerStats(reservations ?? [], today), [reservations, today])
+  const stats = useMemo(
+    () => computeOwnerStats(reservations ?? [], today, range),
+    [reservations, today, range],
+  )
 
-  const monthlyItems: BarChartItem[] = stats.monthly.map((m, index) => ({
-    label: m.label,
-    value: metric === 'count' ? m.count : m.revenue,
-    highlight: index === stats.monthly.length - 1,
+  const trendItems: BarChartItem[] = stats.trend.map((point, index) => ({
+    label: point.label,
+    value: metric === 'count' ? point.count : point.revenue,
+    highlight: index === stats.trend.length - 1,
   }))
 
   const venueOptions = (venues ?? []).map((venue) => ({ value: venue.id, label: venue.name }))
+  const rangeLabel = STATS_RANGES.find((option) => option.value === range)?.label ?? ''
 
   return (
     <div>
@@ -104,6 +125,28 @@ export function DashboardStats() {
         )}
       </div>
 
+      {/* Dönem filtresi */}
+      <div className="mt-4 flex flex-wrap items-center gap-2">
+        <span className="text-sm font-medium text-slate-500 dark:text-ink-400">Dönem:</span>
+        <div className="inline-flex flex-wrap gap-1 rounded-xl border border-slate-200 p-0.5 dark:border-ink-700">
+          {STATS_RANGES.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => setRange(option.value)}
+              className={cn(
+                'rounded-lg px-3 py-1.5 text-sm font-medium transition-colors',
+                range === option.value
+                  ? 'bg-primary-600 text-white'
+                  : 'text-slate-600 hover:bg-slate-100 dark:text-ink-300 dark:hover:bg-ink-800',
+              )}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {isLoading ? (
         <div className="mt-5 space-y-5">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -117,8 +160,8 @@ export function DashboardStats() {
         <div className="mt-6">
           <EmptyState
             icon={BarChart3}
-            title="Henüz veri yok"
-            description="Tesisinize rezervasyon geldikçe istatistikler burada oluşacak."
+            title="Bu dönemde veri yok"
+            description="Seçili dönem için rezervasyon bulunmuyor. Başka bir dönem deneyin."
           />
         </div>
       ) : (
@@ -128,15 +171,14 @@ export function DashboardStats() {
             <KpiCard icon={BarChart3} label="Toplam Rezervasyon" value={String(stats.total)} />
             <KpiCard
               icon={TrendingUp}
-              label="Tahmini Gelir"
+              label="Tahmini Ciro"
               value={formatPrice(stats.revenue)}
-              hint={`Bu ay: ${formatPrice(stats.revenueThisMonth)}`}
+              hint={rangeLabel}
             />
             <KpiCard
               icon={CalendarCheck2}
-              label="Bu Ay"
-              value={String(stats.thisMonthCount)}
-              hint="rezervasyon"
+              label="Tamamlanan"
+              value={String(stats.status.completed)}
             />
             <KpiCard
               icon={XCircle}
@@ -146,27 +188,31 @@ export function DashboardStats() {
             />
           </div>
 
-          {/* Aylık trend */}
-          <ChartCard title="Son 6 Ay">
-            <div className="mb-4 inline-flex rounded-xl border border-slate-200 p-0.5 dark:border-ink-700">
-              {(['count', 'revenue'] as const).map((option) => (
-                <button
-                  key={option}
-                  type="button"
-                  onClick={() => setMetric(option)}
-                  className={cn(
-                    'rounded-lg px-3 py-1.5 text-sm font-medium transition-colors',
-                    metric === option
-                      ? 'bg-primary-600 text-white'
-                      : 'text-slate-600 hover:bg-slate-100 dark:text-ink-300 dark:hover:bg-ink-800',
-                  )}
-                >
-                  {option === 'count' ? 'Rezervasyon' : 'Gelir'}
-                </button>
-              ))}
-            </div>
+          {/* Ciro / rezervasyon trendi */}
+          <ChartCard
+            title={`Trend · ${rangeLabel}`}
+            action={
+              <div className="inline-flex rounded-xl border border-slate-200 p-0.5 dark:border-ink-700">
+                {(['revenue', 'count'] as const).map((option) => (
+                  <button
+                    key={option}
+                    type="button"
+                    onClick={() => setMetric(option)}
+                    className={cn(
+                      'rounded-lg px-3 py-1.5 text-sm font-medium transition-colors',
+                      metric === option
+                        ? 'bg-primary-600 text-white'
+                        : 'text-slate-600 hover:bg-slate-100 dark:text-ink-300 dark:hover:bg-ink-800',
+                    )}
+                  >
+                    {option === 'revenue' ? 'Ciro' : 'Rezervasyon'}
+                  </button>
+                ))}
+              </div>
+            }
+          >
             <BarChart
-              items={monthlyItems}
+              items={trendItems}
               formatValue={metric === 'revenue' ? compactTry : undefined}
             />
           </ChartCard>
