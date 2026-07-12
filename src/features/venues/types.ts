@@ -12,10 +12,14 @@ export interface VenueFilters {
   q?: string
 }
 
-/** Liste kartında gösterilen tesis + spor rozetleri + başlangıç fiyatı */
+/** Liste kartında gösterilen tesis + spor rozetleri + başlangıç fiyatı + puan özeti */
 export interface VenueListItem extends Venue {
   sports: Sport[]
   minPrice: number | null
+  /** Ortalama puan (yorum yoksa null) */
+  avgRating: number | null
+  /** Toplam yorum sayısı */
+  reviewCount: number
 }
 
 /** Detay sayfası için tüm ilişkili veriler */

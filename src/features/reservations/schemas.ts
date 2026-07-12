@@ -1,11 +1,12 @@
 import { z } from 'zod'
+import { uuid } from '@/lib/validation'
 
 const dateRegex = /^\d{4}-\d{2}-\d{2}$/
 const timeRegex = /^\d{2}:\d{2}$/
 
 export const createReservationSchema = z.object({
-  courtId: z.string().uuid('Geçersiz saha'),
-  venueId: z.string().uuid('Geçersiz tesis'),
+  courtId: uuid('Geçersiz saha'),
+  venueId: uuid('Geçersiz tesis'),
   date: z.string().regex(dateRegex, 'Geçersiz tarih'),
   startTime: z.string().regex(timeRegex, 'Geçersiz saat'),
   endTime: z.string().regex(timeRegex, 'Geçersiz saat'),
@@ -15,7 +16,7 @@ export const createReservationSchema = z.object({
 export type CreateReservationInput = z.infer<typeof createReservationSchema>
 
 export const cancelReservationSchema = z.object({
-  reservationId: z.string().uuid(),
+  reservationId: uuid(),
   reason: z.string().max(300, 'Gerekçe en fazla 300 karakter olabilir').optional(),
 })
 

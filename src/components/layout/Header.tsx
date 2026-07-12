@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import {
   CalendarDays,
+  Heart,
   Info,
   LayoutDashboard,
   LogOut,
@@ -66,6 +67,11 @@ export function Header() {
           {profile?.role === 'customer' && (
             <NavLink to="/rezervasyonlarim" className={navLinkClass}>
               Rezervasyonlarım
+            </NavLink>
+          )}
+          {profile?.role === 'customer' && (
+            <NavLink to="/favorilerim" className={navLinkClass}>
+              Favorilerim
             </NavLink>
           )}
           {profile?.role === 'venue_owner' && (
@@ -153,6 +159,16 @@ export function Header() {
             >
               <User className="size-5 text-primary-600" aria-hidden />
               Rezervasyonlarım
+            </Link>
+          )}
+          {profile?.role === 'customer' && (
+            <Link
+              to="/favorilerim"
+              onClick={closeMenu}
+              className="flex items-center gap-3 rounded-xl px-3 py-3 font-medium text-slate-700 hover:bg-slate-100 dark:text-ink-200 dark:hover:bg-ink-800"
+            >
+              <Heart className="size-5 text-primary-600" aria-hidden />
+              Favorilerim
             </Link>
           )}
           {profile?.role === 'venue_owner' && (

@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { uuid } from '@/lib/validation'
 
 export const venueSchema = z.object({
   name: z.string().min(3, 'Tesis adı en az 3 karakter olmalı').max(100, 'Tesis adı çok uzun'),
@@ -12,14 +13,14 @@ export const venueSchema = z.object({
     .optional()
     .or(z.literal('')),
   amenities: z.array(z.string()),
-  sportIds: z.array(z.string().uuid()).min(1, 'En az bir spor türü seçin'),
+  sportIds: z.array(uuid()).min(1, 'En az bir spor türü seçin'),
 })
 
 export type VenueInput = z.infer<typeof venueSchema>
 
 export const courtSchema = z.object({
   name: z.string().min(2, 'Saha adı en az 2 karakter olmalı').max(80, 'Saha adı çok uzun'),
-  sportId: z.string().uuid('Spor türü seçin'),
+  sportId: uuid('Spor türü seçin'),
   surfaceType: z.string().max(50).optional().or(z.literal('')),
   isIndoor: z.boolean(),
   capacity: z.number().int().min(1).max(100).optional(),

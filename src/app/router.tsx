@@ -5,6 +5,7 @@ import { Landing } from '@/pages/Landing'
 import { VenueList } from '@/pages/VenueList'
 import { VenueDetail } from '@/pages/VenueDetail'
 import { MyReservations } from '@/pages/MyReservations'
+import { Favorites } from '@/pages/Favorites'
 import { Login } from '@/pages/Login'
 import { Register } from '@/pages/Register'
 import { About } from '@/pages/About'
@@ -34,7 +35,10 @@ export const router = createBrowserRouter([
       { path: '/kayit', element: <Register /> },
       {
         element: <RequireAuth />,
-        children: [{ path: '/rezervasyonlarim', element: <MyReservations /> }],
+        children: [
+          { path: '/rezervasyonlarim', element: <MyReservations /> },
+          { path: '/favorilerim', element: <Favorites /> },
+        ],
       },
       {
         element: <RequireRole role="venue_owner" />,

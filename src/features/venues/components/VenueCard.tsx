@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
 import { MapPin, ImageOff } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
+import { RatingStars } from '@/components/ui/RatingStars'
+import { FavoriteButton } from '@/features/favorites/components/FavoriteButton'
 import { formatPrice } from '@/lib/format'
 import type { VenueListItem } from '../types'
 
@@ -23,6 +25,7 @@ export function VenueCard({ venue }: { venue: VenueListItem }) {
             <ImageOff className="size-8 text-slate-300 dark:text-ink-600" aria-hidden />
           </div>
         )}
+        <FavoriteButton venueId={venue.id} className="absolute right-3 top-3" />
         {venue.minPrice !== null && (
           <span className="absolute bottom-3 right-3 rounded-full bg-white/95 dark:bg-ink-900/95 px-3 py-1 text-sm font-semibold text-slate-900 dark:text-ink-50 shadow-soft">
             {formatPrice(venue.minPrice)}
@@ -32,6 +35,15 @@ export function VenueCard({ venue }: { venue: VenueListItem }) {
       </div>
       <div className="p-4">
         <h3 className="font-semibold text-slate-900 dark:text-ink-50 group-hover:text-primary-700">{venue.name}</h3>
+        {venue.reviewCount > 0 && venue.avgRating !== null && (
+          <div className="mt-1.5 flex items-center gap-1.5">
+            <RatingStars value={venue.avgRating} />
+            <span className="text-sm font-medium text-slate-700 dark:text-ink-200">
+              {venue.avgRating.toFixed(1)}
+            </span>
+            <span className="text-xs text-slate-400 dark:text-ink-500">({venue.reviewCount})</span>
+          </div>
+        )}
         <p className="mt-1 flex items-center gap-1 text-sm text-slate-500 dark:text-ink-400">
           <MapPin className="size-3.5 shrink-0" aria-hidden />
           {venue.district}, {venue.city}

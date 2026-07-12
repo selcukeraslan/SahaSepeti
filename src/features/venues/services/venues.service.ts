@@ -10,9 +10,24 @@ export async function listSports(): Promise<Sport[]> {
   return data
 }
 
-interface VenueListRow extends Venue {
+export interface VenueListRow extends Venue {
   venue_sports: { sports: Sport | null }[]
   courts: { price_rules: Pick<PriceRule, 'price'>[] }[]
+  reviews: { rating: number }[]
+}
+
+/** Ham liste satırını karta uygun VenueListItem'a dönüştürür (favoriler de kullanır). */
+export function mapVenueListRow(row: VenueListRow): VenueListItem {
+  const { venue_sports, courts, reviews, ...venue } = row
+  const prices = courts.flatMap((court) => court.price_rules.map((rule) => rule.price))
+  const ratings = reviews.map((review) => review.rating)
+  return {
+    ...venue,
+    sports: venue_sports.map((vs) => vs.sports).filter((sport): sport is Sport => sport !== null),
+    minPrice: prices.length > 0 ? Math.min(...prices) : null,
+    avgRating: ratings.length > 0 ? ratings.reduce((sum, r) => sum + r, 0) / ratings.length : null,
+    reviewCount: ratings.length,
+  }
 }
 
 export async function listVenues(filters: VenueFilters): Promise<VenueListItem[]> {
@@ -25,7 +40,8 @@ export async function listVenues(filters: VenueFilters): Promise<VenueListItem[]
     .select(
       `*,
        ${sportJoin},
-       courts(price_rules(price))`,
+       courts(price_rules(price)),
+       reviews(rating)`,
     )
     .eq('status', 'approved')
     .order('created_at', { ascending: false })
@@ -48,15 +64,7 @@ export async function listVenues(filters: VenueFilters): Promise<VenueListItem[]
     throw new Error('Tesisler yüklenemedi')
   }
 
-  return data.map((row) => {
-    const { venue_sports, courts, ...venue } = row
-    const prices = courts.flatMap((court) => court.price_rules.map((rule) => rule.price))
-    return {
-      ...venue,
-      sports: venue_sports.map((vs) => vs.sports).filter((sport): sport is Sport => sport !== null),
-      minPrice: prices.length > 0 ? Math.min(...prices) : null,
-    }
-  })
+  return data.map(mapVenueListRow)
 }
 
 interface VenueDetailRow extends Venue {
