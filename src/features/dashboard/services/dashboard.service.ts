@@ -96,6 +96,8 @@ export async function createVenue(input: VenueInput): Promise<Venue> {
       address: data.address,
       phone: data.phone || null,
       amenities: data.amenities,
+      latitude: data.latitude,
+      longitude: data.longitude,
       status: 'draft',
     })
     .select()
@@ -119,6 +121,8 @@ export async function updateVenue(venueId: string, input: VenueInput): Promise<v
       address: data.address,
       phone: data.phone || null,
       amenities: data.amenities,
+      latitude: data.latitude,
+      longitude: data.longitude,
     })
     .eq('id', venueId)
 

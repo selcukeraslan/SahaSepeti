@@ -9,6 +9,7 @@ import { ALL_CITY_NAMES, getDistricts } from '@/config/cities'
 import { useSports } from '@/features/venues/hooks/useSports'
 import { cn } from '@/lib/utils'
 import { venueSchema, type VenueInput } from '../schemas'
+import { LocationPicker } from './LocationPicker'
 
 export interface VenueFormProps {
   defaultValues?: VenueInput
@@ -26,6 +27,8 @@ const EMPTY_VALUES: VenueInput = {
   phone: '',
   amenities: [],
   sportIds: [],
+  latitude: null,
+  longitude: null,
 }
 
 export function VenueForm({ defaultValues, isSaving, submitLabel, onSubmit }: VenueFormProps) {
@@ -44,7 +47,16 @@ export function VenueForm({ defaultValues, isSaving, submitLabel, onSubmit }: Ve
   const city = watch('city')
   const selectedSports = watch('sportIds')
   const selectedAmenities = watch('amenities')
+  const latitude = watch('latitude')
+  const longitude = watch('longitude')
   const districts = getDistricts(city)
+
+  const location = latitude !== null && longitude !== null ? { lat: latitude, lng: longitude } : null
+
+  const setLocation = (point: { lat: number; lng: number } | null) => {
+    setValue('latitude', point?.lat ?? null, { shouldValidate: true })
+    setValue('longitude', point?.lng ?? null, { shouldValidate: true })
+  }
 
   const toggleSport = (sportId: string) => {
     const next = selectedSports.includes(sportId)
@@ -116,6 +128,9 @@ export function VenueForm({ defaultValues, isSaving, submitLabel, onSubmit }: Ve
         error={errors.phone?.message}
         {...register('phone')}
       />
+
+      {/* Haritadan konum */}
+      <LocationPicker value={location} onChange={setLocation} />
 
       {/* Spor türleri */}
       <fieldset>

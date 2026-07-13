@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
-import { Check, ImageOff, MapPin, Phone } from 'lucide-react'
+import { Check, ImageOff, MapPin, Navigation, Phone } from 'lucide-react'
+import { MapContainer, Marker, TileLayer } from 'react-leaflet'
+import { venuePinIcon } from '@/lib/map'
 import { Container } from '@/components/layout/Container'
 import { Badge } from '@/components/ui/Badge'
 import { RatingStars } from '@/components/ui/RatingStars'
@@ -190,6 +192,37 @@ export function VenueDetail() {
                 })}
               </div>
             </div>
+
+            {venue.latitude !== null && venue.longitude !== null && (
+              <div className="mt-6">
+                <div className="flex items-center justify-between gap-3">
+                  <h2 className="text-lg font-semibold text-slate-900 dark:text-ink-50">Konum</h2>
+                  <a
+                    href={`https://www.google.com/maps/dir/?api=1&destination=${venue.latitude},${venue.longitude}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-1.5 text-sm font-medium text-primary-600 hover:text-primary-700"
+                  >
+                    <Navigation className="size-4" aria-hidden />
+                    Yol Tarifi Al
+                  </a>
+                </div>
+                <div className="mt-3 h-64 overflow-hidden rounded-2xl border border-slate-200 shadow-soft dark:border-ink-800">
+                  <MapContainer
+                    center={[venue.latitude, venue.longitude]}
+                    zoom={15}
+                    className="size-full"
+                    scrollWheelZoom={false}
+                  >
+                    <TileLayer
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
+                    <Marker position={[venue.latitude, venue.longitude]} icon={venuePinIcon} />
+                  </MapContainer>
+                </div>
+              </div>
+            )}
 
             <div className="mt-6">
               <h2 className="text-lg font-semibold text-slate-900 dark:text-ink-50">

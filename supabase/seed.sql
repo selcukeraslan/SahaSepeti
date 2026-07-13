@@ -64,7 +64,7 @@ where id = '22222222-2222-2222-2222-222222222222';
 -- ---------- Demo tesisler ----------
 insert into venues
   (id, owner_id, name, slug, description, city, district, address,
-   phone, cover_image_url, amenities, status)
+   phone, cover_image_url, amenities, status, latitude, longitude)
 values
   ('b0000000-0000-0000-0000-000000000001', '11111111-1111-1111-1111-111111111111',
    'Yeşilvadi Spor Kompleksi', 'yesilvadi-spor-kompleksi',
@@ -72,21 +72,21 @@ values
    'İstanbul', 'Kadıköy', 'Caferağa Mah. Spor Cad. No:12',
    '0216 555 01 01', 'https://picsum.photos/seed/halisaha1/1200/800',
    array['Duş', 'Soyunma Odası', 'Otopark', 'Kafeterya', 'Aydınlatma', 'Kiralık Ekipman', 'Wi-Fi'],
-   'approved'),
+   'approved', 40.98192, 29.02542),
   ('b0000000-0000-0000-0000-000000000002', '11111111-1111-1111-1111-111111111111',
    'Boğaz Arena', 'bogaz-arena',
    'Beşiktaş''ta kapalı ve açık kortlarıyla tenis tutkunlarının buluşma noktası. Deneyimli eğitmen kadrosu ve pro-shop hizmeti.',
    'İstanbul', 'Beşiktaş', 'Sinanpaşa Mah. Kort Sok. No:5',
    '0212 555 02 02', 'https://picsum.photos/seed/tenis1/1200/800',
    array['Duş', 'Soyunma Odası', 'Otopark', 'Kafeterya', 'Tribün', 'Wi-Fi'],
-   'approved'),
+   'approved', 41.04303, 29.00610),
   ('b0000000-0000-0000-0000-000000000003', '11111111-1111-1111-1111-111111111111',
    'Çankaya Basket Park', 'cankaya-basket-park',
    'Ankara Çankaya''da açık ve kapalı basketbol sahaları. Amatör ligler ve özel turnuvalar için ideal.',
    'Ankara', 'Çankaya', 'Birlik Mah. Pota Cad. No:8',
    '0312 555 03 03', 'https://picsum.photos/seed/basket1/1200/800',
    array['Duş', 'Soyunma Odası', 'Otopark', 'Aydınlatma', 'Tribün'],
-   'pending')
+   'pending', 39.88714, 32.83231)
 on conflict (slug) do nothing;
 
 -- ---------- Tesis-spor eşleşmeleri ----------
