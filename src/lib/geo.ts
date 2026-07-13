@@ -25,10 +25,12 @@ export function haversineKm(a: GeoPoint, b: GeoPoint): number {
   return 2 * EARTH_RADIUS_KM * Math.asin(Math.min(1, Math.sqrt(h)))
 }
 
-/** "0.85" → "850 m", "2.43" → "2,4 km" (tr-TR ondalık virgül). */
+/** "0.85" → "850 m", "2.43" → "2,4 km" (tr-TR ondalık virgül).
+ * Önce metreye yuvarlanır; böylece 0.9996 km "1000 m" değil "1 km" olur. */
 export function formatDistance(km: number): string {
-  if (km < 1) return `${Math.round(km * 1000)} m`
-  return `${km.toLocaleString('tr-TR', { maximumFractionDigits: 1 })} km`
+  const meters = Math.round(km * 1000)
+  if (meters < 1000) return `${meters} m`
+  return `${(meters / 1000).toLocaleString('tr-TR', { maximumFractionDigits: 1 })} km`
 }
 
 /** Konumu olan kayıt için mesafe (km); koordinat yoksa null. */

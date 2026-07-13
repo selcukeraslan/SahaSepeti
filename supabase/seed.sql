@@ -89,6 +89,15 @@ values
    'pending', 39.88714, 32.83231)
 on conflict (slug) do nothing;
 
+-- Koordinatlar sonradan eklendi: daha önce seed edilmiş DB'lerde insert
+-- slug çakışmasıyla atlanır; mevcut demo kayıtları burada geri doldurulur.
+update venues set latitude = 40.98192, longitude = 29.02542
+  where slug = 'yesilvadi-spor-kompleksi' and latitude is null;
+update venues set latitude = 41.04303, longitude = 29.00610
+  where slug = 'bogaz-arena' and latitude is null;
+update venues set latitude = 39.88714, longitude = 32.83231
+  where slug = 'cankaya-basket-park' and latitude is null;
+
 -- ---------- Tesis-spor eşleşmeleri ----------
 insert into venue_sports (venue_id, sport_id) values
   ('b0000000-0000-0000-0000-000000000001', 'a0000000-0000-0000-0000-000000000001'),

@@ -12,7 +12,12 @@ interface LocationPickerProps {
 /** Harita tıklamalarını yakalar. */
 function ClickHandler({ onPick }: { onPick: (point: GeoPoint) => void }) {
   useMapEvents({
-    click: (event) => onPick({ lat: event.latlng.lat, lng: event.latlng.lng }),
+    // wrap(): dünya kopyasında tıklanırsa boylamı ±180 aralığına normalize eder;
+    // aksi halde şema doğrulaması sessizce reddeder.
+    click: (event) => {
+      const wrapped = event.latlng.wrap()
+      onPick({ lat: wrapped.lat, lng: wrapped.lng })
+    },
   })
   return null
 }

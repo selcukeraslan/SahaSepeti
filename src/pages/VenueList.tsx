@@ -126,8 +126,8 @@ export function VenueList() {
             {userLoc ? 'Yakınımdakiler ✓' : 'Yakınımdakiler'}
           </Button>
 
-          {/* Liste / Harita geçişi */}
-          <div className="inline-flex rounded-xl border border-slate-200 p-0.5 dark:border-ink-700" role="tablist" aria-label="Görünüm">
+          {/* Liste / Harita geçişi — görünüm anahtarı (tab paneli değil), bu yüzden aria-pressed */}
+          <div className="inline-flex rounded-xl border border-slate-200 p-0.5 dark:border-ink-700" role="group" aria-label="Görünüm">
             {(
               [
                 { key: 'list', label: 'Liste', icon: List },
@@ -137,8 +137,7 @@ export function VenueList() {
               <button
                 key={option.key}
                 type="button"
-                role="tab"
-                aria-selected={view === option.key}
+                aria-pressed={view === option.key}
                 onClick={() => setView(option.key)}
                 className={cn(
                   'flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors',

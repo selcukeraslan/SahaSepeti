@@ -30,6 +30,11 @@ describe('formatDistance', () => {
     expect(formatDistance(2.43)).toBe('2,4 km')
     expect(formatDistance(12)).toBe('12 km')
   })
+
+  it('1 km sınırında "1000 m" yerine "1 km" gösterir', () => {
+    expect(formatDistance(0.9996)).toBe('1 km')
+    expect(formatDistance(0.9994)).toBe('999 m')
+  })
 })
 
 describe('distanceToOrNull', () => {

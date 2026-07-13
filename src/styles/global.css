@@ -1,5 +1,7 @@
 @import 'tailwindcss';
-@import 'leaflet/dist/leaflet.css';
+/* layer(base): leaflet kuralları katmansız kalırsa Tailwind utility'lerini ezer
+   (katmansız CSS her katmanı yener) — base katmanında utility'ler önceliklidir. */
+@import 'leaflet/dist/leaflet.css' layer(base);
 
 /* Manuel tema anahtarı: <html class="dark"> olduğunda dark: varyantları uygulanır */
 @custom-variant dark (&:where(.dark, .dark *));

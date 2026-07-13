@@ -130,7 +130,14 @@ export function VenueForm({ defaultValues, isSaving, submitLabel, onSubmit }: Ve
       />
 
       {/* Haritadan konum */}
-      <LocationPicker value={location} onChange={setLocation} />
+      <div>
+        <LocationPicker value={location} onChange={setLocation} />
+        {(errors.latitude || errors.longitude) && (
+          <p className="mt-1.5 text-sm text-red-600">
+            {errors.latitude?.message ?? errors.longitude?.message}
+          </p>
+        )}
+      </div>
 
       {/* Spor türleri */}
       <fieldset>
