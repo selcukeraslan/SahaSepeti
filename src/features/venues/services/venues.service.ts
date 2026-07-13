@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase'
 import type { Court, OpeningHour, PriceRule, Sport, Venue, VenueImage } from '@/types/database.types'
 import type { VenueDetail, VenueFilters, VenueListItem } from '../types'
+import { sortVenues } from './sorting'
 
 export async function listSports(): Promise<Sport[]> {
   const { data, error } = await supabase.from('sports').select('*').order('name')
@@ -64,7 +65,8 @@ export async function listVenues(filters: VenueFilters): Promise<VenueListItem[]
     throw new Error('Tesisler yüklenemedi')
   }
 
-  return data.map(mapVenueListRow)
+  // Puan/fiyat istemcide hesaplandığından sıralama da burada uygulanır
+  return sortVenues(data.map(mapVenueListRow), filters.sort)
 }
 
 interface VenueDetailRow extends Venue {

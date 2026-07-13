@@ -3,21 +3,28 @@ import { useSearchParams } from 'react-router-dom'
 import { SlidersHorizontal } from 'lucide-react'
 import { Container } from '@/components/layout/Container'
 import { Button } from '@/components/ui/Button'
+import { Select } from '@/components/ui/Select'
 import { Sheet } from '@/components/ui/Sheet'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { VenueCard } from '@/features/venues/components/VenueCard'
 import { VenueFilterFields } from '@/features/venues/components/VenueFilterFields'
 import { useVenues } from '@/features/venues/hooks/useVenues'
-import type { VenueFilters } from '@/features/venues/types'
+import {
+  isVenueSort,
+  VENUE_SORT_OPTIONS,
+  type VenueFilters,
+} from '@/features/venues/types'
 
 function paramsToFilters(params: URLSearchParams): VenueFilters {
+  const sortParam = params.get('sort')
   return {
     city: params.get('city') ?? undefined,
     district: params.get('district') ?? undefined,
     sport: params.get('sport') ?? undefined,
     date: params.get('date') ?? undefined,
     q: params.get('q') ?? undefined,
+    sort: isVenueSort(sortParam) ? sortParam : undefined,
   }
 }
 
@@ -35,6 +42,7 @@ export function VenueList() {
     if (next.district) params.set('district', next.district)
     if (next.date) params.set('date', next.date)
     if (next.q) params.set('q', next.q)
+    if (next.sort) params.set('sort', next.sort)
     setSearchParams(params, { replace: true })
   }
 
@@ -92,6 +100,22 @@ export function VenueList() {
 
         {/* Sonuçlar */}
         <div>
+          {/* Sıralama */}
+          <div className="mb-4 flex justify-end">
+            <div className="w-full sm:w-56">
+              <Select
+                aria-label="Sıralama"
+                placeholder="Önerilen"
+                value={filters.sort ?? ''}
+                onChange={(event) => {
+                  const value = event.target.value
+                  applyFilters({ ...filters, sort: isVenueSort(value) ? value : undefined })
+                }}
+                options={VENUE_SORT_OPTIONS}
+              />
+            </div>
+          </div>
+
           {isLoading && (
             <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
               {Array.from({ length: 6 }, (_, index) => (
