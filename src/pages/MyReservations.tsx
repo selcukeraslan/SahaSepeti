@@ -17,6 +17,7 @@ import {
   RESERVATION_STATUS_VARIANTS,
   type ReservationWithVenue,
 } from '@/features/reservations/types'
+import { ReservationActions } from '@/features/reservations/components/ReservationActions'
 import { ReviewDialog } from '@/features/reviews/components/ReviewDialog'
 import { nowInIstanbul } from '@/features/venues/services/slots'
 import { formatDateShort, formatPrice, formatTime } from '@/lib/format'
@@ -32,10 +33,13 @@ function ReservationCard({
   reservation,
   onCancel,
   onReview,
+  showActions = false,
 }: {
   reservation: ReservationWithVenue
   onCancel?: (reservation: ReservationWithVenue) => void
   onReview?: (reservation: ReservationWithVenue) => void
+  /** Yaklaşan rezervasyonlarda takvim/paylaşım kısayolları */
+  showActions?: boolean
 }) {
   return (
     <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 dark:border-ink-800 bg-white dark:bg-ink-900 p-4 shadow-soft sm:flex-row sm:items-center">
@@ -72,6 +76,11 @@ function ReservationCard({
             {reservation.court && ` · ${reservation.court.name}`}
           </span>
         </div>
+        {showActions && (
+          <div className="mt-2.5 -ml-2.5">
+            <ReservationActions reservation={reservation} />
+          </div>
+        )}
       </div>
       {onCancel && (
         <Button variant="outline" size="sm" onClick={() => onCancel(reservation)}>
@@ -150,6 +159,7 @@ export function MyReservations() {
                 key={reservation.id}
                 reservation={reservation}
                 onCancel={setCancelTarget}
+                showActions
               />
             ))}
           </div>
