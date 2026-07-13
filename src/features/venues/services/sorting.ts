@@ -51,7 +51,18 @@ export function isTopRated(venue: Pick<VenueListItem, 'avgRating' | 'reviewCount
 /** "Yeni" rozeti: son N gün içinde eklenen tesis. */
 export const NEW_VENUE_DAYS = 30
 
+/** UTC timestamp'i İstanbul takvim gününe (yyyy-MM-dd) çevirir — en-CA locale ISO biçim verir. */
+const ISTANBUL_DAY_FORMAT = new Intl.DateTimeFormat('en-CA', {
+  timeZone: 'Europe/Istanbul',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+})
+
 export function isNewVenue(createdAt: string, todayYmd: string): boolean {
-  const days = differenceInCalendarDays(parseISO(todayYmd), parseISO(createdAt))
+  // created_at (UTC) tarayıcı saat diliminde DEĞİL, İstanbul gününde değerlendirilir;
+  // aksi halde yurtdışından bakan kullanıcıda rozet ±1 gün kayar.
+  const createdYmd = ISTANBUL_DAY_FORMAT.format(new Date(createdAt))
+  const days = differenceInCalendarDays(parseISO(todayYmd), parseISO(createdYmd))
   return days >= 0 && days <= NEW_VENUE_DAYS
 }

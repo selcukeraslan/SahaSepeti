@@ -10,6 +10,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { VenueCard } from '@/features/venues/components/VenueCard'
 import { VenueFilterFields } from '@/features/venues/components/VenueFilterFields'
 import { useVenues } from '@/features/venues/hooks/useVenues'
+import { sortVenues } from '@/features/venues/services/sorting'
 import {
   isVenueSort,
   VENUE_SORT_OPTIONS,
@@ -33,7 +34,19 @@ export function VenueList() {
   const [sheetOpen, setSheetOpen] = useState(false)
 
   const filters = useMemo(() => paramsToFilters(searchParams), [searchParams])
-  const { data: venues, isLoading, isError } = useVenues(filters)
+
+  // sort queryKey'e GİRMEZ: sıralama istemcide yapılır; aynı veri için
+  // yeniden fetch + skeleton flaşı yaşanmaz (sorgu 4 sıralama için tek cache girdisi).
+  const queryFilters = useMemo(() => {
+    const { sort: _sort, ...rest } = filters
+    return rest
+  }, [filters])
+  const { data: venues, isLoading, isError } = useVenues(queryFilters)
+
+  const sortedVenues = useMemo(
+    () => sortVenues(venues ?? [], filters.sort),
+    [venues, filters.sort],
+  )
 
   const applyFilters = (next: VenueFilters) => {
     const params = new URLSearchParams()
@@ -46,7 +59,12 @@ export function VenueList() {
     setSearchParams(params, { replace: true })
   }
 
-  const clearFilters = () => setSearchParams(new URLSearchParams(), { replace: true })
+  // Sıralama filtre sayılmaz: "Temizle" filtreleri sıfırlar, sıralama seçimini korur.
+  const clearFilters = () => {
+    const params = new URLSearchParams()
+    if (filters.sort) params.set('sort', filters.sort)
+    setSearchParams(params, { replace: true })
+  }
 
   const activeFilterCount = [filters.sport, filters.city, filters.district, filters.q].filter(
     Boolean,
@@ -144,7 +162,7 @@ export function VenueList() {
           )}
           {venues && venues.length > 0 && (
             <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-              {venues.map((venue) => (
+              {sortedVenues.map((venue) => (
                 <VenueCard key={venue.id} venue={venue} />
               ))}
             </div>

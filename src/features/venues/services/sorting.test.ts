@@ -95,6 +95,11 @@ describe('isNewVenue', () => {
     expect(isNewVenue('2026-06-12T00:00:00Z', TODAY)).toBe(false) // 31 gün
   })
 
+  it('UTC gününü değil İstanbul gününü baz alır (saat dilimi kayması yok)', () => {
+    // 12 Haziran 21:30 UTC = 13 Haziran 00:30 İstanbul → İstanbul gününe göre tam 30 gün → yeni
+    expect(isNewVenue('2026-06-12T21:30:00Z', TODAY)).toBe(true)
+  })
+
   it('gelecek tarihli kayıt yeni sayılmaz (veri hatasına karşı)', () => {
     expect(isNewVenue('2026-08-01T00:00:00Z', TODAY)).toBe(false)
   })
