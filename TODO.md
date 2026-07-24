@@ -259,3 +259,34 @@ VITE_SUPABASE_ANON_KEY=
 - Owner istatistik ekranı (doluluk, gelir raporu).
 - Çoklu dil (EN), SEO/SSR ihtiyacı doğarsa Next.js değerlendirmesi.
 - Mobil uygulama (React Native / Expo).
+
+### Phase 12 — Fikir Havuzu (aday özellikler)
+
+Ürün kararı bekleyen adaylar; her biri kendi branch/PR'ında geliştirilir.
+Etiketler: 🟢 küçük (1 oturum) · 🟡 orta (1-2 gün) · 🔴 büyük (çok oturum).
+
+#### Müşteri deneyimi
+- 🟢 **Takvime ekle:** rezervasyon onayında ICS dosyası + Google Calendar linki — hızlı kazanım.
+- 🟢 **Rezervasyon paylaşımı:** "Maça geliyor musun?" — WhatsApp/kopyalanabilir davet linki.
+- 🟡 **Gelişmiş filtreler:** olanaklara göre (duş, otopark...), kapalı/açık saha, seçilen tarih-saatte müsait tesis filtresi.
+- 🟡 **Boş saat alarmı (bekleme listesi):** dolu slot iptal olunca ilgilenen müşteriye bildirim.
+- 🟡 **Yoruma tesis sahibi yanıtı** + yorum şikayet/moderasyon akışı.
+- 🟡 **Son dakika fırsatları:** bugün boş kalan saatlere tesis sahibinin indirim etiketi koyabilmesi.
+- 🔴 **Tekrarlayan rezervasyon:** "her Salı 20:00" serisi; çakışma ve istisna (tek hafta iptali) yönetimi.
+- 🔴 **Rakip/oyuncu bul:** eksik oyuncu tamamlama, açık maç ilanları, basit takım yönetimi.
+- 🔴 **Sadakat & kampanya:** promosyon kodu, X. rezervasyona indirim (ödeme entegrasyonuyla birlikte anlamlı).
+
+#### Tesis sahibi paneli
+- 🟡 **Takvim görünümü:** haftalık grid'de tüm sahaların rezervasyonları; boş hücreye tıkla → manuel rezervasyon (telefonla arayan müşteri için).
+- 🟢 **Saat bloklama:** bakım/özel etkinlik için slotu rezervasyona kapatma.
+- 🟢 **No-show takibi:** "gelmedi" işaretleme; müşteri geçmişinde no-show sayısı.
+- 🟢 **Doluluk ısı haritası:** istatistik sayfasına gün × saat ısı haritası.
+- 🔴 **Personel hesapları:** tesise bağlı sınırlı yetkili alt kullanıcılar (rezervasyon onaylar, tesisi düzenleyemez).
+
+#### Platform / teknik
+- 🟡 **Uygulama içi bildirim merkezi:** header'da zil + okunmamış sayacı (e-posta ⏸️ domain bekliyor; bkz. Phase 11 notu).
+- 🟡 **PWA:** ana ekrana ekleme, temel offline, push bildirim altyapısına zemin.
+- 🟡 **SEO:** meta/OG etiketleri, sitemap, tesis sayfalarında yapılandırılmış veri (schema.org); SSR gerekirse Next.js değerlendirmesi.
+- 🟡 **KVKK araçları:** "hesabımı sil" (verilerle birlikte) ve "verilerimi indir" self-servis akışları.
+- 🟡 **Admin genişletme:** platform geneli istatistik, yorum moderasyon kuyruğu, denetim kaydı (audit log).
+- 🟢 **E-posta doğrulama & şifre sıfırlama** akışlarının cilalanması (Supabase şablonlarının Türkçeleştirilmesi).

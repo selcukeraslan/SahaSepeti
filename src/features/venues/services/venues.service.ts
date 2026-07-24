@@ -64,6 +64,8 @@ export async function listVenues(filters: VenueFilters): Promise<VenueListItem[]
     throw new Error('Tesisler yüklenemedi')
   }
 
+  // Not: sıralama bilinçli olarak burada YAPILMAZ — sort queryKey'e girerse her
+  // sıralama değişimi aynı veriyi yeniden indirir. Bileşen sortVenues ile sıralar.
   return data.map(mapVenueListRow)
 }
 

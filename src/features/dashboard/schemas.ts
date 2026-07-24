@@ -14,6 +14,9 @@ export const venueSchema = z.object({
     .or(z.literal('')),
   amenities: z.array(z.string()),
   sportIds: z.array(uuid()).min(1, 'En az bir spor türü seçin'),
+  /** Haritadan seçilen konum; ikisi birlikte dolu ya da birlikte boş olmalı */
+  latitude: z.number().min(-90, 'Geçersiz konum').max(90, 'Geçersiz konum').nullable(),
+  longitude: z.number().min(-180, 'Geçersiz konum').max(180, 'Geçersiz konum').nullable(),
 })
 
 export type VenueInput = z.infer<typeof venueSchema>

@@ -1,7 +1,10 @@
 import { useMemo, useState } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
-import { Check, ImageOff, MapPin, Phone } from 'lucide-react'
+import { Check, ImageOff, Images, MapPin, Navigation, Phone } from 'lucide-react'
+import { MapContainer, Marker, TileLayer } from 'react-leaflet'
+import { venuePinIcon } from '@/lib/map'
 import { Container } from '@/components/layout/Container'
+import { Lightbox } from '@/components/ui/Lightbox'
 import { Badge } from '@/components/ui/Badge'
 import { RatingStars } from '@/components/ui/RatingStars'
 import { Skeleton } from '@/components/ui/Skeleton'
@@ -39,6 +42,7 @@ export function VenueDetail() {
   const [date, setDate] = useState(initialDate)
   const [activeCourtId, setActiveCourtId] = useState<string | null>(null)
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null)
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
 
   const { data: availability, isLoading: slotsLoading } = useAvailability(venue, date)
   const { data: reviews } = useVenueReviews(venue?.id)
@@ -67,40 +71,80 @@ export function VenueDetail() {
     availability?.find((item) => item.courtId === activeCourt?.id)?.slots ?? []
   const ratingSummary = summarizeReviews(reviews ?? [])
 
+  // Galeri listesi: kapak + kapak DIŞINDAKİ görseller (mükerrer gösterim yok)
+  const photos = [
+    ...(venue.cover_image_url ? [{ url: venue.cover_image_url, alt: venue.name }] : []),
+    ...venue.images
+      .filter((image) => image.url !== venue.cover_image_url)
+      .map((image, index) => ({ url: image.url, alt: `${venue.name} görsel ${index + 2}` })),
+  ]
+
   return (
     <>
-      {/* Galeri */}
+      {/* Galeri — sabit yükseklik + object-cover: farklı oranlı fotoğraflar taşmaz */}
       <section className="bg-ink-900">
         <Container className="py-0">
-          <div className="grid gap-1 sm:grid-cols-3">
-            <div className="relative aspect-[3/2] overflow-hidden sm:col-span-2 sm:aspect-auto">
-              {venue.cover_image_url ? (
+          <div className="grid gap-1 sm:h-[420px] sm:grid-cols-3">
+            {/* Büyük görsel (kapak) */}
+            {photos[0] ? (
+              <button
+                type="button"
+                onClick={() => setLightboxIndex(0)}
+                aria-label="Fotoğrafları büyük görüntüle"
+                className="group relative aspect-[3/2] cursor-zoom-in overflow-hidden sm:col-span-2 sm:aspect-auto sm:h-full"
+              >
                 <img
-                  src={venue.cover_image_url}
-                  alt={venue.name}
-                  className="size-full object-cover"
+                  src={photos[0].url}
+                  alt={photos[0].alt}
+                  className="absolute inset-0 size-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                 />
-              ) : (
-                <div className="flex size-full min-h-64 items-center justify-center bg-ink-800">
-                  <ImageOff className="size-10 text-slate-600" aria-hidden />
-                </div>
-              )}
-            </div>
-            <div className="hidden grid-rows-2 gap-1 sm:grid">
-              {[0, 1].map((index) => {
-                const image = venue.images[index]
-                return image ? (
-                  <img
-                    key={image.id}
-                    src={image.url}
-                    alt={`${venue.name} görsel ${index + 2}`}
-                    loading="lazy"
-                    className="size-full object-cover"
-                  />
-                ) : (
-                  <div key={index} className="flex items-center justify-center bg-ink-800">
-                    <ImageOff className="size-6 text-slate-600" aria-hidden />
-                  </div>
+                {/* Mobilde yan sütun gizli: tüm fotoğraflara buradan ulaşılır */}
+                {photos.length > 1 && (
+                  <span className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-full bg-ink-950/70 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur sm:hidden">
+                    <Images className="size-3.5" aria-hidden />
+                    {photos.length} fotoğraf
+                  </span>
+                )}
+              </button>
+            ) : (
+              <div className="flex aspect-[3/2] items-center justify-center bg-ink-800 sm:col-span-2 sm:aspect-auto sm:h-full">
+                <ImageOff className="size-10 text-ink-500" aria-hidden />
+              </div>
+            )}
+
+            {/* Yan küçük görseller (masaüstü) */}
+            <div className="hidden h-full min-h-0 grid-rows-2 gap-1 sm:grid">
+              {[1, 2].map((photoIndex) => {
+                const photo = photos[photoIndex]
+                if (!photo) {
+                  return (
+                    <div key={photoIndex} className="flex min-h-0 items-center justify-center bg-ink-800">
+                      <ImageOff className="size-6 text-ink-500" aria-hidden />
+                    </div>
+                  )
+                }
+                const remaining = photos.length - 3
+                const showMore = photoIndex === 2 && remaining > 0
+                return (
+                  <button
+                    key={photoIndex}
+                    type="button"
+                    onClick={() => setLightboxIndex(photoIndex)}
+                    aria-label={showMore ? `${remaining} fotoğraf daha` : 'Fotoğrafı büyük görüntüle'}
+                    className="group relative min-h-0 cursor-zoom-in overflow-hidden"
+                  >
+                    <img
+                      src={photo.url}
+                      alt={photo.alt}
+                      loading="lazy"
+                      className="absolute inset-0 size-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                    />
+                    {showMore && (
+                      <span className="absolute inset-0 flex items-center justify-center bg-ink-950/60 text-sm font-semibold text-white">
+                        +{remaining} fotoğraf
+                      </span>
+                    )}
+                  </button>
                 )
               })}
             </div>
@@ -190,6 +234,37 @@ export function VenueDetail() {
                 })}
               </div>
             </div>
+
+            {venue.latitude !== null && venue.longitude !== null && (
+              <div className="mt-6">
+                <div className="flex items-center justify-between gap-3">
+                  <h2 className="text-lg font-semibold text-slate-900 dark:text-ink-50">Konum</h2>
+                  <a
+                    href={`https://www.google.com/maps/dir/?api=1&destination=${venue.latitude},${venue.longitude}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-1.5 text-sm font-medium text-primary-600 hover:text-primary-700"
+                  >
+                    <Navigation className="size-4" aria-hidden />
+                    Yol Tarifi Al
+                  </a>
+                </div>
+                <div className="mt-3 h-64 overflow-hidden rounded-2xl border border-slate-200 shadow-soft dark:border-ink-800">
+                  <MapContainer
+                    center={[venue.latitude, venue.longitude]}
+                    zoom={15}
+                    className="size-full"
+                    scrollWheelZoom={false}
+                  >
+                    <TileLayer
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
+                    <Marker position={[venue.latitude, venue.longitude]} icon={venuePinIcon} />
+                  </MapContainer>
+                </div>
+              </div>
+            )}
 
             <div className="mt-6">
               <h2 className="text-lg font-semibold text-slate-900 dark:text-ink-50">
@@ -292,6 +367,15 @@ export function VenueDetail() {
           slot={selectedSlot}
           open={selectedSlot !== null}
           onClose={() => setSelectedSlot(null)}
+        />
+      )}
+
+      {/* Fotoğraf görüntüleyici */}
+      {lightboxIndex !== null && photos.length > 0 && (
+        <Lightbox
+          images={photos}
+          initialIndex={lightboxIndex}
+          onClose={() => setLightboxIndex(null)}
         />
       )}
     </>
