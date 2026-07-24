@@ -14,6 +14,7 @@ import { VenueMap } from '@/features/venues/components/VenueMap'
 import { useVenues } from '@/features/venues/hooks/useVenues'
 import { sortVenues } from '@/features/venues/services/sorting'
 import {
+  isCourtKind,
   isVenueSort,
   VENUE_SORT_OPTIONS,
   type VenueFilters,
@@ -24,6 +25,8 @@ import { cn } from '@/lib/utils'
 
 function paramsToFilters(params: URLSearchParams): VenueFilters {
   const sortParam = params.get('sort')
+  const courtParam = params.get('court')
+  const amenities = params.getAll('amenity')
   return {
     city: params.get('city') ?? undefined,
     district: params.get('district') ?? undefined,
@@ -31,6 +34,9 @@ function paramsToFilters(params: URLSearchParams): VenueFilters {
     date: params.get('date') ?? undefined,
     q: params.get('q') ?? undefined,
     sort: isVenueSort(sortParam) ? sortParam : undefined,
+    court: isCourtKind(courtParam) ? courtParam : undefined,
+    time: params.get('time') ?? undefined,
+    amenities: amenities.length > 0 ? amenities : undefined,
   }
 }
 
@@ -104,6 +110,9 @@ export function VenueList() {
     if (next.date) params.set('date', next.date)
     if (next.q) params.set('q', next.q)
     if (next.sort) params.set('sort', next.sort)
+    if (next.court) params.set('court', next.court)
+    if (next.time) params.set('time', next.time)
+    next.amenities?.forEach((amenity) => params.append('amenity', amenity))
     setSearchParams(params, { replace: true })
   }
 
@@ -114,9 +123,10 @@ export function VenueList() {
     setSearchParams(params, { replace: true })
   }
 
-  const activeFilterCount = [filters.sport, filters.city, filters.district, filters.q].filter(
-    Boolean,
-  ).length
+  const activeFilterCount =
+    [filters.sport, filters.city, filters.district, filters.q, filters.court, filters.time].filter(
+      Boolean,
+    ).length + (filters.amenities?.length ? 1 : 0)
 
   /** "Yakınımdakiler": konum izni iste; açıksa kapat. */
   const toggleNearMe = () => {

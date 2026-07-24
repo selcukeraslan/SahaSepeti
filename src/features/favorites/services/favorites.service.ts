@@ -1,5 +1,9 @@
 import { supabase } from '@/lib/supabase'
-import { mapVenueListRow, type VenueListRow } from '@/features/venues/services/venues.service'
+import {
+  mapVenueListRow,
+  VENUE_LIST_COURTS,
+  type VenueListRow,
+} from '@/features/venues/services/venues.service'
 import type { VenueListItem } from '@/features/venues/types'
 
 /** Zaten favoride (PK ihlali) — sessizce yok say */
@@ -24,7 +28,7 @@ export async function listFavoriteVenues(): Promise<VenueListItem[]> {
     .select(
       `venue:venues(*,
          venue_sports(sports(*)),
-         courts(price_rules(price)),
+         ${VENUE_LIST_COURTS},
          reviews(rating))`,
     )
     .order('created_at', { ascending: false })

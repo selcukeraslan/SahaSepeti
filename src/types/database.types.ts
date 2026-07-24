@@ -578,6 +578,10 @@ export interface Database {
           reviewer_name: string
         }[]
       }
+      venues_available_at: {
+        Args: { p_date: string; p_start: string; p_end: string }
+        Returns: { venue_id: string }[]
+      }
     }
     Enums: {
       user_role: 'customer' | 'venue_owner' | 'admin'

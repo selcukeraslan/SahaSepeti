@@ -13,6 +13,13 @@ export function isVenueSort(value: string | null): value is VenueSort {
   return value === 'rating' || value === 'price-asc' || value === 'price-desc'
 }
 
+/** Saha türü filtresi: kapalı (indoor) / açık (outdoor) saha. */
+export type CourtKind = 'indoor' | 'outdoor'
+
+export function isCourtKind(value: string | null): value is CourtKind {
+  return value === 'indoor' || value === 'outdoor'
+}
+
 /** Tesis listeleme filtreleri — URL query paramlarıyla senkron tutulur. */
 export interface VenueFilters {
   city?: string
@@ -24,6 +31,12 @@ export interface VenueFilters {
   /** İsim içinde arama */
   q?: string
   sort?: VenueSort
+  /** Tesiste bulunması istenen olanaklar (hepsi bulunmalı) */
+  amenities?: string[]
+  /** Kapalı/açık saha */
+  court?: CourtKind
+  /** HH:mm — bu saatte (date gününde) müsait tesisler; date ile birlikte anlamlı */
+  time?: string
 }
 
 /** Liste kartında gösterilen tesis + spor rozetleri + başlangıç fiyatı + puan özeti */
@@ -34,6 +47,10 @@ export interface VenueListItem extends Venue {
   avgRating: number | null
   /** Toplam yorum sayısı */
   reviewCount: number
+  /** En az bir aktif kapalı saha var mı */
+  hasIndoor: boolean
+  /** En az bir aktif açık saha var mı */
+  hasOutdoor: boolean
 }
 
 /** Detay sayfası için tüm ilişkili veriler */

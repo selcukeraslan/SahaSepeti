@@ -26,6 +26,8 @@ function makeVenue(overrides: Partial<VenueListItem> = {}): VenueListItem {
     minPrice: null,
     avgRating: null,
     reviewCount: 0,
+    hasIndoor: false,
+    hasOutdoor: false,
     ...overrides,
   }
 }
