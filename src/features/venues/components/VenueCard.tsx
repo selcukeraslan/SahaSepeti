@@ -3,12 +3,20 @@ import { MapPin, ImageOff, Star } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
 import { RatingStars } from '@/components/ui/RatingStars'
 import { FavoriteButton } from '@/features/favorites/components/FavoriteButton'
+import { formatDistance } from '@/lib/geo'
 import { formatPrice } from '@/lib/format'
 import { nowInIstanbul } from '../services/slots'
 import { isNewVenue, isTopRated } from '../services/sorting'
 import type { VenueListItem } from '../types'
 
-export function VenueCard({ venue }: { venue: VenueListItem }) {
+export function VenueCard({
+  venue,
+  distanceKm,
+}: {
+  venue: VenueListItem
+  /** Kullanıcı konumuna uzaklık (km); "Yakınımdakiler" aktifken gösterilir */
+  distanceKm?: number | null
+}) {
   const today = nowInIstanbul().date
   return (
     <Link
@@ -64,6 +72,11 @@ export function VenueCard({ venue }: { venue: VenueListItem }) {
         <p className="mt-1 flex items-center gap-1 text-sm text-slate-500 dark:text-ink-400">
           <MapPin className="size-3.5 shrink-0" aria-hidden />
           {venue.district}, {venue.city}
+          {distanceKm !== null && distanceKm !== undefined && (
+            <span className="ml-auto shrink-0 font-semibold text-primary-600">
+              {formatDistance(distanceKm)}
+            </span>
+          )}
         </p>
         {venue.sports.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-1.5">

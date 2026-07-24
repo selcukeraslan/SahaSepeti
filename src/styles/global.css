@@ -1,4 +1,7 @@
 @import 'tailwindcss';
+/* layer(base): leaflet kuralları katmansız kalırsa Tailwind utility'lerini ezer
+   (katmansız CSS her katmanı yener) — base katmanında utility'ler önceliklidir. */
+@import 'leaflet/dist/leaflet.css' layer(base);
 
 /* Manuel tema anahtarı: <html class="dark"> olduğunda dark: varyantları uygulanır */
 @custom-variant dark (&:where(.dark, .dark *));
@@ -62,4 +65,50 @@
   ::selection {
     @apply bg-primary-200 text-primary-900 dark:bg-primary-800 dark:text-primary-50;
   }
+}
+
+/* ---------- Leaflet harita tema uyumu ---------- */
+/* Harita kendi stacking context'inde kalsın; sticky header'ın üstüne binmesin */
+.leaflet-container {
+  isolation: isolate;
+  font: inherit;
+  border-radius: 1rem;
+}
+
+/* Koyu temada karo katmanını karart (klasik invert + hue-rotate filtresi) */
+.dark .leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.85) saturate(0.7);
+}
+
+.dark .leaflet-container {
+  background: #12211c; /* ink-900 */
+}
+
+/* Popup ve kontroller tema renklerine uysun */
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  @apply bg-white text-slate-900 shadow-soft-lg dark:bg-ink-900 dark:text-ink-50;
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 1rem;
+}
+
+.dark .leaflet-bar a {
+  background: #12211c;
+  color: #dde8e3;
+  border-color: #294036;
+}
+
+.dark .leaflet-bar a:hover {
+  background: #1c2e27;
+}
+
+.dark .leaflet-control-attribution {
+  background: rgb(18 33 28 / 0.8);
+  color: #6f8a80;
+}
+
+.dark .leaflet-control-attribution a {
+  color: #9db3aa;
 }

@@ -110,6 +110,8 @@ export function VenueManage() {
               phone: venue.phone ?? '',
               amenities: venue.amenities,
               sportIds: venue.sports.map((sport) => sport.id),
+              latitude: venue.latitude,
+              longitude: venue.longitude,
             }}
             isSaving={update.isPending}
             submitLabel="Değişiklikleri Kaydet"
