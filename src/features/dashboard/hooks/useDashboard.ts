@@ -1,25 +1,37 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { ReservationStatus } from '@/types/database.types'
 import {
+  createBlockSlot,
   createCourt,
+  createManualReservation,
   createPriceRule,
   createVenue,
+  deleteOwnerReservation,
   deletePriceRule,
   getOpeningHours,
   listCourtPriceRules,
   listMyVenues,
+  listOwnerDaySchedule,
   listOwnerReservations,
   listOwnerReservationsForStats,
   listVenueCourts,
   saveOpeningHours,
   setCourtActive,
+  setReservationNoShow,
   submitVenueForApproval,
   updateCourt,
   updateReservationStatus,
   updateVenue,
   type OwnerReservationFilters,
 } from '../services/dashboard.service'
-import type { CourtInput, OpeningHourInput, PriceRuleInput, VenueInput } from '../schemas'
+import type {
+  BlockSlotInput,
+  CourtInput,
+  ManualReservationInput,
+  OpeningHourInput,
+  PriceRuleInput,
+  VenueInput,
+} from '../schemas'
 
 export function useMyVenues() {
   return useQuery({ queryKey: ['my-venues'], queryFn: listMyVenues })
@@ -158,7 +170,48 @@ export function useUpdateReservationStatus() {
     }) => updateReservationStatus(reservationId, status),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['owner-reservations'] })
+      void queryClient.invalidateQueries({ queryKey: ['owner-schedule'] })
       void queryClient.invalidateQueries({ queryKey: ['availability'] })
     },
   })
+}
+
+// ---------- Takvim / manuel rezervasyon / blok / no-show ----------
+
+export function useOwnerDaySchedule(venueId: string | undefined, date: string) {
+  return useQuery({
+    queryKey: ['owner-schedule', venueId ?? '', date],
+    queryFn: () => listOwnerDaySchedule(venueId ?? '', date),
+    enabled: Boolean(venueId),
+  })
+}
+
+/** Manuel rezervasyon, blok, silme ve no-show — hepsi takvimi + rezervasyonları tazeler. */
+export function useScheduleMutations() {
+  const queryClient = useQueryClient()
+  const invalidate = () => {
+    void queryClient.invalidateQueries({ queryKey: ['owner-schedule'] })
+    void queryClient.invalidateQueries({ queryKey: ['owner-reservations'] })
+    void queryClient.invalidateQueries({ queryKey: ['availability'] })
+  }
+
+  const addManual = useMutation({
+    mutationFn: (input: ManualReservationInput) => createManualReservation(input),
+    onSuccess: invalidate,
+  })
+  const addBlock = useMutation({
+    mutationFn: (input: BlockSlotInput) => createBlockSlot(input),
+    onSuccess: invalidate,
+  })
+  const remove = useMutation({
+    mutationFn: (reservationId: string) => deleteOwnerReservation(reservationId),
+    onSuccess: invalidate,
+  })
+  const setNoShow = useMutation({
+    mutationFn: ({ reservationId, value }: { reservationId: string; value: boolean }) =>
+      setReservationNoShow(reservationId, value),
+    onSuccess: invalidate,
+  })
+
+  return { addManual, addBlock, remove, setNoShow }
 }
