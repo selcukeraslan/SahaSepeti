@@ -104,7 +104,7 @@ VITE_SUPABASE_ANON_KEY=
 | 8 | Storage, Görseller & Polish | ✅ |
 | 9 | RLS, Doğrulama & Güvenlik | ✅ |
 | 10 | Test, Bug Fix & MVP Temizlik | ✅ |
-| 11 | Gelecek Yol Haritası | — |
+| 11 | Gelecek Yol Haritası | 🔄 devam ediyor |
 
 ---
 
@@ -244,8 +244,16 @@ VITE_SUPABASE_ANON_KEY=
 ### Phase 11 — Gelecek Yol Haritası (MVP sonrası)
 
 - Gerçek ödeme: iyzico/PayTR (kapora + tam ödeme), webhook ile `payments` güncelleme.
-- Yorum & puanlama (reviews aktifleştirme), favoriler.
-- Bildirimler: e-posta (rezervasyon onayı/hatırlatma), ileride SMS/push.
+- ✅ Yorum & puanlama (reviews aktifleştirme), favoriler. *(2026-07 — merge edildi)*
+- ✅ Owner istatistik ekranı (doluluk, ciro raporu, dönem filtresi). *(2026-07 — `owner-stats` PR)*
+- ⏸️ Bildirimler: e-posta (rezervasyon onayı/hatırlatma), ileride SMS/push.
+  - **Durum (Temmuz 2026): RAFA KALDIRILDI — geliştirmeye sonradan devam edilecek.**
+  - Altyapı hazır: `supabase/functions/notify-reservation` (Resend), secret'lar ayarlı,
+    fonksiyon deploy edildi, Database Webhook kuruldu (`notify-owner-email` branch/PR).
+  - Bekleyen tek engel: Resend test modu yalnızca hesap sahibinin e-postasına gönderir.
+    **Alan adı alınıp Resend'de doğrulanınca** `NOTIFY_FROM_EMAIL` güncellenecek ve
+    tüm tesis sahiplerine gönderim açılacak (detay: fonksiyonun README'si).
+  - Not: Sohbette görünen Resend API anahtarı aktivasyondan önce yenilenmeli.
 - Harita görünümü (leaflet) + konuma göre "yakınımdaki tesisler".
 - Tekrarlayan rezervasyon (her salı 20:00), kapora iade kuralları.
 - Owner istatistik ekranı (doluluk, gelir raporu).
