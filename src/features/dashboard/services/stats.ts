@@ -52,6 +52,16 @@ export interface StatusBreakdown {
   cancelled: number
 }
 
+/** Doluluk ısı haritası: gün (Pzt→Paz) × saat matrisi. */
+export interface OccupancyHeatmap {
+  /** gözlemlenen saatler (min..max); veri yoksa boş */
+  hours: number[]
+  /** grid[gün 0-6][saatIndex] → rezervasyon sayısı; saatIndex, hours ile eşleşir */
+  grid: number[][]
+  /** renk ölçeklemesi için en yüksek hücre */
+  max: number
+}
+
 export interface OwnerStats {
   total: number
   /** iptal olmayan rezervasyon sayısı */
@@ -69,6 +79,8 @@ export interface OwnerStats {
   byDay: BarDatum[]
   busiestHour: string | null
   busiestDay: string | null
+  /** doluluk ısı haritası (gün × saat) */
+  heatmap: OccupancyHeatmap
 }
 
 type Granularity = 'day' | 'week' | 'month' | 'year'
@@ -182,6 +194,8 @@ export function computeOwnerStats(
   let revenue = 0
   const hourCount = new Array<number>(24).fill(0)
   const dayCount = new Array<number>(7).fill(0)
+  // heat[gün 0-6 Pzt..Paz][saat 0-23]
+  const heat: number[][] = Array.from({ length: 7 }, () => new Array<number>(24).fill(0))
   let minDate: string | null = null
 
   for (const r of filtered) {
@@ -192,6 +206,8 @@ export function computeOwnerStats(
       hourCount[h] = (hourCount[h] ?? 0) + 1
       const d = mondayIndex(r.reservation_date)
       dayCount[d] = (dayCount[d] ?? 0) + 1
+      const heatRow = heat[d]
+      if (heatRow) heatRow[h] = (heatRow[h] ?? 0) + 1
     }
     if (minDate === null || r.reservation_date < minDate) minDate = r.reservation_date
   }
@@ -230,6 +246,36 @@ export function computeOwnerStats(
 
   const byDay: BarDatum[] = DAY_SHORT.map((label, i) => ({ label, value: dayCount[i] ?? 0 }))
 
+  // Isı haritası: herhangi bir günde dolu olan en erken–en geç saat aralığı
+  let heatMinHour = 24
+  let heatMaxHour = -1
+  for (let h = 0; h < 24; h++) {
+    let anyDay = false
+    for (let d = 0; d < 7; d++) {
+      if ((heat[d]?.[h] ?? 0) > 0) {
+        anyDay = true
+        break
+      }
+    }
+    if (anyDay) {
+      if (h < heatMinHour) heatMinHour = h
+      if (h > heatMaxHour) heatMaxHour = h
+    }
+  }
+  const heatHours: number[] =
+    heatMaxHour >= heatMinHour
+      ? Array.from({ length: heatMaxHour - heatMinHour + 1 }, (_, i) => heatMinHour + i)
+      : []
+  let heatMax = 0
+  const heatGrid: number[][] = Array.from({ length: 7 }, (_, d) =>
+    heatHours.map((h) => {
+      const value = heat[d]?.[h] ?? 0
+      if (value > heatMax) heatMax = value
+      return value
+    }),
+  )
+  const heatmap: OccupancyHeatmap = { hours: heatHours, grid: heatGrid, max: heatMax }
+
   const busiestHourIdx = argmax(hourCount)
   const busiestDayIdx = argmax(dayCount)
 
@@ -244,5 +290,6 @@ export function computeOwnerStats(
     byDay,
     busiestHour: busiestHourIdx === null ? null : `${String(busiestHourIdx).padStart(2, '0')}:00`,
     busiestDay: busiestDayIdx === null ? null : (DAY_FULL[busiestDayIdx] ?? null),
+    heatmap,
   }
 }

@@ -7,6 +7,7 @@ import { Select } from '@/components/ui/Select'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { BarChart, type BarChartItem } from '@/features/dashboard/components/BarChart'
+import { OccupancyHeatmapView } from '@/features/dashboard/components/OccupancyHeatmapView'
 import { useMyVenues, useOwnerStats } from '@/features/dashboard/hooks/useDashboard'
 import {
   computeOwnerStats,
@@ -264,6 +265,11 @@ export function DashboardStats() {
               )}
             </ChartCard>
           </div>
+
+          {/* Doluluk ısı haritası (gün × saat) */}
+          <ChartCard title="Doluluk Isı Haritası">
+            <OccupancyHeatmapView heatmap={stats.heatmap} />
+          </ChartCard>
         </div>
       )}
     </div>

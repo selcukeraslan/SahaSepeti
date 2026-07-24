@@ -47,6 +47,17 @@ export async function upsertReview(input: CreateReviewInput): Promise<Review> {
   return review
 }
 
+/** Tesis sahibi bir yoruma yanıt yazar/günceller/temizler (RPC owner doğrular). */
+export async function setReviewReply(reviewId: string, reply: string): Promise<void> {
+  const { error } = await supabase.rpc('set_review_reply', {
+    p_review_id: reviewId,
+    p_reply: reply,
+  })
+  if (error) {
+    throw new Error(error.message || 'Yanıt kaydedilemedi')
+  }
+}
+
 /** Yorum listesinden ortalama + adet (saf fonksiyon). */
 export function summarizeReviews(reviews: VenueReview[]): RatingSummary {
   if (reviews.length === 0) return { average: 0, count: 0 }

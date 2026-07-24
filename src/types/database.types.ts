@@ -468,6 +468,8 @@ export interface Database {
           reservation_id: string | null
           rating: number
           comment: string | null
+          owner_reply: string | null
+          owner_reply_at: string | null
           created_at: string
         }
         Insert: {
@@ -477,6 +479,8 @@ export interface Database {
           reservation_id?: string | null
           rating: number
           comment?: string | null
+          owner_reply?: string | null
+          owner_reply_at?: string | null
           created_at?: string
         }
         Update: {
@@ -486,6 +490,8 @@ export interface Database {
           reservation_id?: string | null
           rating?: number
           comment?: string | null
+          owner_reply?: string | null
+          owner_reply_at?: string | null
           created_at?: string
         }
         Relationships: [
@@ -576,7 +582,13 @@ export interface Database {
           comment: string | null
           created_at: string
           reviewer_name: string
+          owner_reply: string | null
+          owner_reply_at: string | null
         }[]
+      }
+      set_review_reply: {
+        Args: { p_review_id: string; p_reply: string }
+        Returns: undefined
       }
     }
     Enums: {

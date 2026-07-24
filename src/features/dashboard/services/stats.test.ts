@@ -106,4 +106,31 @@ describe('computeOwnerStats', () => {
     expect(last?.label).toBe('Tem')
     expect(last?.count).toBe(1)
   })
+
+  it('ısı haritası gün×saat doluluğunu doğru sayar; iptaller girmez', () => {
+    const stats = computeOwnerStats(
+      [
+        make({ reservation_date: '2026-07-11', start_time: '20:00:00' }), // Cumartesi 20
+        make({ reservation_date: '2026-07-04', start_time: '20:00:00' }), // Cumartesi 20
+        make({ reservation_date: '2026-07-06', start_time: '09:00:00' }), // Pazartesi 09
+        make({ reservation_date: '2026-07-06', start_time: '20:00:00', status: 'cancelled' }), // sayılmaz
+      ],
+      TODAY,
+    )
+    // gözlemlenen saat aralığı 09..20
+    expect(stats.heatmap.hours[0]).toBe(9)
+    expect(stats.heatmap.hours[stats.heatmap.hours.length - 1]).toBe(20)
+    expect(stats.heatmap.max).toBe(2) // Cumartesi 20:00 → 2 rezervasyon
+    // Cumartesi = Pzt tabanlı index 5; son saat (20) sütunu
+    const saturdayRow = stats.heatmap.grid[5]
+    expect(saturdayRow?.[saturdayRow.length - 1]).toBe(2)
+    // Pazartesi = index 0; 09:00 sütunu (ilk)
+    expect(stats.heatmap.grid[0]?.[0]).toBe(1)
+  })
+
+  it('boş listede ısı haritası boş', () => {
+    const stats = computeOwnerStats([], TODAY)
+    expect(stats.heatmap.hours).toEqual([])
+    expect(stats.heatmap.max).toBe(0)
+  })
 })

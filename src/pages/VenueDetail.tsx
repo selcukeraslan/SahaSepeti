@@ -18,6 +18,7 @@ import { ReservationDialog } from '@/features/reservations/components/Reservatio
 import { FavoriteButton } from '@/features/favorites/components/FavoriteButton'
 import { ReviewList } from '@/features/reviews/components/ReviewList'
 import { useVenueReviews } from '@/features/reviews/hooks/useReviews'
+import { useAuth } from '@/features/auth/hooks/useAuth'
 import { summarizeReviews } from '@/features/reviews/services/reviews.service'
 import { formatTime } from '@/lib/format'
 import { cn } from '@/lib/utils'
@@ -29,6 +30,7 @@ const DAY_ORDER = [1, 2, 3, 4, 5, 6, 0]
 
 export function VenueDetail() {
   const { slug } = useParams<{ slug: string }>()
+  const { user } = useAuth()
   const [searchParams] = useSearchParams()
   const { data: venue, isLoading } = useVenue(slug)
 
@@ -276,7 +278,11 @@ export function VenueDetail() {
                 )}
               </h2>
               {reviews && reviews.length > 0 ? (
-                <ReviewList reviews={reviews} />
+                <ReviewList
+                  reviews={reviews}
+                  venueId={venue.id}
+                  canReply={user?.id === venue.owner_id}
+                />
               ) : (
                 <p className="mt-2 text-sm text-slate-500 dark:text-ink-400">
                   Bu tesis için henüz değerlendirme yapılmamış.

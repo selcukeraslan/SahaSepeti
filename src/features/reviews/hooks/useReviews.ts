@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { listVenueReviews, upsertReview } from '../services/reviews.service'
+import { listVenueReviews, setReviewReply, upsertReview } from '../services/reviews.service'
 
 export function useVenueReviews(venueId: string | undefined) {
   return useQuery({
@@ -18,6 +18,18 @@ export function useUpsertReview() {
       void queryClient.invalidateQueries({ queryKey: ['venue-reviews', review.venue_id] })
       void queryClient.invalidateQueries({ queryKey: ['venues'] })
       void queryClient.invalidateQueries({ queryKey: ['favorite-venues'] })
+    },
+  })
+}
+
+/** Tesis sahibinin bir yoruma yanıtı — yalnızca ilgili tesisin yorumlarını tazeler. */
+export function useSetReviewReply(venueId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ reviewId, reply }: { reviewId: string; reply: string }) =>
+      setReviewReply(reviewId, reply),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['venue-reviews', venueId] })
     },
   })
 }
