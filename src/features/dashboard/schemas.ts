@@ -64,3 +64,35 @@ export const priceRuleSchema = z
   })
 
 export type PriceRuleInput = z.infer<typeof priceRuleSchema>
+
+// ---------- Owner araçları: manuel rezervasyon + saat bloklama ----------
+
+const dateRegex = /^\d{4}-\d{2}-\d{2}$/
+const timeRegex = /^\d{2}:\d{2}$/
+
+/** Owner'ın haritadan/kırpma... değil, takvimden eklediği misafir rezervasyonu. */
+export const manualReservationSchema = z.object({
+  venueId: uuid(),
+  courtId: uuid('Saha seçin'),
+  date: z.string().regex(dateRegex, 'Geçersiz tarih'),
+  startTime: z.string().regex(timeRegex, 'Saat seçin'),
+  endTime: z.string().regex(timeRegex, 'Saat seçin'),
+  guestName: z.string().min(2, 'Müşteri adını girin').max(80, 'Ad çok uzun'),
+  // Telefon owner'ın kendi iletişim notu; katı format dayatmayız (serbest ama kısa).
+  guestPhone: z.string().max(20, 'Telefon çok uzun').optional().or(z.literal('')),
+  notes: z.string().max(500, 'Not en fazla 500 karakter olabilir').optional().or(z.literal('')),
+})
+
+export type ManualReservationInput = z.infer<typeof manualReservationSchema>
+
+/** Owner'ın bir slotu bakım/özel için rezervasyona kapatması. */
+export const blockSlotSchema = z.object({
+  venueId: uuid(),
+  courtId: uuid('Saha seçin'),
+  date: z.string().regex(dateRegex, 'Geçersiz tarih'),
+  startTime: z.string().regex(timeRegex, 'Saat seçin'),
+  endTime: z.string().regex(timeRegex, 'Saat seçin'),
+  reason: z.string().max(200, 'Açıklama çok uzun').optional().or(z.literal('')),
+})
+
+export type BlockSlotInput = z.infer<typeof blockSlotSchema>

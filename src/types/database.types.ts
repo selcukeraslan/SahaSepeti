@@ -330,7 +330,7 @@ export interface Database {
           id: string
           court_id: string
           venue_id: string
-          customer_id: string
+          customer_id: string | null
           reservation_date: string
           start_time: string
           end_time: string
@@ -340,14 +340,19 @@ export interface Database {
           notes: string | null
           cancelled_at: string | null
           cancellation_reason: string | null
+          is_block: boolean
+          no_show: boolean
+          guest_name: string | null
+          guest_phone: string | null
+          created_by: string | null
           created_at: string
           updated_at: string
         }
         Insert: {
           id?: string
           court_id: string
-          venue_id: string
-          customer_id: string
+          venue_id?: string
+          customer_id?: string | null
           reservation_date: string
           start_time: string
           end_time: string
@@ -357,6 +362,11 @@ export interface Database {
           notes?: string | null
           cancelled_at?: string | null
           cancellation_reason?: string | null
+          is_block?: boolean
+          no_show?: boolean
+          guest_name?: string | null
+          guest_phone?: string | null
+          created_by?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -364,7 +374,7 @@ export interface Database {
           id?: string
           court_id?: string
           venue_id?: string
-          customer_id?: string
+          customer_id?: string | null
           reservation_date?: string
           start_time?: string
           end_time?: string
@@ -374,6 +384,11 @@ export interface Database {
           notes?: string | null
           cancelled_at?: string | null
           cancellation_reason?: string | null
+          is_block?: boolean
+          no_show?: boolean
+          guest_name?: string | null
+          guest_phone?: string | null
+          created_by?: string | null
           created_at?: string
           updated_at?: string
         }

@@ -9,6 +9,7 @@ import { useToast } from '@/components/ui/useToast'
 import {
   useMyVenues,
   useOwnerReservations,
+  useScheduleMutations,
   useUpdateReservationStatus,
 } from '@/features/dashboard/hooks/useDashboard'
 import {
@@ -30,6 +31,7 @@ export function DashboardReservations() {
     date: date || undefined,
   })
   const updateStatus = useUpdateReservationStatus()
+  const { setNoShow } = useScheduleMutations()
   const { toast } = useToast()
 
   const handleStatusChange = (reservationId: string, nextStatus: ReservationStatus) => {
@@ -41,6 +43,19 @@ export function DashboardReservations() {
       },
     )
   }
+
+  const handleNoShow = (reservationId: string, value: boolean) => {
+    setNoShow.mutate(
+      { reservationId, value },
+      {
+        onSuccess: () => toast(value ? 'No-show işaretlendi' : 'No-show kaldırıldı', 'success'),
+        onError: (error) => toast(error.message, 'error'),
+      },
+    )
+  }
+
+  // Blok (bakım) kayıtları burada listelenmez; onlar takvimde yönetilir.
+  const visible = reservations?.filter((reservation) => !reservation.is_block)
 
   return (
     <div>
@@ -79,14 +94,14 @@ export function DashboardReservations() {
         {isLoading &&
           Array.from({ length: 4 }, (_, index) => <Skeleton key={index} className="h-24" />)}
 
-        {reservations && reservations.length === 0 && (
+        {visible && visible.length === 0 && (
           <EmptyState
             title="Rezervasyon bulunamadı"
             description="Seçili filtrelere uyan rezervasyon yok."
           />
         )}
 
-        {reservations?.map((reservation) => (
+        {visible?.map((reservation) => (
           <div
             key={reservation.id}
             className="flex flex-col gap-3 rounded-2xl border border-slate-200 dark:border-ink-800 bg-white dark:bg-ink-900 p-4 shadow-soft sm:flex-row sm:items-center"
@@ -100,14 +115,20 @@ export function DashboardReservations() {
                   {formatPrice(reservation.total_price)}
                 </span>
               </div>
-              <p className="mt-1.5 font-semibold text-slate-900 dark:text-ink-50">
-                {reservation.customer?.full_name || 'Müşteri'}
-                {reservation.customer?.phone && (
-                  <span className="ml-2 font-normal text-slate-500 dark:text-ink-400">
-                    {reservation.customer.phone}
+              <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1">
+                <span className="font-semibold text-slate-900 dark:text-ink-50">
+                  {reservation.customer?.full_name || reservation.guest_name || 'Müşteri'}
+                </span>
+                {(reservation.customer?.phone || reservation.guest_phone) && (
+                  <span className="font-normal text-slate-500 dark:text-ink-400">
+                    {reservation.customer?.phone || reservation.guest_phone}
                   </span>
                 )}
-              </p>
+                {!reservation.customer && reservation.guest_name && (
+                  <Badge variant="info">Manuel</Badge>
+                )}
+                {reservation.no_show && <Badge variant="danger">Gelmedi</Badge>}
+              </div>
               <p className="text-sm text-slate-500 dark:text-ink-400">
                 {reservation.venue?.name} · {reservation.court?.name} ·{' '}
                 {formatDateShort(reservation.reservation_date)} ·{' '}
@@ -149,6 +170,13 @@ export function DashboardReservations() {
                     onClick={() => handleStatusChange(reservation.id, 'completed')}
                   >
                     Tamamlandı
+                  </Button>
+                  <Button
+                    variant={reservation.no_show ? 'outline' : 'ghost'}
+                    size="sm"
+                    onClick={() => handleNoShow(reservation.id, !reservation.no_show)}
+                  >
+                    {reservation.no_show ? "No-show'u kaldır" : 'Gelmedi'}
                   </Button>
                   <Button
                     variant="outline"

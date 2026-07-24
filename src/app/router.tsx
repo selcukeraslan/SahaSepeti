@@ -16,6 +16,7 @@ import { DashboardVenues } from '@/pages/dashboard/DashboardVenues'
 import { VenueCreate } from '@/pages/dashboard/VenueCreate'
 import { VenueManage } from '@/pages/dashboard/VenueManage'
 import { DashboardReservations } from '@/pages/dashboard/DashboardReservations'
+import { DashboardCalendar } from '@/pages/dashboard/DashboardCalendar'
 import { DashboardStats } from '@/pages/dashboard/DashboardStats'
 import { AdminLayout } from '@/pages/admin/AdminLayout'
 import { AdminVenueQueue } from '@/pages/admin/AdminVenueQueue'
@@ -49,6 +50,7 @@ export const router = createBrowserRouter([
             element: <DashboardLayout />,
             children: [
               { index: true, element: <DashboardHome /> },
+              { path: 'takvim', element: <DashboardCalendar /> },
               { path: 'tesisler', element: <DashboardVenues /> },
               { path: 'tesisler/yeni', element: <VenueCreate /> },
               { path: 'tesisler/:id', element: <VenueManage /> },
