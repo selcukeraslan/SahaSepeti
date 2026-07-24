@@ -13,6 +13,10 @@ import {
   setCoverImage,
   uploadVenueImage,
 } from '../services/images.service'
+import { ImageCropDialog } from './ImageCropDialog'
+
+/** Kırpma öncesi orijinal dosya üst sınırı (kırpılan çıktı zaten küçülür) */
+const MAX_ORIGINAL_BYTES = 15 * 1024 * 1024
 
 export function ImageManager({
   venueId,
@@ -25,6 +29,10 @@ export function ImageManager({
   const { toast } = useToast()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isUploading, setIsUploading] = useState(false)
+  // Kırpma kuyruğu: seçilen dosyalar sırayla kırpılıp yüklenir
+  const [cropQueue, setCropQueue] = useState<File[]>([])
+  const [batchTotal, setBatchTotal] = useState(0)
+  const uploadedInBatch = useRef(0)
 
   const { data: images, isLoading } = useQuery({
     queryKey: ['venue-images', venueId],
@@ -54,26 +62,57 @@ export function ImageManager({
     onError: (error) => toast(error.message, 'error'),
   })
 
-  const handleFiles = async (files: FileList | null) => {
+  /** Dosya seçimi: kuyruk oluştur — her dosya sırayla kırpma editöründen geçer. */
+  const handleFiles = (files: FileList | null) => {
     if (!files || files.length === 0) return
-    setIsUploading(true)
-    // Kapak yoksa, bu partideki İLK yüklenen görsel kapak olur (döngü öncesi sabitlenir).
-    let needsCover = !coverImageUrl && (images?.length ?? 0) === 0
-    try {
-      for (const file of Array.from(files)) {
-        const image = await uploadVenueImage(venueId, file)
-        if (needsCover) {
-          await setCoverImage(venueId, image.url)
-          needsCover = false
-        }
+    const accepted: File[] = []
+    for (const file of Array.from(files)) {
+      if (file.size > MAX_ORIGINAL_BYTES) {
+        toast(`${file.name}: dosya çok büyük (en fazla 15MB)`, 'error')
+        continue
       }
+      accepted.push(file)
+    }
+    if (accepted.length === 0) return
+    uploadedInBatch.current = 0
+    setBatchTotal(accepted.length)
+    setCropQueue(accepted)
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
+
+  /** Kuyruğu bir adım ilerlet; bittiyse özet toast göster. */
+  const advanceQueue = () => {
+    setCropQueue((queue) => {
+      const next = queue.slice(1)
+      if (next.length === 0 && uploadedInBatch.current > 0) {
+        toast(
+          uploadedInBatch.current === 1
+            ? 'Görsel yüklendi'
+            : `${uploadedInBatch.current} görsel yüklendi`,
+          'success',
+        )
+      }
+      return next
+    })
+  }
+
+  /** Kırpılan görseli yükle; ilk görselse kapak yap. */
+  const handleCropped = async (blob: Blob) => {
+    setIsUploading(true)
+    try {
+      const file = new File([blob], 'gorsel.jpg', { type: 'image/jpeg' })
+      const image = await uploadVenueImage(venueId, file)
+      // Tesiste hiç görsel/kapak yoksa ilk yüklenen kapak olur
+      if (!coverImageUrl && (images?.length ?? 0) === 0 && uploadedInBatch.current === 0) {
+        await setCoverImage(venueId, image.url)
+      }
+      uploadedInBatch.current += 1
       invalidate()
-      toast('Görseller yüklendi', 'success')
+      advanceQueue()
     } catch (error) {
       toast(error instanceof Error ? error.message : 'Yükleme başarısız', 'error')
     } finally {
       setIsUploading(false)
-      if (fileInputRef.current) fileInputRef.current.value = ''
     }
   }
 
@@ -81,7 +120,8 @@ export function ImageManager({
     <div>
       <div className="flex items-center justify-between gap-4">
         <p className="text-sm text-slate-500 dark:text-ink-400">
-          JPG, PNG veya WebP — en fazla 2MB. Yıldıza tıklayarak kapak görseli seçin.
+          JPG, PNG veya WebP. Yüklemeden önce görseli istediğiniz gibi kırpıp
+          konumlandırabilirsiniz. Yıldıza tıklayarak kapak görseli seçin.
         </p>
         <Button size="sm" isLoading={isUploading} onClick={() => fileInputRef.current?.click()}>
           <ImagePlus className="size-4" aria-hidden />
@@ -162,6 +202,18 @@ export function ImageManager({
           </div>
         )}
       </div>
+
+      {/* Kırpma editörü — kuyruktaki ilk dosya */}
+      {cropQueue[0] && (
+        <ImageCropDialog
+          key={`${cropQueue[0].name}-${cropQueue.length}`}
+          file={cropQueue[0]}
+          queuePosition={{ current: batchTotal - cropQueue.length + 1, total: batchTotal }}
+          isUploading={isUploading}
+          onCancel={advanceQueue}
+          onCropped={(blob) => void handleCropped(blob)}
+        />
+      )}
     </div>
   )
 }

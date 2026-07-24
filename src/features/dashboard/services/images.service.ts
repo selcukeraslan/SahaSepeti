@@ -32,12 +32,22 @@ export async function uploadVenueImage(venueId: string, file: File): Promise<Ven
 
   const { data: publicUrl } = supabase.storage.from(BUCKET).getPublicUrl(storagePath)
 
+  // Yükleme sırası korunur: yeni görsel en yüksek sort_order + 1 alır.
+  const { data: last } = await supabase
+    .from('venue_images')
+    .select('sort_order')
+    .eq('venue_id', venueId)
+    .order('sort_order', { ascending: false })
+    .limit(1)
+  const nextSortOrder = (last?.[0]?.sort_order ?? -1) + 1
+
   const { data: image, error: insertError } = await supabase
     .from('venue_images')
     .insert({
       venue_id: venueId,
       storage_path: storagePath,
       url: publicUrl.publicUrl,
+      sort_order: nextSortOrder,
     })
     .select()
     .single()
