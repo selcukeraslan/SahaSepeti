@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom'
-import { Building2, CalendarDays, LayoutDashboard } from 'lucide-react'
+import { BarChart3, Building2, CalendarDays, LayoutDashboard } from 'lucide-react'
 import { Container } from '@/components/layout/Container'
 import { cn } from '@/lib/utils'
 
@@ -7,6 +7,7 @@ const NAV_ITEMS = [
   { to: '/panel', label: 'Genel Bakış', icon: LayoutDashboard, end: true },
   { to: '/panel/tesisler', label: 'Tesislerim', icon: Building2, end: false },
   { to: '/panel/rezervasyonlar', label: 'Rezervasyonlar', icon: CalendarDays, end: false },
+  { to: '/panel/istatistik', label: 'İstatistik', icon: BarChart3, end: false },
 ]
 
 export function DashboardLayout() {

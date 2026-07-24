@@ -20,6 +20,7 @@ import {
   type PriceRuleInput,
   type VenueInput,
 } from '../schemas'
+import type { StatsReservation } from './stats'
 
 // ---------- Tesisler ----------
 
@@ -295,6 +296,24 @@ export async function listOwnerReservations(
     }
     return { ...reservation, court: courts, venue: venues, customer: profiles }
   })
+}
+
+/**
+ * İstatistik için minimal alanlar. RLS, owner'a yalnızca kendi tesislerinin
+ * rezervasyonlarını döndürür; venueId verilirse tek tesise daraltılır.
+ */
+export async function listOwnerReservationsForStats(venueId?: string): Promise<StatsReservation[]> {
+  let query = supabase
+    .from('reservations')
+    .select('reservation_date, start_time, status, total_price, venue_id')
+    .order('reservation_date', { ascending: false })
+    .limit(2000)
+
+  if (venueId) query = query.eq('venue_id', venueId)
+
+  const { data, error } = await query
+  if (error) throw new Error('İstatistik verisi yüklenemedi')
+  return data
 }
 
 export async function updateReservationStatus(
