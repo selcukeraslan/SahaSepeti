@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+# Panel ve admin arayüzleri indekslenmez (kimlik doğrulama gerektirir)
+Disallow: /panel
+Disallow: /admin
+Disallow: /giris
+Disallow: /kayit
+
+Sitemap: /sitemap.xml

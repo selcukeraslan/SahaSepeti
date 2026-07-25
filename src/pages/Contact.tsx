@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Clock, Mail, MapPin, Phone, Send } from 'lucide-react'
+import { Seo } from '@/components/Seo'
 import { Container } from '@/components/layout/Container'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -30,6 +31,11 @@ export function Contact() {
 
   return (
     <Container className="py-12 sm:py-16">
+      <Seo
+        title="İletişim"
+        description="SahaSepeti ile iletişime geçin — sorularınız, tesis ekleme talepleriniz ve destek için."
+        canonicalPath="/iletisim"
+      />
       <div className="mx-auto max-w-2xl text-center">
         <h1 className="text-3xl font-bold text-slate-900 dark:text-ink-50 sm:text-4xl">İletişim</h1>
         <p className="mt-3 text-slate-500 dark:text-ink-400">

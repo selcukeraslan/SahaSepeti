@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { CalendarCheck2, MapPinned, Search, Trophy } from 'lucide-react'
+import { Seo } from '@/components/Seo'
 import { Container } from '@/components/layout/Container'
 import { Button } from '@/components/ui/Button'
 import { Skeleton } from '@/components/ui/Skeleton'
@@ -15,6 +16,7 @@ export function Landing() {
 
   return (
     <>
+      <Seo title="SahaSepeti — Spor Tesisi Rezervasyonu" canonicalPath="/" />
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary-900 via-primary-800 to-primary-700 pb-20 pt-16 sm:pb-28 sm:pt-24">
         <div

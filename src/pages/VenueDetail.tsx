@@ -3,6 +3,7 @@ import { useParams, useSearchParams } from 'react-router-dom'
 import { Check, ImageOff, Images, MapPin, Navigation, Phone } from 'lucide-react'
 import { MapContainer, Marker, TileLayer } from 'react-leaflet'
 import { venuePinIcon } from '@/lib/map'
+import { Seo } from '@/components/Seo'
 import { Container } from '@/components/layout/Container'
 import { Lightbox } from '@/components/ui/Lightbox'
 import { Badge } from '@/components/ui/Badge'
@@ -79,8 +80,53 @@ export function VenueDetail() {
       .map((image, index) => ({ url: image.url, alt: `${venue.name} görsel ${index + 2}` })),
   ]
 
+  // SEO: açıklama + schema.org yapılandırılmış veri
+  const seoDescription = (
+    venue.description?.trim() ||
+    `${venue.name} — ${venue.district}, ${venue.city}. Sporları, olanakları ve müsait saatleri gör, online rezervasyon yap.`
+  ).slice(0, 160)
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'SportsActivityLocation',
+    name: venue.name,
+    ...(venue.description ? { description: venue.description } : {}),
+    ...(venue.cover_image_url ? { image: venue.cover_image_url } : {}),
+    ...(venue.phone ? { telephone: venue.phone } : {}),
+    address: {
+      '@type': 'PostalAddress',
+      ...(venue.address ? { streetAddress: venue.address } : {}),
+      addressLocality: venue.district,
+      addressRegion: venue.city,
+      addressCountry: 'TR',
+    },
+    ...(venue.latitude !== null && venue.longitude !== null
+      ? { geo: { '@type': 'GeoCoordinates', latitude: venue.latitude, longitude: venue.longitude } }
+      : {}),
+    ...(ratingSummary.count > 0
+      ? {
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: ratingSummary.average.toFixed(1),
+            reviewCount: ratingSummary.count,
+          },
+        }
+      : {}),
+  }
+
   return (
     <>
+      <Seo
+        title={venue.name}
+        description={seoDescription}
+        image={venue.cover_image_url}
+        canonicalPath={`/tesis/${venue.slug}`}
+        type="article"
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Galeri — sabit yükseklik + object-cover: farklı oranlı fotoğraflar taşmaz */}
       <section className="bg-ink-900">
         <Container className="py-0">

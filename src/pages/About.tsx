@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { CalendarCheck2, Clock, Search, ShieldCheck, Target, Users } from 'lucide-react'
+import { Seo } from '@/components/Seo'
 import { Container } from '@/components/layout/Container'
 import { Button } from '@/components/ui/Button'
 
@@ -35,6 +36,11 @@ const STATS = [
 export function About() {
   return (
     <>
+      <Seo
+        title="Biz Kimiz"
+        description="SahaSepeti; spor tesisi rezervasyonunu kolaylaştıran, tesisleri ve sporcuları buluşturan Türkiye merkezli bir platformdur."
+        canonicalPath="/hakkimizda"
+      />
       {/* Hero */}
       <section className="bg-gradient-to-br from-primary-900 via-primary-800 to-primary-700 py-16 sm:py-20">
         <Container>

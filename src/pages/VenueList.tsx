@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { List, LocateFixed, Map as MapIcon, SlidersHorizontal } from 'lucide-react'
+import { Seo } from '@/components/Seo'
 import { Container } from '@/components/layout/Container'
 import { Button } from '@/components/ui/Button'
 import { Select } from '@/components/ui/Select'
@@ -148,8 +149,15 @@ export function VenueList() {
     )
   }
 
+  const listTitle = filters.city ? `${filters.city} Spor Tesisleri` : 'Spor Tesisleri'
+
   return (
     <Container className="py-8 sm:py-10">
+      <Seo
+        title={listTitle}
+        description={`${filters.city ?? "Türkiye'de"} spor tesislerini keşfet, müsait saatleri gör ve online rezervasyon yap.`}
+        canonicalPath="/tesisler"
+      />
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-ink-50 sm:text-3xl">Spor Tesisleri</h1>
