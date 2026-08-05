@@ -2,8 +2,10 @@ import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Search } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
+import { DatePicker } from '@/components/ui/DatePicker'
 import { Select } from '@/components/ui/Select'
 import { ALL_CITY_NAMES, getDistricts } from '@/config/cities'
+import { sortSportsByPriority } from '@/config/sports'
 import { nowInIstanbul } from '../services/slots'
 import { useSports } from '../hooks/useSports'
 
@@ -31,19 +33,24 @@ export function VenueSearchBox() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="grid gap-3 rounded-2xl border border-slate-200 dark:border-ink-800 bg-white dark:bg-ink-900 p-4 shadow-soft-lg sm:grid-cols-2 lg:grid-cols-5"
+      className="grid gap-3 rounded-3xl border border-slate-200 bg-white p-5 shadow-soft-lg dark:border-ink-800 dark:bg-ink-900 sm:grid-cols-2 lg:grid-cols-5"
     >
       <Select
         aria-label="Spor türü"
         placeholder="Spor türü"
         value={sport}
         onChange={(event) => setSport(event.target.value)}
-        options={(sports ?? []).map((item) => ({ value: item.slug, label: item.name }))}
+        className="h-12 text-base"
+        options={sortSportsByPriority(sports ?? []).map((item) => ({
+          value: item.slug,
+          label: item.name,
+        }))}
       />
       <Select
         aria-label="İl"
         placeholder="İl seçin"
         value={city}
+        className="h-12 text-base"
         onChange={(event) => {
           setCity(event.target.value)
           setDistrict('')
@@ -54,19 +61,17 @@ export function VenueSearchBox() {
         aria-label="İlçe"
         placeholder={districts.length > 0 ? 'İlçe seçin' : 'Önce il seçin'}
         value={district}
+        className="h-12 text-base"
         disabled={districts.length === 0}
         onChange={(event) => setDistrict(event.target.value)}
         options={districts.map((name) => ({ value: name, label: name }))}
       />
-      <input
-        type="date"
-        aria-label="Tarih"
+      <DatePicker
         value={date}
         min={nowInIstanbul().date}
-        onChange={(event) => setDate(event.target.value)}
-        className="h-11 rounded-xl border border-slate-300 dark:border-ink-700 bg-white dark:bg-ink-900 px-3.5 text-sm text-slate-900 dark:text-ink-50 transition-colors hover:border-slate-400 dark:hover:border-ink-600 focus:outline-2 focus:outline-offset--1 focus:outline-primary-600"
+        onChange={setDate}
       />
-      <Button type="submit" size="md" className="w-full">
+      <Button type="submit" size="lg" className="w-full">
         <Search className="size-4" aria-hidden />
         Saha Bul
       </Button>

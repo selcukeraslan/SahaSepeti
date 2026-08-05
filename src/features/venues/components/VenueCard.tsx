@@ -12,15 +12,21 @@ import type { VenueListItem } from '../types'
 export function VenueCard({
   venue,
   distanceKm,
+  selectedDate,
 }: {
   venue: VenueListItem
   /** Kullanıcı konumuna uzaklık (km); "Yakınımdakiler" aktifken gösterilir */
   distanceKm?: number | null
+  /** Liste filtresinden detay sayfasına taşınan yyyy-MM-dd tarihi. */
+  selectedDate?: string
 }) {
   const today = nowInIstanbul().date
+  const detailUrl = selectedDate
+    ? `/tesis/${venue.slug}?date=${encodeURIComponent(selectedDate)}`
+    : `/tesis/${venue.slug}`
   return (
     <Link
-      to={`/tesis/${venue.slug}`}
+      to={detailUrl}
       className="group overflow-hidden rounded-2xl border border-slate-200 dark:border-ink-800 bg-white dark:bg-ink-900 shadow-soft transition-shadow hover:shadow-soft-lg"
     >
       <div className="relative aspect-[3/2] overflow-hidden bg-slate-100 dark:bg-ink-800">

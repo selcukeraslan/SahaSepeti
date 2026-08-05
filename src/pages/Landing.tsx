@@ -8,7 +8,7 @@ import { VenueSearchBox } from '@/features/venues/components/VenueSearchBox'
 import { VenueCard } from '@/features/venues/components/VenueCard'
 import { useSports } from '@/features/venues/hooks/useSports'
 import { useVenues } from '@/features/venues/hooks/useVenues'
-import { getSportIcon } from '@/config/sports'
+import { getSportIcon, sortSportsByPriority } from '@/config/sports'
 
 export function Landing() {
   const { data: sports, isLoading: sportsLoading } = useSports()
@@ -54,7 +54,7 @@ export function Landing() {
               Array.from({ length: 7 }, (_, index) => (
                 <Skeleton key={index} className="h-24" />
               ))}
-            {sports?.map((sport) => {
+            {sortSportsByPriority(sports ?? []).map((sport) => {
               const Icon = getSportIcon(sport.slug)
               return (
                 <Link

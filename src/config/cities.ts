@@ -107,10 +107,17 @@ export const OTHER_CITY_NAMES: string[] = [
   'Tunceli', 'Uşak', 'Van', 'Yalova', 'Yozgat', 'Zonguldak',
 ]
 
+const CITY_PRIORITY = ['İstanbul', 'Ankara', 'İzmir'] as const
+
+const cityNames = [...FEATURED_CITIES.map((city) => city.name), ...OTHER_CITY_NAMES]
+
+/** İstanbul, Ankara ve İzmir önde; kalan iller Türkçe alfabetik sırada. */
 export const ALL_CITY_NAMES: string[] = [
-  ...FEATURED_CITIES.map((c) => c.name),
-  ...OTHER_CITY_NAMES,
-].sort((a, b) => a.localeCompare(b, 'tr'))
+  ...CITY_PRIORITY,
+  ...cityNames
+    .filter((name) => !CITY_PRIORITY.includes(name as (typeof CITY_PRIORITY)[number]))
+    .sort((left, right) => left.localeCompare(right, 'tr')),
+]
 
 export function getDistricts(cityName: string): string[] {
   return FEATURED_CITIES.find((c) => c.name === cityName)?.districts ?? []
