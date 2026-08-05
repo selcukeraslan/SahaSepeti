@@ -578,6 +578,14 @@ export interface Database {
           reviewer_name: string
         }[]
       }
+      get_venue_rating_summaries: {
+        Args: { p_venue_ids: string[] }
+        Returns: {
+          venue_id: string
+          avg_rating: number
+          review_count: number
+        }[]
+      }
     }
     Enums: {
       user_role: 'customer' | 'venue_owner' | 'admin'

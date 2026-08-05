@@ -1,5 +1,9 @@
 import { supabase } from '@/lib/supabase'
-import { mapVenueListRow, type VenueListRow } from '@/features/venues/services/venues.service'
+import {
+  getVenueRatingSummaries,
+  mapVenueListRow,
+  type VenueListRow,
+} from '@/features/venues/services/venues.service'
 import type { VenueListItem } from '@/features/venues/types'
 
 /** Zaten favoride (PK ihlali) — sessizce yok say */
@@ -24,8 +28,7 @@ export async function listFavoriteVenues(): Promise<VenueListItem[]> {
     .select(
       `venue:venues(*,
          venue_sports(sports(*)),
-         courts(price_rules(price)),
-         reviews(rating))`,
+         courts(price_rules(price)))`,
     )
     .order('created_at', { ascending: false })
     .returns<FavoriteVenueRow[]>()
@@ -35,10 +38,11 @@ export async function listFavoriteVenues(): Promise<VenueListItem[]> {
   }
 
   // Onaylı olmayan/gizlenen (RLS) tesisler null döner → ayıklanır
-  return data
+  const venues = data
     .map((row) => row.venue)
     .filter((venue): venue is VenueListRow => venue !== null)
-    .map(mapVenueListRow)
+  const ratings = await getVenueRatingSummaries(venues.map((venue) => venue.id))
+  return venues.map((venue) => mapVenueListRow(venue, ratings.get(venue.id)))
 }
 
 export async function addFavorite(venueId: string): Promise<void> {

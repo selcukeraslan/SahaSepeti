@@ -12,6 +12,9 @@ Türkiye için modern spor tesisi rezervasyon platformu. Halı saha, basketbol, 
 - ✅ Admin paneli: tesis onay kuyruğu, askıya alma, rezervasyon görünümü
 - 🖼️ Supabase Storage ile görsel yükleme
 - 🔒 Tüm tablolarda Row Level Security
+- ❤️ Favoriler ve tamamlanmış rezervasyona bağlı puan/yorum sistemi
+- 🗺️ Harita görünümü, yakındaki tesisler ve rezervasyonu takvime ekleme/paylaşma
+- 📊 Owner istatistikleri, günlük takvim, manuel rezervasyon, saat bloklama ve no-show
 
 ## Teknoloji
 
@@ -33,6 +36,10 @@ npm install
    - `supabase/migrations/002_functions_triggers.sql`
    - `supabase/migrations/003_rls.sql`
    - `supabase/migrations/004_storage.sql`
+   - `supabase/migrations/005_remove_padel_squash.sql`
+   - `supabase/migrations/006_reviews_public_read.sql`
+   - `supabase/migrations/007_owner_tools.sql`
+   - `supabase/migrations/008_security_hardening.sql`
 3. Seed verisini yükleyin: `supabase/seed.sql`
    - Üretimde yalnızca **Sporlar** bölümünü çalıştırın; demo kullanıcılar/tesisler sadece geliştirme içindir.
 
@@ -75,6 +82,7 @@ npm run build        # üretim derlemesi (tsc + vite)
 npm run typecheck    # tip kontrolü
 npm run lint         # oxlint
 npm test             # vitest (slot üretim motoru testleri)
+npm run test:db      # yerel Supabase üzerinde RLS/trigger güvenlik sözleşmesi
 ```
 
 ## Proje yapısı
@@ -103,7 +111,7 @@ Detaylı yol haritası için [TODO.md](TODO.md), geliştirme kuralları için [C
 ## Bilinen kapsam sınırları (MVP)
 
 - Online ödeme yok — `payments` tablosu placeholder (iyzico/PayTR için hazır)
-- Yorum ve favoriler şemada hazır, UI'da henüz yok
-- Bildirim (e-posta/SMS) yok
+- E-posta bildirim altyapısı hazır; genel gönderim Resend alan adı doğrulamasını bekliyor
+- SMS/push bildirimi yok
 
 Yol haritasının tamamı: [TODO.md → Phase 11](TODO.md)

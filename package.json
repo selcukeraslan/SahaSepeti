@@ -11,7 +11,8 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:db": "SUPABASE_TELEMETRY_DISABLED=1 supabase test db --local supabase/tests"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.2.8",

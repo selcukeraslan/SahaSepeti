@@ -21,6 +21,7 @@ import { ReviewList } from '@/features/reviews/components/ReviewList'
 import { useVenueReviews } from '@/features/reviews/hooks/useReviews'
 import { summarizeReviews } from '@/features/reviews/services/reviews.service'
 import { formatTime } from '@/lib/format'
+import { serializeJsonLd } from '@/lib/security'
 import { cn } from '@/lib/utils'
 import { NotFound } from '@/pages/NotFound'
 
@@ -125,7 +126,7 @@ export function VenueDetail() {
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
       />
       {/* Galeri — sabit yükseklik + object-cover: farklı oranlı fotoğraflar taşmaz */}
       <section className="bg-ink-900">

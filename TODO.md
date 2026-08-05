@@ -246,6 +246,14 @@ VITE_SUPABASE_ANON_KEY=
 - Gerçek ödeme: iyzico/PayTR (kapora + tam ödeme), webhook ile `payments` güncelleme.
 - ✅ Yorum & puanlama (reviews aktifleştirme), favoriler. *(2026-07 — merge edildi)*
 - ✅ Owner istatistik ekranı (doluluk, ciro raporu, dönem filtresi). *(2026-07 — `owner-stats` PR)*
+- ✅ Güvenlik sertleştirmesi ve yayın performansı. *(2026-08 — `security-hardening`)*
+  - JSON-LD stored-XSS koruması ve e-posta HTML kaçışlama eklendi.
+  - Ham yorum tablosunun public erişimi kapatıldı; maskeli yorum ve toplu puan RPC'leri kullanılıyor.
+  - Rezervasyon insert trigger'ı çalışma saati, 1 saatlik slot, slot hizası ve fiyatı doğruluyor.
+  - İstemci kontrollü rezervasyon alanları sunucuda normalize ediliyor.
+  - Owner/customer durum geçişleri ve no-show zamanı DB durum makinesiyle korunuyor.
+  - pgTAP güvenlik sözleşmesi testleri ve JSON-LD birim testleri eklendi.
+  - Route bazlı code splitting uygulandı; README ve yol haritası güncellendi.
 - ⏸️ Bildirimler: e-posta (rezervasyon onayı/hatırlatma), ileride SMS/push.
   - **Durum (Temmuz 2026): RAFA KALDIRILDI — geliştirmeye sonradan devam edilecek.**
   - Altyapı hazır: `supabase/functions/notify-reservation` (Resend), secret'lar ayarlı,
@@ -254,9 +262,8 @@ VITE_SUPABASE_ANON_KEY=
     **Alan adı alınıp Resend'de doğrulanınca** `NOTIFY_FROM_EMAIL` güncellenecek ve
     tüm tesis sahiplerine gönderim açılacak (detay: fonksiyonun README'si).
   - Not: Sohbette görünen Resend API anahtarı aktivasyondan önce yenilenmeli.
-- Harita görünümü (leaflet) + konuma göre "yakınımdaki tesisler".
+- ✅ Harita görünümü (leaflet) + konuma göre "yakınımdaki tesisler". *(2026-07 — merge edildi)*
 - Tekrarlayan rezervasyon (her salı 20:00), kapora iade kuralları.
-- Owner istatistik ekranı (doluluk, gelir raporu).
 - Çoklu dil (EN), SEO/SSR ihtiyacı doğarsa Next.js değerlendirmesi.
 - Mobil uygulama (React Native / Expo).
 
@@ -266,8 +273,8 @@ VITE_SUPABASE_ANON_KEY=
 Etiketler: 🟢 küçük (1 oturum) · 🟡 orta (1-2 gün) · 🔴 büyük (çok oturum).
 
 #### Müşteri deneyimi
-- 🟢 **Takvime ekle:** rezervasyon onayında ICS dosyası + Google Calendar linki — hızlı kazanım.
-- 🟢 **Rezervasyon paylaşımı:** "Maça geliyor musun?" — WhatsApp/kopyalanabilir davet linki.
+- ✅ **Takvime ekle:** rezervasyon onayında ICS dosyası + Google Calendar linki. *(2026-07)*
+- ✅ **Rezervasyon paylaşımı:** Web Share API + kopyalanabilir davet metni. *(2026-07)*
 - 🟡 **Gelişmiş filtreler:** olanaklara göre (duş, otopark...), kapalı/açık saha, seçilen tarih-saatte müsait tesis filtresi.
 - 🟡 **Boş saat alarmı (bekleme listesi):** dolu slot iptal olunca ilgilenen müşteriye bildirim.
 - 🟡 **Yoruma tesis sahibi yanıtı** + yorum şikayet/moderasyon akışı.
@@ -277,16 +284,16 @@ Etiketler: 🟢 küçük (1 oturum) · 🟡 orta (1-2 gün) · 🔴 büyük (ço
 - 🔴 **Sadakat & kampanya:** promosyon kodu, X. rezervasyona indirim (ödeme entegrasyonuyla birlikte anlamlı).
 
 #### Tesis sahibi paneli
-- 🟡 **Takvim görünümü:** haftalık grid'de tüm sahaların rezervasyonları; boş hücreye tıkla → manuel rezervasyon (telefonla arayan müşteri için).
-- 🟢 **Saat bloklama:** bakım/özel etkinlik için slotu rezervasyona kapatma.
-- 🟢 **No-show takibi:** "gelmedi" işaretleme; müşteri geçmişinde no-show sayısı.
+- ✅ **Günlük takvim görünümü:** tüm sahaların slotları; boş hücreden manuel rezervasyon. *(2026-07)*
+- ✅ **Saat bloklama:** bakım/özel etkinlik için slotu rezervasyona kapatma. *(2026-07)*
+- ✅ **No-show takibi:** başlamış onaylı rezervasyonu "gelmedi" işaretleme. *(2026-08)*
 - 🟢 **Doluluk ısı haritası:** istatistik sayfasına gün × saat ısı haritası.
 - 🔴 **Personel hesapları:** tesise bağlı sınırlı yetkili alt kullanıcılar (rezervasyon onaylar, tesisi düzenleyemez).
 
 #### Platform / teknik
 - 🟡 **Uygulama içi bildirim merkezi:** header'da zil + okunmamış sayacı (e-posta ⏸️ domain bekliyor; bkz. Phase 11 notu).
 - 🟡 **PWA:** ana ekrana ekleme, temel offline, push bildirim altyapısına zemin.
-- 🟡 **SEO:** meta/OG etiketleri, sitemap, tesis sayfalarında yapılandırılmış veri (schema.org); SSR gerekirse Next.js değerlendirmesi.
+- ✅ **SEO temeli:** meta/OG etiketleri, sitemap ve güvenli schema.org JSON-LD. *(2026-08 — `seo`)*
 - 🟡 **KVKK araçları:** "hesabımı sil" (verilerle birlikte) ve "verilerimi indir" self-servis akışları.
 - 🟡 **Admin genişletme:** platform geneli istatistik, yorum moderasyon kuyruğu, denetim kaydı (audit log).
 - 🟢 **E-posta doğrulama & şifre sıfırlama** akışlarının cilalanması (Supabase şablonlarının Türkçeleştirilmesi).

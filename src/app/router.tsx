@@ -1,45 +1,46 @@
 import { createBrowserRouter } from 'react-router-dom'
 import { PageShell } from '@/components/layout/PageShell'
 import { RequireAuth, RequireRole } from '@/app/guards'
-import { Landing } from '@/pages/Landing'
-import { VenueList } from '@/pages/VenueList'
-import { VenueDetail } from '@/pages/VenueDetail'
-import { MyReservations } from '@/pages/MyReservations'
-import { Favorites } from '@/pages/Favorites'
-import { Login } from '@/pages/Login'
-import { Register } from '@/pages/Register'
-import { About } from '@/pages/About'
-import { Contact } from '@/pages/Contact'
-import { DashboardLayout } from '@/pages/dashboard/DashboardLayout'
-import { DashboardHome } from '@/pages/dashboard/DashboardHome'
-import { DashboardVenues } from '@/pages/dashboard/DashboardVenues'
-import { VenueCreate } from '@/pages/dashboard/VenueCreate'
-import { VenueManage } from '@/pages/dashboard/VenueManage'
-import { DashboardReservations } from '@/pages/dashboard/DashboardReservations'
-import { DashboardCalendar } from '@/pages/dashboard/DashboardCalendar'
-import { DashboardStats } from '@/pages/dashboard/DashboardStats'
-import { AdminLayout } from '@/pages/admin/AdminLayout'
-import { AdminVenueQueue } from '@/pages/admin/AdminVenueQueue'
-import { AdminVenues } from '@/pages/admin/AdminVenues'
-import { AdminReservations } from '@/pages/admin/AdminReservations'
-import { NotFound } from '@/pages/NotFound'
 
 export const router = createBrowserRouter([
   {
     element: <PageShell />,
     children: [
-      { path: '/', element: <Landing /> },
-      { path: '/tesisler', element: <VenueList /> },
-      { path: '/tesis/:slug', element: <VenueDetail /> },
-      { path: '/hakkimizda', element: <About /> },
-      { path: '/iletisim', element: <Contact /> },
-      { path: '/giris', element: <Login /> },
-      { path: '/kayit', element: <Register /> },
+      { path: '/', lazy: async () => ({ Component: (await import('@/pages/Landing')).Landing }) },
+      {
+        path: '/tesisler',
+        lazy: async () => ({ Component: (await import('@/pages/VenueList')).VenueList }),
+      },
+      {
+        path: '/tesis/:slug',
+        lazy: async () => ({ Component: (await import('@/pages/VenueDetail')).VenueDetail }),
+      },
+      {
+        path: '/hakkimizda',
+        lazy: async () => ({ Component: (await import('@/pages/About')).About }),
+      },
+      {
+        path: '/iletisim',
+        lazy: async () => ({ Component: (await import('@/pages/Contact')).Contact }),
+      },
+      { path: '/giris', lazy: async () => ({ Component: (await import('@/pages/Login')).Login }) },
+      {
+        path: '/kayit',
+        lazy: async () => ({ Component: (await import('@/pages/Register')).Register }),
+      },
       {
         element: <RequireAuth />,
         children: [
-          { path: '/rezervasyonlarim', element: <MyReservations /> },
-          { path: '/favorilerim', element: <Favorites /> },
+          {
+            path: '/rezervasyonlarim',
+            lazy: async () => ({
+              Component: (await import('@/pages/MyReservations')).MyReservations,
+            }),
+          },
+          {
+            path: '/favorilerim',
+            lazy: async () => ({ Component: (await import('@/pages/Favorites')).Favorites }),
+          },
         ],
       },
       {
@@ -47,15 +48,53 @@ export const router = createBrowserRouter([
         children: [
           {
             path: '/panel',
-            element: <DashboardLayout />,
+            lazy: async () => ({
+              Component: (await import('@/pages/dashboard/DashboardLayout')).DashboardLayout,
+            }),
             children: [
-              { index: true, element: <DashboardHome /> },
-              { path: 'takvim', element: <DashboardCalendar /> },
-              { path: 'tesisler', element: <DashboardVenues /> },
-              { path: 'tesisler/yeni', element: <VenueCreate /> },
-              { path: 'tesisler/:id', element: <VenueManage /> },
-              { path: 'rezervasyonlar', element: <DashboardReservations /> },
-              { path: 'istatistik', element: <DashboardStats /> },
+              {
+                index: true,
+                lazy: async () => ({
+                  Component: (await import('@/pages/dashboard/DashboardHome')).DashboardHome,
+                }),
+              },
+              {
+                path: 'takvim',
+                lazy: async () => ({
+                  Component: (await import('@/pages/dashboard/DashboardCalendar')).DashboardCalendar,
+                }),
+              },
+              {
+                path: 'tesisler',
+                lazy: async () => ({
+                  Component: (await import('@/pages/dashboard/DashboardVenues')).DashboardVenues,
+                }),
+              },
+              {
+                path: 'tesisler/yeni',
+                lazy: async () => ({
+                  Component: (await import('@/pages/dashboard/VenueCreate')).VenueCreate,
+                }),
+              },
+              {
+                path: 'tesisler/:id',
+                lazy: async () => ({
+                  Component: (await import('@/pages/dashboard/VenueManage')).VenueManage,
+                }),
+              },
+              {
+                path: 'rezervasyonlar',
+                lazy: async () => ({
+                  Component: (await import('@/pages/dashboard/DashboardReservations'))
+                    .DashboardReservations,
+                }),
+              },
+              {
+                path: 'istatistik',
+                lazy: async () => ({
+                  Component: (await import('@/pages/dashboard/DashboardStats')).DashboardStats,
+                }),
+              },
             ],
           },
         ],
@@ -65,16 +104,36 @@ export const router = createBrowserRouter([
         children: [
           {
             path: '/admin',
-            element: <AdminLayout />,
+            lazy: async () => ({
+              Component: (await import('@/pages/admin/AdminLayout')).AdminLayout,
+            }),
             children: [
-              { index: true, element: <AdminVenueQueue /> },
-              { path: 'tesisler', element: <AdminVenues /> },
-              { path: 'rezervasyonlar', element: <AdminReservations /> },
+              {
+                index: true,
+                lazy: async () => ({
+                  Component: (await import('@/pages/admin/AdminVenueQueue')).AdminVenueQueue,
+                }),
+              },
+              {
+                path: 'tesisler',
+                lazy: async () => ({
+                  Component: (await import('@/pages/admin/AdminVenues')).AdminVenues,
+                }),
+              },
+              {
+                path: 'rezervasyonlar',
+                lazy: async () => ({
+                  Component: (await import('@/pages/admin/AdminReservations')).AdminReservations,
+                }),
+              },
             ],
           },
         ],
       },
-      { path: '*', element: <NotFound /> },
+      {
+        path: '*',
+        lazy: async () => ({ Component: (await import('@/pages/NotFound')).NotFound }),
+      },
     ],
   },
 ])
