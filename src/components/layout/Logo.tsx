@@ -1,14 +1,12 @@
 import { Link } from 'react-router-dom'
-import { CircleDot } from 'lucide-react'
+import { BrandMark } from './BrandMark'
 
 export function Logo() {
   return (
-    <Link to="/" className="flex items-center gap-2" aria-label="SahaSepeti ana sayfa">
-      <span className="flex size-9 items-center justify-center rounded-xl bg-primary-600 text-white">
-        <CircleDot className="size-5" aria-hidden />
-      </span>
-      <span className="text-lg font-bold tracking-tight text-slate-900 dark:text-ink-50">
-        Saha<span className="text-primary-600">Sepeti</span>
+    <Link to="/" className="group flex items-center gap-2.5" aria-label="SahaSepeti ana sayfa">
+      <BrandMark className="size-9 transition-transform duration-300 group-hover:-rotate-3 group-hover:scale-105" />
+      <span className="text-[1.08rem] font-extrabold lowercase tracking-[-0.055em] text-slate-950 dark:text-white">
+        saha<span className="mx-0.5 font-medium text-accent-500">/</span>sepeti
       </span>
     </Link>
   )

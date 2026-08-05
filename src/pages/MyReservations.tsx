@@ -1,7 +1,9 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { CalendarX2, Clock, MapPin, Star } from 'lucide-react'
+import { Seo } from '@/components/Seo'
 import { Container } from '@/components/layout/Container'
+import { PublicPageHero } from '@/components/layout/PublicPageHero'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Dialog } from '@/components/ui/Dialog'
@@ -42,7 +44,7 @@ function ReservationCard({
   showActions?: boolean
 }) {
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 dark:border-ink-800 bg-white dark:bg-ink-900 p-4 shadow-soft sm:flex-row sm:items-center">
+    <div className="flex flex-col gap-4 rounded-3xl border border-slate-200/80 bg-white p-5 shadow-sm transition-shadow hover:shadow-soft dark:border-ink-700 dark:bg-ink-900 sm:flex-row sm:items-center">
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
           <Badge variant={RESERVATION_STATUS_VARIANTS[reservation.status]}>
@@ -124,8 +126,16 @@ export function MyReservations() {
   }
 
   return (
-    <Container className="py-8 sm:py-10">
-      <h1 className="text-2xl font-bold text-slate-900 dark:text-ink-50 sm:text-3xl">Rezervasyonlarım</h1>
+    <>
+      <Seo title="Rezervasyonlarım" canonicalPath="/rezervasyonlarim" />
+      <PublicPageHero
+        eyebrow="Oyun takvimin"
+        title="Rezervasyonların"
+        description="Yaklaşan maçlarını takip et, takvimine ekle veya geçmiş oyunlarını değerlendir."
+        aside={reservations ? <p className="text-sm font-semibold text-slate-500 dark:text-ink-400">{upcoming.length} yaklaşan rezervasyon</p> : undefined}
+      />
+      <section className="bg-[#fafbf8] py-10 dark:bg-ink-950 sm:py-14">
+        <Container>
 
       {isLoading && (
         <div className="mt-6 space-y-3">
@@ -181,6 +191,9 @@ export function MyReservations() {
         </section>
       )}
 
+        </Container>
+      </section>
+
       {/* İptal onayı */}
       <Dialog
         open={cancelTarget !== null}
@@ -218,6 +231,6 @@ export function MyReservations() {
           reservationId={reviewTarget.id}
         />
       )}
-    </Container>
+    </>
   )
 }

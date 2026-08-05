@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Clock, Mail, MapPin, Phone, Send } from 'lucide-react'
 import { Seo } from '@/components/Seo'
 import { Container } from '@/components/layout/Container'
+import { PublicPageHero } from '@/components/layout/PublicPageHero'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
@@ -30,26 +31,23 @@ export function Contact() {
   }
 
   return (
-    <Container className="py-12 sm:py-16">
+    <>
       <Seo
         title="İletişim"
         description="SahaSepeti ile iletişime geçin — sorularınız, tesis ekleme talepleriniz ve destek için."
         canonicalPath="/iletisim"
       />
-      <div className="mx-auto max-w-2xl text-center">
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-ink-50 sm:text-4xl">İletişim</h1>
-        <p className="mt-3 text-slate-500 dark:text-ink-400">
-          Sorusu, önerisi veya iş birliği talebi olan herkese kapımız açık. Aşağıdaki formu
-          doldur ya da doğrudan bize ulaş.
-        </p>
-      </div>
-
-      <div className="mx-auto mt-10 grid max-w-4xl gap-8 lg:grid-cols-[1fr_1.2fr]">
+      <PublicPageHero
+        title="İletişim"
+        description="Soruların, önerilerin veya iş birliği talebin için bize yaz. En doğru yolu birlikte bulalım."
+      />
+      <section className="bg-[#fafbf8] py-12 dark:bg-ink-950 sm:py-16">
+        <Container className="grid max-w-5xl gap-8 lg:grid-cols-[0.82fr_1.18fr]">
         {/* İletişim bilgileri */}
         <div className="space-y-3">
           {INFO.map((item) => {
             const content = (
-              <div className="flex items-start gap-3 rounded-2xl border border-slate-200 dark:border-ink-800 bg-white dark:bg-ink-900 p-4 shadow-soft">
+              <div className="flex items-start gap-4 rounded-3xl border border-slate-200/80 bg-white p-5 transition-colors hover:border-primary-200 dark:border-ink-700 dark:bg-ink-900">
                 <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-50 dark:bg-primary-500/10 text-primary-600">
                   <item.icon className="size-5" aria-hidden />
                 </span>
@@ -72,7 +70,7 @@ export function Contact() {
         {/* İletişim formu */}
         <form
           onSubmit={handleSubmit}
-          className="rounded-3xl border border-slate-200 dark:border-ink-800 bg-white dark:bg-ink-900 p-6 shadow-soft"
+          className="rounded-[2rem] border border-slate-200/80 bg-white p-6 shadow-[0_24px_70px_-40px_rgba(15,23,42,0.4)] dark:border-ink-700 dark:bg-ink-900 sm:p-8"
         >
           <div className="flex flex-col gap-4">
             <Input
@@ -97,7 +95,7 @@ export function Contact() {
               value={message}
               onChange={(event) => setMessage(event.target.value)}
             />
-            <Button type="submit" size="lg">
+            <Button type="submit" size="lg" className="rounded-full">
               <Send className="size-4" aria-hidden />
               Mesaj Gönder
             </Button>
@@ -106,7 +104,8 @@ export function Contact() {
             </p>
           </div>
         </form>
-      </div>
-    </Container>
+        </Container>
+      </section>
+    </>
   )
 }

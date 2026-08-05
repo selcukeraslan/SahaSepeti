@@ -28,9 +28,9 @@ const VALUES = [
 ]
 
 const STATS = [
-  { icon: Users, value: 'Binlerce', label: 'Oyuncu' },
-  { icon: Target, value: '5+', label: 'Spor Türü' },
-  { icon: CalendarCheck2, value: '7/24', label: 'Online Rezervasyon' },
+  { icon: Users, value: '81', label: 'İlde keşif' },
+  { icon: Target, value: '7', label: 'Spor türü' },
+  { icon: CalendarCheck2, value: '7/24', label: 'Tesis arama' },
 ]
 
 export function About() {
@@ -41,31 +41,27 @@ export function About() {
         description="SahaSepeti; spor tesisi rezervasyonunu kolaylaştıran, tesisleri ve sporcuları buluşturan Türkiye merkezli bir platformdur."
         canonicalPath="/hakkimizda"
       />
-      {/* Hero */}
-      <section className="bg-gradient-to-br from-primary-900 via-primary-800 to-primary-700 py-16 sm:py-20">
-        <Container>
-          <div className="mx-auto max-w-3xl text-center">
-            <span className="inline-flex rounded-full bg-white/10 px-3 py-1 text-sm font-medium text-primary-100">
+      <section className="relative overflow-hidden border-b border-slate-200/70 bg-[#f4f5ef] py-14 dark:border-ink-800 dark:bg-ink-950 sm:py-20">
+        <div aria-hidden className="absolute -left-28 -top-28 size-80 rounded-full border-[48px] border-primary-600/[0.06]" />
+        <Container className="relative grid gap-10 lg:grid-cols-2 lg:gap-16">
+          <div className="lg:border-r lg:border-slate-200 lg:pr-16 dark:lg:border-ink-800">
+            <h1 className="text-4xl font-semibold tracking-[-0.045em] text-slate-950 dark:text-white sm:text-5xl lg:text-6xl">
               Biz Kimiz
-            </span>
-            <h1 className="mt-4 text-3xl font-bold text-white sm:text-4xl">
-              Sahayı bulmak hiç bu kadar kolay olmamıştı
             </h1>
-            <p className="mt-4 text-lg text-primary-100">
+            <p className="mt-5 max-w-xl text-lg leading-8 text-slate-600 dark:text-ink-300">
               SahaSepeti, Türkiye'deki spor tesislerini oyuncularla buluşturan modern bir
-              rezervasyon platformudur. Amacımız, saha aramayı ve rezervasyon yapmayı telefon
-              trafiğinden kurtarıp herkes için birkaç dokunuşla halledilir hâle getirmek.
+              rezervasyon platformu. Amacımız saha aramayı ve rezervasyonu herkes için
+              sadeleştirmek.
             </p>
           </div>
-        </Container>
-      </section>
-
-      {/* Misyon */}
-      <section className="py-14 sm:py-20">
-        <Container>
-          <div className="mx-auto max-w-3xl">
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-ink-50">Neden SahaSepeti?</h2>
-            <p className="mt-3 leading-relaxed text-slate-600 dark:text-ink-300">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary-600 dark:text-primary-400">
+              Neden SahaSepeti?
+            </p>
+            <h2 className="mt-3 text-3xl font-semibold tracking-[-0.035em] text-slate-950 dark:text-white sm:text-4xl">
+              Saha aramak oyundan zor olmamalı.
+            </h2>
+            <p className="mt-5 leading-7 text-slate-600 dark:text-ink-300">
               Halı saha, tenis kortu, basketbol sahası… Türkiye'de spor yapmak isteyen milyonlarca
               insan var; ama uygun sahayı bulmak, müsait saati öğrenmek ve yer ayırtmak çoğu zaman
               zahmetli. Biz bu süreci tek bir platformda topladık: oyuncular kolayca keşfedip
@@ -73,18 +69,23 @@ export function About() {
               paneline kavuşuyor.
             </p>
           </div>
+        </Container>
+      </section>
 
+      {/* Misyon */}
+      <section className="bg-white py-16 dark:bg-ink-900 sm:py-24">
+        <Container>
           {/* Değerler */}
-          <div className="mt-10 grid gap-5 sm:grid-cols-2">
+          <div className="grid gap-5 sm:grid-cols-2">
             {VALUES.map((value) => (
               <div
                 key={value.title}
-                className="rounded-2xl border border-slate-200 dark:border-ink-800 bg-white dark:bg-ink-900 p-6 shadow-soft"
+                className="rounded-3xl border border-slate-200/80 bg-[#f7f8f4] p-6 dark:border-ink-700 dark:bg-ink-800"
               >
                 <span className="flex size-11 items-center justify-center rounded-xl bg-primary-50 dark:bg-primary-500/10 text-primary-600">
                   <value.icon className="size-5" aria-hidden />
                 </span>
-                <h3 className="mt-4 font-semibold text-slate-900 dark:text-ink-50">{value.title}</h3>
+                <h3 className="mt-5 text-lg font-semibold text-slate-900 dark:text-ink-50">{value.title}</h3>
                 <p className="mt-1.5 text-sm leading-relaxed text-slate-500 dark:text-ink-400">{value.text}</p>
               </div>
             ))}
@@ -93,16 +94,16 @@ export function About() {
       </section>
 
       {/* İstatistikler */}
-      <section className="bg-white dark:bg-ink-900 py-14">
+      <section className="bg-primary-950 py-14 text-white">
         <Container>
           <div className="grid gap-6 sm:grid-cols-3">
             {STATS.map((stat) => (
               <div key={stat.label} className="flex flex-col items-center text-center">
-                <span className="flex size-12 items-center justify-center rounded-2xl bg-primary-50 dark:bg-primary-500/10 text-primary-600">
+                <span className="flex size-12 items-center justify-center rounded-2xl bg-white/10 text-primary-300">
                   <stat.icon className="size-6" aria-hidden />
                 </span>
-                <p className="mt-3 text-2xl font-bold text-slate-900 dark:text-ink-50">{stat.value}</p>
-                <p className="text-sm text-slate-500 dark:text-ink-400">{stat.label}</p>
+                <p className="mt-3 text-3xl font-semibold">{stat.value}</p>
+                <p className="text-sm text-ink-300">{stat.label}</p>
               </div>
             ))}
           </div>
@@ -112,19 +113,19 @@ export function About() {
       {/* CTA */}
       <section className="py-14 sm:py-20">
         <Container>
-          <div className="mx-auto max-w-2xl rounded-3xl bg-ink-900 px-6 py-10 text-center sm:px-12">
-            <h2 className="text-2xl font-bold text-white">Hazır mısın?</h2>
-            <p className="mx-auto mt-2 max-w-md text-ink-200">
+          <div className="mx-auto max-w-4xl rounded-[2rem] bg-accent-400 px-6 py-12 text-center text-slate-950 sm:px-12">
+            <h2 className="text-3xl font-semibold tracking-[-0.035em]">Sahaya çıkmaya hazır mısın?</h2>
+            <p className="mx-auto mt-3 max-w-md text-slate-800/70">
               İster oyna ister tesisini ekle — SahaSepeti seni bekliyor.
             </p>
             <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
               <Link to="/tesisler">
-                <Button size="lg" className="w-full sm:w-auto">
+                <Button size="lg" className="w-full rounded-full bg-slate-950 hover:bg-slate-800 sm:w-auto">
                   Saha Bul
                 </Button>
               </Link>
               <Link to="/kayit?rol=tesis">
-                <Button size="lg" className="w-full sm:w-auto">
+                <Button size="lg" variant="outline" className="w-full rounded-full border-slate-950 bg-transparent text-slate-950 hover:bg-slate-950 hover:text-white sm:w-auto">
                   Tesisini Ekle
                 </Button>
               </Link>
