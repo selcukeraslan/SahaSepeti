@@ -13,21 +13,44 @@ export async function listSports(): Promise<Sport[]> {
 export interface VenueListRow extends Venue {
   venue_sports: { sports: Sport | null }[]
   courts: { price_rules: Pick<PriceRule, 'price'>[] }[]
-  reviews: { rating: number }[]
+}
+
+export interface VenueRatingSummary {
+  avgRating: number
+  reviewCount: number
 }
 
 /** Ham liste satırını karta uygun VenueListItem'a dönüştürür (favoriler de kullanır). */
-export function mapVenueListRow(row: VenueListRow): VenueListItem {
-  const { venue_sports, courts, reviews, ...venue } = row
+export function mapVenueListRow(
+  row: VenueListRow,
+  rating?: VenueRatingSummary,
+): VenueListItem {
+  const { venue_sports, courts, ...venue } = row
   const prices = courts.flatMap((court) => court.price_rules.map((rule) => rule.price))
-  const ratings = reviews.map((review) => review.rating)
   return {
     ...venue,
     sports: venue_sports.map((vs) => vs.sports).filter((sport): sport is Sport => sport !== null),
     minPrice: prices.length > 0 ? Math.min(...prices) : null,
-    avgRating: ratings.length > 0 ? ratings.reduce((sum, r) => sum + r, 0) / ratings.length : null,
-    reviewCount: ratings.length,
+    avgRating: rating?.avgRating ?? null,
+    reviewCount: rating?.reviewCount ?? 0,
   }
+}
+
+/** Ham reviews tablosunu açmadan, güvenli RPC üzerinden tesis puanlarını getirir. */
+export async function getVenueRatingSummaries(
+  venueIds: string[],
+): Promise<Map<string, VenueRatingSummary>> {
+  if (venueIds.length === 0) return new Map()
+  const { data, error } = await supabase.rpc('get_venue_rating_summaries', {
+    p_venue_ids: venueIds,
+  })
+  if (error) throw new Error('Tesis puanları yüklenemedi')
+  return new Map(
+    data.map((row) => [
+      row.venue_id,
+      { avgRating: Number(row.avg_rating), reviewCount: Number(row.review_count) },
+    ]),
+  )
 }
 
 export async function listVenues(filters: VenueFilters): Promise<VenueListItem[]> {
@@ -40,8 +63,7 @@ export async function listVenues(filters: VenueFilters): Promise<VenueListItem[]
     .select(
       `*,
        ${sportJoin},
-       courts(price_rules(price)),
-       reviews(rating)`,
+       courts(price_rules(price))`,
     )
     .eq('status', 'approved')
     .order('created_at', { ascending: false })
@@ -66,7 +88,8 @@ export async function listVenues(filters: VenueFilters): Promise<VenueListItem[]
 
   // Not: sıralama bilinçli olarak burada YAPILMAZ — sort queryKey'e girerse her
   // sıralama değişimi aynı veriyi yeniden indirir. Bileşen sortVenues ile sıralar.
-  return data.map(mapVenueListRow)
+  const ratings = await getVenueRatingSummaries(data.map((venue) => venue.id))
+  return data.map((venue) => mapVenueListRow(venue, ratings.get(venue.id)))
 }
 
 interface VenueDetailRow extends Venue {

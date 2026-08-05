@@ -31,3 +31,6 @@ dist-ssr
 # Supabase CLI yerel durumu
 supabase/.temp/
 supabase/.branches/
+
+# Üretilen sitemap (build öncesi oluşturulur)
+public/sitemap.xml
