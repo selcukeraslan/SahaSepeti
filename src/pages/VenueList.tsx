@@ -115,9 +115,13 @@ export function VenueList() {
     setSearchParams(params, { replace: true })
   }
 
-  const activeFilterCount = [filters.sport, filters.city, filters.district, filters.q].filter(
-    Boolean,
-  ).length
+  const activeFilterCount = [
+    filters.sport,
+    filters.city,
+    filters.district,
+    filters.date,
+    filters.q,
+  ].filter(Boolean).length
 
   /** "Yakınımdakiler": konum izni iste; açıksa kapat. */
   const toggleNearMe = () => {
@@ -290,7 +294,12 @@ export function VenueList() {
           {venues && venues.length > 0 && view === 'list' && (
             <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
               {displayVenues.map(({ venue, distanceKm }) => (
-                <VenueCard key={venue.id} venue={venue} distanceKm={distanceKm} />
+                <VenueCard
+                  key={venue.id}
+                  venue={venue}
+                  distanceKm={distanceKm}
+                  selectedDate={filters.date}
+                />
               ))}
             </div>
           )}

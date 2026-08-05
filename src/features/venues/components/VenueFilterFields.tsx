@@ -1,6 +1,9 @@
+import { DatePicker } from '@/components/ui/DatePicker'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { ALL_CITY_NAMES, getDistricts } from '@/config/cities'
+import { sortSportsByPriority } from '@/config/sports'
+import { nowInIstanbul } from '../services/slots'
 import { useSports } from '../hooks/useSports'
 import type { VenueFilters } from '../types'
 
@@ -27,7 +30,10 @@ export function VenueFilterFields({ filters, onChange }: VenueFilterFieldsProps)
         placeholder="Tümü"
         value={filters.sport ?? ''}
         onChange={(event) => onChange({ ...filters, sport: event.target.value || undefined })}
-        options={(sports ?? []).map((sport) => ({ value: sport.slug, label: sport.name }))}
+        options={sortSportsByPriority(sports ?? []).map((sport) => ({
+          value: sport.slug,
+          label: sport.name,
+        }))}
       />
       <Select
         label="İl"
@@ -45,6 +51,12 @@ export function VenueFilterFields({ filters, onChange }: VenueFilterFieldsProps)
         disabled={districts.length === 0}
         onChange={(event) => onChange({ ...filters, district: event.target.value || undefined })}
         options={districts.map((name) => ({ value: name, label: name }))}
+      />
+      <DatePicker
+        label="Tarih"
+        value={filters.date}
+        min={nowInIstanbul().date}
+        onChange={(date) => onChange({ ...filters, date: date || undefined })}
       />
     </div>
   )
