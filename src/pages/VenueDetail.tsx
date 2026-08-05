@@ -129,9 +129,9 @@ export function VenueDetail() {
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
       />
       {/* Galeri — sabit yükseklik + object-cover: farklı oranlı fotoğraflar taşmaz */}
-      <section className="bg-ink-900">
-        <Container className="py-0">
-          <div className="grid gap-1 sm:h-[420px] sm:grid-cols-3">
+      <section className="bg-[#f4f5ef] pt-5 dark:bg-ink-950 sm:pt-7">
+        <Container>
+          <div className="grid overflow-hidden rounded-[2rem] bg-ink-900 sm:h-[440px] sm:grid-cols-3">
             {/* Büyük görsel (kapak) */}
             {photos[0] ? (
               <button
@@ -199,7 +199,8 @@ export function VenueDetail() {
         </Container>
       </section>
 
-      <Container className="py-8">
+      <section className="bg-[#fafbf8] dark:bg-ink-950">
+      <Container className="py-10 sm:py-14">
         <div className="grid gap-8 lg:grid-cols-[1fr_420px]">
           {/* Sol: tesis bilgileri */}
           <div>
@@ -209,7 +210,7 @@ export function VenueDetail() {
               ))}
             </div>
             <div className="mt-3 flex items-start justify-between gap-3">
-              <h1 className="text-3xl font-bold text-slate-900 dark:text-ink-50">{venue.name}</h1>
+              <h1 className="text-3xl font-semibold tracking-[-0.04em] text-slate-950 dark:text-white sm:text-4xl">{venue.name}</h1>
               <FavoriteButton venueId={venue.id} variant="plain" className="shrink-0" />
             </div>
             {ratingSummary.count > 0 && (
@@ -237,7 +238,7 @@ export function VenueDetail() {
 
             {venue.description && (
               <div className="mt-6">
-                <h2 className="text-lg font-semibold text-slate-900 dark:text-ink-50">Tesis Hakkında</h2>
+                <h2 className="text-xl font-semibold tracking-[-0.02em] text-slate-900 dark:text-ink-50">Tesis hakkında</h2>
                 <p className="mt-2 whitespace-pre-line leading-relaxed text-slate-600 dark:text-ink-300">
                   {venue.description}
                 </p>
@@ -334,8 +335,9 @@ export function VenueDetail() {
 
           {/* Sağ: rezervasyon paneli */}
           <div>
-            <div className="sticky top-24 rounded-3xl border border-slate-200 dark:border-ink-800 bg-white dark:bg-ink-900 p-5 shadow-soft">
-              <h2 className="text-lg font-semibold text-slate-900 dark:text-ink-50">Müsait Saatler</h2>
+              <div className="sticky top-24 rounded-[2rem] border border-slate-200/80 bg-white p-5 shadow-[0_28px_70px_-42px_rgba(15,23,42,0.5)] dark:border-ink-700 dark:bg-ink-900 sm:p-6">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary-600 dark:text-primary-400">Rezervasyon</p>
+              <h2 className="mt-1 text-xl font-semibold tracking-[-0.02em] text-slate-900 dark:text-ink-50">Müsait saatler</h2>
               <div className="mt-4">
                 <DateStrip selected={date} onSelect={setDate} />
               </div>
@@ -404,6 +406,7 @@ export function VenueDetail() {
           </div>
         </div>
       </Container>
+      </section>
 
       {/* Rezervasyon dialogu */}
       {activeCourt && selectedSlot && (

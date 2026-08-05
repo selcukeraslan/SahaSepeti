@@ -2,10 +2,11 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Container } from '@/components/layout/Container'
+import { Seo } from '@/components/Seo'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { useToast } from '@/components/ui/useToast'
+import { AuthShell } from '@/features/auth/components/AuthShell'
 import { useAuth } from '@/features/auth/hooks/useAuth'
 import { loginSchema, type LoginInput } from '@/features/auth/schemas'
 import { signIn } from '@/features/auth/services/auth.service'
@@ -40,42 +41,25 @@ export function Login() {
   }
 
   return (
-    <Container className="flex justify-center py-12 sm:py-20">
-      <div className="w-full max-w-md">
-        <div className="rounded-3xl border border-slate-200 dark:border-ink-800 bg-white dark:bg-ink-900 p-6 shadow-soft sm:p-8">
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-ink-50">Giriş Yap</h1>
-          <p className="mt-1 text-sm text-slate-500 dark:text-ink-400">
-            Rezervasyonlarınıza erişmek için giriş yapın.
-          </p>
-          <form onSubmit={handleSubmit(onSubmit)} className="mt-6 flex flex-col gap-4" noValidate>
-            <Input
-              label="E-posta"
-              type="email"
-              autoComplete="email"
-              placeholder="ornek@eposta.com"
-              error={errors.email?.message}
-              {...register('email')}
-            />
-            <Input
-              label="Şifre"
-              type="password"
-              autoComplete="current-password"
-              placeholder="••••••••"
-              error={errors.password?.message}
-              {...register('password')}
-            />
-            <Button type="submit" size="lg" isLoading={isSubmitting} className="mt-2">
-              Giriş Yap
-            </Button>
-          </form>
-        </div>
-        <p className="mt-4 text-center text-sm text-slate-500 dark:text-ink-400">
+    <>
+      <Seo title="Giriş Yap" canonicalPath="/giris" />
+      <AuthShell
+        eyebrow="Tekrar hoş geldin"
+        title="Giriş yap"
+        description="Rezervasyonlarına ve favori tesislerine kaldığın yerden ulaş."
+        footer={<>
           Hesabınız yok mu?{' '}
           <Link to="/kayit" className="font-semibold text-primary-600 hover:text-primary-700">
             Kayıt olun
           </Link>
-        </p>
-      </div>
-    </Container>
+        </>}
+      >
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4" noValidate>
+          <Input label="E-posta" type="email" autoComplete="email" placeholder="ornek@eposta.com" error={errors.email?.message} {...register('email')} />
+          <Input label="Şifre" type="password" autoComplete="current-password" placeholder="••••••••" error={errors.password?.message} {...register('password')} />
+          <Button type="submit" size="lg" isLoading={isSubmitting} className="mt-2 rounded-full">Giriş yap</Button>
+        </form>
+      </AuthShell>
+    </>
   )
 }

@@ -27,7 +27,7 @@ export function VenueCard({
   return (
     <Link
       to={detailUrl}
-      className="group overflow-hidden rounded-2xl border border-slate-200 dark:border-ink-800 bg-white dark:bg-ink-900 shadow-soft transition-shadow hover:shadow-soft-lg"
+      className="group overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary-200 hover:shadow-[0_24px_60px_-34px_rgba(15,23,42,0.45)] dark:border-ink-700 dark:bg-ink-900 dark:hover:border-primary-700"
     >
       <div className="relative aspect-[3/2] overflow-hidden bg-slate-100 dark:bg-ink-800">
         {venue.cover_image_url ? (
@@ -35,7 +35,7 @@ export function VenueCard({
             src={venue.cover_image_url}
             alt={venue.name}
             loading="lazy"
-            className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
+            className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
           <div className="flex size-full items-center justify-center">
@@ -58,14 +58,14 @@ export function VenueCard({
           )}
         </div>
         {venue.minPrice !== null && (
-          <span className="absolute bottom-3 right-3 rounded-full bg-white/95 dark:bg-ink-900/95 px-3 py-1 text-sm font-semibold text-slate-900 dark:text-ink-50 shadow-soft">
+          <span className="absolute bottom-3 right-3 rounded-full bg-white/95 px-3 py-1.5 text-sm font-semibold text-slate-900 shadow-soft backdrop-blur dark:bg-ink-900/95 dark:text-ink-50">
             {formatPrice(venue.minPrice)}
             <span className="font-normal text-slate-500 dark:text-ink-400"> / saat'ten</span>
           </span>
         )}
       </div>
-      <div className="p-4">
-        <h3 className="font-semibold text-slate-900 dark:text-ink-50 group-hover:text-primary-700">{venue.name}</h3>
+      <div className="p-5">
+        <h3 className="text-lg font-semibold tracking-[-0.02em] text-slate-900 transition-colors group-hover:text-primary-700 dark:text-ink-50 dark:group-hover:text-primary-300">{venue.name}</h3>
         {venue.reviewCount > 0 && venue.avgRating !== null && (
           <div className="mt-1.5 flex items-center gap-1.5">
             <RatingStars value={venue.avgRating} />

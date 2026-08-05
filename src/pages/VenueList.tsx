@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { List, LocateFixed, Map as MapIcon, SlidersHorizontal } from 'lucide-react'
 import { Seo } from '@/components/Seo'
 import { Container } from '@/components/layout/Container'
+import { PublicPageHero } from '@/components/layout/PublicPageHero'
 import { Button } from '@/components/ui/Button'
 import { Select } from '@/components/ui/Select'
 import { Sheet } from '@/components/ui/Sheet'
@@ -156,21 +157,25 @@ export function VenueList() {
   const listTitle = filters.city ? `${filters.city} Spor Tesisleri` : 'Spor Tesisleri'
 
   return (
-    <Container className="py-8 sm:py-10">
+    <>
       <Seo
         title={listTitle}
         description={`${filters.city ?? "Türkiye'de"} spor tesislerini keşfet, müsait saatleri gör ve online rezervasyon yap.`}
         canonicalPath="/tesisler"
       />
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-ink-50 sm:text-3xl">Spor Tesisleri</h1>
-          <p className="mt-1 text-slate-500 dark:text-ink-400">
+      <PublicPageHero
+        eyebrow="Tesisleri keşfet"
+        title={listTitle}
+        description="Konumuna, sporuna ve tarihine uygun sahaları karşılaştır; sana en uygun saati seç."
+        aside={
+          <div className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm dark:border-ink-700 dark:bg-ink-900 dark:text-ink-200">
             {venues ? `${venues.length} tesis bulundu` : 'Tesisler yükleniyor...'}
-          </p>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
+          </div>
+        }
+      />
+      <section className="bg-[#fafbf8] py-8 dark:bg-ink-950 sm:py-10">
+        <Container>
+          <div className="flex flex-wrap items-center justify-end gap-2">
           {/* Yakınımdakiler */}
           <Button
             variant={userLoc ? 'secondary' : 'outline'}
@@ -224,13 +229,12 @@ export function VenueList() {
               </span>
             )}
           </Button>
-        </div>
-      </div>
+          </div>
 
-      <div className="mt-6 grid gap-8 lg:grid-cols-[260px_1fr]">
+      <div className="mt-5 grid gap-8 lg:grid-cols-[280px_1fr]">
         {/* Masaüstü filtre paneli */}
         <aside className="hidden lg:block">
-          <div className="sticky top-24 rounded-2xl border border-slate-200 dark:border-ink-800 bg-white dark:bg-ink-900 p-5 shadow-soft">
+          <div className="sticky top-24 rounded-3xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-ink-700 dark:bg-ink-900">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="font-semibold text-slate-900 dark:text-ink-50">Filtreler</h2>
               {activeFilterCount > 0 && (
@@ -268,7 +272,7 @@ export function VenueList() {
           {isLoading && (
             <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
               {Array.from({ length: 6 }, (_, index) => (
-                <Skeleton key={index} className="h-72" />
+                <Skeleton key={index} className="h-80 rounded-3xl" />
               ))}
             </div>
           )}
@@ -308,6 +312,8 @@ export function VenueList() {
           )}
         </div>
       </div>
+        </Container>
+      </section>
 
       {/* Mobil filtre sheet */}
       <Sheet open={sheetOpen} onClose={() => setSheetOpen(false)} title="Filtreler" side="bottom">
@@ -321,6 +327,6 @@ export function VenueList() {
           </Button>
         </div>
       </Sheet>
-    </Container>
+    </>
   )
 }

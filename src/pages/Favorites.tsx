@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
 import { HeartOff } from 'lucide-react'
+import { Seo } from '@/components/Seo'
 import { Container } from '@/components/layout/Container'
+import { PublicPageHero } from '@/components/layout/PublicPageHero'
 import { Button } from '@/components/ui/Button'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
@@ -11,16 +13,21 @@ export function Favorites() {
   const { data: venues, isLoading, isError } = useFavoriteVenues()
 
   return (
-    <Container className="py-8 sm:py-10">
-      <h1 className="text-2xl font-bold text-slate-900 dark:text-ink-50 sm:text-3xl">Favorilerim</h1>
-      <p className="mt-1 text-slate-500 dark:text-ink-400">
-        {venues ? `${venues.length} tesis` : 'Favoriler yükleniyor...'}
-      </p>
+    <>
+      <Seo title="Favorilerim" canonicalPath="/favorilerim" />
+      <PublicPageHero
+        eyebrow="Koleksiyonun"
+        title="Favori tesislerin"
+        description="Beğendiğin tesisleri burada sakla, müsaitliklerine yeniden hızlıca ulaş."
+        aside={<p className="text-sm font-semibold text-slate-500 dark:text-ink-400">{venues ? `${venues.length} tesis` : 'Yükleniyor...'}</p>}
+      />
+      <section className="bg-[#fafbf8] py-10 dark:bg-ink-950 sm:py-14">
+        <Container>
 
       {isLoading && (
         <div className="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {Array.from({ length: 3 }, (_, index) => (
-            <Skeleton key={index} className="h-72" />
+            <Skeleton key={index} className="h-80 rounded-3xl" />
           ))}
         </div>
       )}
@@ -56,6 +63,8 @@ export function Favorites() {
           ))}
         </div>
       )}
-    </Container>
+        </Container>
+      </section>
+    </>
   )
 }

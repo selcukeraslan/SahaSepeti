@@ -10,7 +10,7 @@ describe('öncelikli filtre sıralamaları', () => {
     )
   })
 
-  it('halı saha ve basketbolu diğer sporlardan önce gösterir', () => {
+  it('halı saha, basketbol ve voleybolu diğer sporlardan önce gösterir', () => {
     const sports = [
       { slug: 'voleybol', name: 'Voleybol' },
       { slug: 'tenis', name: 'Tenis' },
@@ -22,9 +22,9 @@ describe('öncelikli filtre sıralamaları', () => {
     expect(sortSportsByPriority(sports).map((sport) => sport.slug)).toEqual([
       'hali-saha',
       'basketbol',
+      'voleybol',
       'badminton',
       'tenis',
-      'voleybol',
     ])
   })
 })
