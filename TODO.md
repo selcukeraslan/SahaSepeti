@@ -15,7 +15,7 @@ SahaSepeti, Türkiye için modern bir spor tesisi rezervasyon platformudur (olle
 | Katman | Seçim |
 |---|---|
 | Build | Vite + React + TypeScript (strict, `any` yasak) |
-| Routing | React Router v7 |
+| Routing | React Router v6 |
 | Server state | TanStack Query |
 | Backend | Supabase (Auth + Postgres + Storage + RLS) |
 | Stil | Tailwind CSS + özel design-token katmanı |
@@ -105,8 +105,6 @@ VITE_SUPABASE_ANON_KEY=
 | 9 | RLS, Doğrulama & Güvenlik | ✅ |
 | 10 | Test, Bug Fix & MVP Temizlik | ✅ |
 | 11 | Gelecek Yol Haritası | 🔄 devam ediyor |
-| 12 | Fikir Havuzu | 🗂️ karar bekliyor |
-| 13–27 | Strateji Bazlı Detaylı Ürün Planı | 📋 planlandı (`PRODUCT_TODO.md`) |
 
 ---
 
@@ -245,12 +243,7 @@ VITE_SUPABASE_ANON_KEY=
 
 ### Phase 11 — Gelecek Yol Haritası (MVP sonrası)
 
-> Stratejiyle uyumlu ekran, veri modeli, servis, güvenlik, test ve kabul kriterleri
-> bazındaki ayrıntılı uygulama listesi için [`PRODUCT_TODO.md`](PRODUCT_TODO.md)
-> kullanılır. Bu bölüm geçmiş durum özeti ve fikir havuzu olarak korunur.
-
-- Gerçek ödeme: ürün/hukuk/mali karar kapısından sonra iyzico/PayTR ile tam ödeme,
-  webhook, otomatik komisyon, iade ve hak ediş akışı.
+- Gerçek ödeme: iyzico/PayTR (kapora + tam ödeme), webhook ile `payments` güncelleme.
 - ✅ Yorum & puanlama (reviews aktifleştirme), favoriler. *(2026-07 — merge edildi)*
 - ✅ Owner istatistik ekranı (doluluk, ciro raporu, dönem filtresi). *(2026-07 — `owner-stats` PR)*
 - ✅ Güvenlik sertleştirmesi ve yayın performansı. *(2026-08 — `security-hardening`)*
@@ -270,7 +263,7 @@ VITE_SUPABASE_ANON_KEY=
     tüm tesis sahiplerine gönderim açılacak (detay: fonksiyonun README'si).
   - Not: Sohbette görünen Resend API anahtarı aktivasyondan önce yenilenmeli.
 - ✅ Harita görünümü (leaflet) + konuma göre "yakınımdaki tesisler". *(2026-07 — merge edildi)*
-- Tekrarlayan rezervasyon (her salı 20:00), iptal ve iade kuralları.
+- Tekrarlayan rezervasyon (her salı 20:00), kapora iade kuralları.
 - Çoklu dil (EN), SEO/SSR ihtiyacı doğarsa Next.js değerlendirmesi.
 - Mobil uygulama (React Native / Expo).
 

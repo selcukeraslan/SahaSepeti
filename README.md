@@ -82,12 +82,8 @@ npm run build        # üretim derlemesi (tsc + vite)
 npm run typecheck    # tip kontrolü
 npm run lint         # oxlint
 npm test             # vitest (slot üretim motoru testleri)
-npm run test:phase13 # uzak geliştirme Supabase'inde salt-okunur rol/seed smoke kontrolü
 npm run test:db      # yerel Supabase üzerinde RLS/trigger güvenlik sözleşmesi
 ```
-
-Faz 13'ün veri oluşturan ve sonunda test tesisini temizleyen regresyon akışı gerektiğinde
-`node scripts/phase13-smoke.mjs --write` ile çalıştırılır.
 
 ## Proje yapısı
 
