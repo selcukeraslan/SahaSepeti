@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/Button'
 import { Dialog } from '@/components/ui/Dialog'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { QueryErrorState } from '@/components/ui/QueryErrorState'
 import { useToast } from '@/components/ui/useToast'
 import {
   useCancelReservation,
@@ -100,7 +101,7 @@ function ReservationCard({
 }
 
 export function MyReservations() {
-  const { data: reservations, isLoading } = useMyReservations()
+  const { data: reservations, isLoading, isError, isFetching, refetch } = useMyReservations()
   const cancelReservation = useCancelReservation()
   const { toast } = useToast()
   const [cancelTarget, setCancelTarget] = useState<ReservationWithVenue | null>(null)
@@ -142,6 +143,16 @@ export function MyReservations() {
           {Array.from({ length: 3 }, (_, index) => (
             <Skeleton key={index} className="h-28" />
           ))}
+        </div>
+      )}
+
+      {isError && (
+        <div className="mt-6">
+          <QueryErrorState
+            title="Rezervasyonlarınız yüklenemedi"
+            isRetrying={isFetching}
+            onRetry={() => { void refetch() }}
+          />
         </div>
       )}
 
@@ -207,7 +218,7 @@ export function MyReservations() {
           istediğinize emin misiniz?
         </p>
         <div className="mt-5 flex gap-2">
-          <Button variant="outline" className="flex-1" onClick={() => setCancelTarget(null)}>
+          <Button variant="outline" className="flex-1" disabled={cancelReservation.isPending} onClick={() => setCancelTarget(null)}>
             Vazgeç
           </Button>
           <Button

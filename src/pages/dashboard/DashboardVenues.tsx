@@ -4,12 +4,13 @@ import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { QueryErrorState } from '@/components/ui/QueryErrorState'
 import { useToast } from '@/components/ui/useToast'
 import { useMyVenues, useVenueMutations } from '@/features/dashboard/hooks/useDashboard'
 import { VENUE_STATUS_LABELS, VENUE_STATUS_VARIANTS } from '@/features/dashboard/types'
 
 export function DashboardVenues() {
-  const { data: venues, isLoading } = useMyVenues()
+  const { data: venues, isLoading, isError, isFetching, refetch } = useMyVenues()
   const { submit } = useVenueMutations()
   const { toast } = useToast()
 
@@ -35,6 +36,14 @@ export function DashboardVenues() {
       <div className="mt-5 space-y-3">
         {isLoading &&
           Array.from({ length: 2 }, (_, index) => <Skeleton key={index} className="h-32" />)}
+
+        {isError && (
+          <QueryErrorState
+            title="Tesisleriniz yüklenemedi"
+            isRetrying={isFetching}
+            onRetry={() => { void refetch() }}
+          />
+        )}
 
         {venues && venues.length === 0 && (
           <EmptyState
@@ -93,7 +102,8 @@ export function DashboardVenues() {
               {(venue.status === 'draft' || venue.status === 'rejected') && (
                 <Button
                   size="sm"
-                  isLoading={submit.isPending}
+                  isLoading={submit.isPending && submit.variables === venue.id}
+                  disabled={submit.isPending}
                   onClick={() => handleSubmitForApproval(venue.id)}
                 >
                   <Send className="size-4" aria-hidden />

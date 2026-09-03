@@ -4,6 +4,7 @@ import { ImagePlus, Star, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { QueryErrorState } from '@/components/ui/QueryErrorState'
 import { useToast } from '@/components/ui/useToast'
 import { cn } from '@/lib/utils'
 import type { VenueImage } from '@/types/database.types'
@@ -34,7 +35,7 @@ export function ImageManager({
   const [batchTotal, setBatchTotal] = useState(0)
   const uploadedInBatch = useRef(0)
 
-  const { data: images, isLoading } = useQuery({
+  const { data: images, isLoading, isError, isFetching, refetch } = useQuery({
     queryKey: ['venue-images', venueId],
     queryFn: () => listVenueImages(venueId),
   })
@@ -123,7 +124,7 @@ export function ImageManager({
           JPG, PNG veya WebP. Yüklemeden önce görseli istediğiniz gibi kırpıp
           konumlandırabilirsiniz. Yıldıza tıklayarak kapak görseli seçin.
         </p>
-        <Button size="sm" isLoading={isUploading} onClick={() => fileInputRef.current?.click()}>
+        <Button size="sm" isLoading={isUploading} disabled={deleteImage.isPending || makeCover.isPending} onClick={() => fileInputRef.current?.click()}>
           <ImagePlus className="size-4" aria-hidden />
           Görsel Yükle
         </Button>
@@ -144,6 +145,14 @@ export function ImageManager({
               <Skeleton key={index} className="aspect-[4/3]" />
             ))}
           </div>
+        )}
+
+        {isError && (
+          <QueryErrorState
+            title="Görseller yüklenemedi"
+            isRetrying={isFetching}
+            onRetry={() => { void refetch() }}
+          />
         )}
 
         {images && images.length === 0 && (
@@ -181,6 +190,7 @@ export function ImageManager({
                       <button
                         type="button"
                         aria-label="Kapak yap"
+                        disabled={isUploading || deleteImage.isPending || makeCover.isPending}
                         onClick={() => makeCover.mutate(image.url)}
                         className="rounded-lg bg-white/90 dark:bg-ink-900/90 p-1.5 text-slate-700 dark:text-ink-200 hover:bg-white dark:hover:bg-ink-900"
                       >
@@ -190,6 +200,7 @@ export function ImageManager({
                     <button
                       type="button"
                       aria-label="Görseli sil"
+                      disabled={isUploading || deleteImage.isPending || makeCover.isPending}
                       onClick={() => deleteImage.mutate(image)}
                       className="rounded-lg bg-white/90 dark:bg-ink-900/90 p-1.5 text-red-600 hover:bg-white dark:hover:bg-ink-900"
                     >

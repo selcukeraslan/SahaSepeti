@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button'
 import { Select } from '@/components/ui/Select'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { QueryErrorState } from '@/components/ui/QueryErrorState'
 import { useToast } from '@/components/ui/useToast'
 import { useAdminVenueMutations, useAdminVenues } from '@/features/admin/hooks/useAdmin'
 import { VENUE_STATUS_LABELS, VENUE_STATUS_VARIANTS } from '@/features/dashboard/types'
@@ -13,7 +14,7 @@ import type { VenueStatus } from '@/types/database.types'
 
 export function AdminVenues() {
   const [status, setStatus] = useState('')
-  const { data: venues, isLoading } = useAdminVenues(
+  const { data: venues, isLoading, isError, isFetching, refetch } = useAdminVenues(
     (status || undefined) as VenueStatus | undefined,
   )
   const { approve, suspend } = useAdminVenueMutations()
@@ -40,8 +41,24 @@ export function AdminVenues() {
         {isLoading &&
           Array.from({ length: 3 }, (_, index) => <Skeleton key={index} className="h-24" />)}
 
+        {isError && (
+          <QueryErrorState
+            title="Tesisler yüklenemedi"
+            isRetrying={isFetching}
+            onRetry={() => { void refetch() }}
+          />
+        )}
+
         {venues && venues.length === 0 && (
-          <EmptyState title="Tesis bulunamadı" description="Bu durumda tesis yok." />
+          <EmptyState
+            title="Tesis bulunamadı"
+            description="Bu durumda tesis yok."
+            action={status ? (
+              <Button variant="outline" size="sm" onClick={() => setStatus('')}>
+                Tüm Durumları Göster
+              </Button>
+            ) : undefined}
+          />
         )}
 
         {venues?.map((venue) => (
@@ -72,6 +89,8 @@ export function AdminVenues() {
                   <Button
                     variant="outline"
                     size="sm"
+                    isLoading={suspend.isPending && suspend.variables === venue.id}
+                    disabled={suspend.isPending || approve.isPending}
                     onClick={() =>
                       suspend.mutate(venue.id, {
                         onSuccess: () => toast('Tesis askıya alındı', 'success'),
@@ -88,6 +107,8 @@ export function AdminVenues() {
                 <Button
                   variant="outline"
                   size="sm"
+                  isLoading={approve.isPending && approve.variables === venue.id}
+                  disabled={suspend.isPending || approve.isPending}
                   onClick={() =>
                     approve.mutate(venue.id, {
                       onSuccess: () => toast('Tesis yeniden yayına alındı', 'success'),

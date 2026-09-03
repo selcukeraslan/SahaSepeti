@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { Badge } from '@/components/ui/Badge'
 import { Select } from '@/components/ui/Select'
+import { Button } from '@/components/ui/Button'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { QueryErrorState } from '@/components/ui/QueryErrorState'
 import { useAdminReservations } from '@/features/admin/hooks/useAdmin'
 import {
   RESERVATION_STATUS_LABELS,
@@ -15,7 +17,7 @@ export function AdminReservations() {
   const [status, setStatus] = useState('')
   const [date, setDate] = useState('')
 
-  const { data: reservations, isLoading } = useAdminReservations({
+  const { data: reservations, isLoading, isError, isFetching, refetch } = useAdminReservations({
     status: (status || undefined) as ReservationStatus | undefined,
     date: date || undefined,
   })
@@ -49,8 +51,24 @@ export function AdminReservations() {
         {isLoading &&
           Array.from({ length: 5 }, (_, index) => <Skeleton key={index} className="h-16" />)}
 
+        {isError && (
+          <QueryErrorState
+            title="Rezervasyonlar yüklenemedi"
+            isRetrying={isFetching}
+            onRetry={() => { void refetch() }}
+          />
+        )}
+
         {reservations && reservations.length === 0 && (
-          <EmptyState title="Rezervasyon bulunamadı" />
+          <EmptyState
+            title="Rezervasyon bulunamadı"
+            description="Seçili filtrelere uyan rezervasyon yok."
+            action={(status || date) ? (
+              <Button variant="outline" size="sm" onClick={() => { setStatus(''); setDate('') }}>
+                Filtreleri Temizle
+              </Button>
+            ) : undefined}
+          />
         )}
 
         {reservations?.map((reservation) => (

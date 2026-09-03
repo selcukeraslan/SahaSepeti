@@ -66,6 +66,7 @@ export function ReviewDialog({ open, onClose, venueId, venueName, reservationId 
           <button
             key={value}
             type="button"
+            disabled={upsert.isPending}
             aria-label={`${value} yıldız`}
             onClick={() => {
               setRating(value)
@@ -93,13 +94,14 @@ export function ReviewDialog({ open, onClose, venueId, venueName, reservationId 
           label="Yorumunuz (isteğe bağlı)"
           placeholder="Deneyiminizi kısaca paylaşın..."
           maxLength={500}
+          disabled={upsert.isPending}
           value={comment}
           onChange={(event) => setComment(event.target.value)}
         />
       </div>
 
       <div className="mt-5 flex gap-2">
-        <Button variant="outline" className="flex-1" onClick={onClose}>
+        <Button variant="outline" className="flex-1" disabled={upsert.isPending} onClick={onClose}>
           Vazgeç
         </Button>
         <Button className="flex-1" isLoading={upsert.isPending} onClick={handleSubmit}>

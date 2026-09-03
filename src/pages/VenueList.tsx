@@ -1,28 +1,17 @@
 import { useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { List, LocateFixed, Map as MapIcon, SlidersHorizontal } from 'lucide-react'
-import { Seo } from '@/components/Seo'
 import { Container } from '@/components/layout/Container'
 import { PublicPageHero } from '@/components/layout/PublicPageHero'
-import { Button } from '@/components/ui/Button'
-import { Select } from '@/components/ui/Select'
-import { Sheet } from '@/components/ui/Sheet'
-import { Skeleton } from '@/components/ui/Skeleton'
-import { EmptyState } from '@/components/ui/EmptyState'
+import { Seo } from '@/components/Seo'
 import { useToast } from '@/components/ui/useToast'
-import { VenueCard } from '@/features/venues/components/VenueCard'
-import { VenueFilterFields } from '@/features/venues/components/VenueFilterFields'
-import { VenueMap } from '@/features/venues/components/VenueMap'
+import { VenueFilterSidebar } from '@/features/venues/components/VenueFilterSidebar'
+import { VenueListToolbar, type VenueListView } from '@/features/venues/components/VenueListToolbar'
+import { VenueMobileFilters } from '@/features/venues/components/VenueMobileFilters'
+import { VenueResults, type VenueResultItem } from '@/features/venues/components/VenueResults'
 import { useVenues } from '@/features/venues/hooks/useVenues'
 import { sortVenues } from '@/features/venues/services/sorting'
-import {
-  isVenueSort,
-  VENUE_SORT_OPTIONS,
-  type VenueFilters,
-  type VenueListItem,
-} from '@/features/venues/types'
+import { isVenueSort, type VenueFilters, type VenueListItem } from '@/features/venues/types'
 import { distanceToOrNull, type GeoPoint } from '@/lib/geo'
-import { cn } from '@/lib/utils'
 
 function paramsToFilters(params: URLSearchParams): VenueFilters {
   const sortParam = params.get('sort')
@@ -36,26 +25,11 @@ function paramsToFilters(params: URLSearchParams): VenueFilters {
   }
 }
 
-interface VenueWithDistance {
-  venue: VenueListItem
-  distanceKm: number | null
-}
-
-/**
- * Görüntü sırası: açık bir sıralama seçiliyse ona göre; yoksa "Yakınımdakiler"
- * aktifse mesafeye göre; hiçbiri yoksa varsayılan. Mesafe rozeti, konum varsa
- * sıralamadan bağımsız olarak her zaman hesaplanır.
- */
-function orderVenues(
-  venues: VenueListItem[],
-  sort: VenueFilters['sort'],
-  from: GeoPoint | null,
-): VenueWithDistance[] {
+function orderVenues(venues: VenueListItem[], sort: VenueFilters['sort'], from: GeoPoint | null): VenueResultItem[] {
   const withDistance = venues.map((venue) => ({
     venue,
     distanceKm: from ? distanceToOrNull(venue, from) : null,
   }))
-
   if (sort) {
     const distanceByVenue = new Map(withDistance.map((item) => [item.venue.id, item.distanceKm]))
     return sortVenues(venues, sort).map((venue) => ({
@@ -63,7 +37,6 @@ function orderVenues(
       distanceKm: distanceByVenue.get(venue.id) ?? null,
     }))
   }
-
   if (from) {
     return [...withDistance].sort((a, b) => {
       if (a.distanceKm === null) return 1
@@ -71,28 +44,22 @@ function orderVenues(
       return a.distanceKm - b.distanceKm
     })
   }
-
   return withDistance
 }
 
 export function VenueList() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [sheetOpen, setSheetOpen] = useState(false)
-  const [view, setView] = useState<'list' | 'map'>('list')
+  const [view, setView] = useState<VenueListView>('list')
   const [userLoc, setUserLoc] = useState<GeoPoint | null>(null)
   const [locating, setLocating] = useState(false)
   const { toast } = useToast()
-
   const filters = useMemo(() => paramsToFilters(searchParams), [searchParams])
-
-  // sort queryKey'e GİRMEZ: sıralama istemcide yapılır; aynı veri için
-  // yeniden fetch + skeleton flaşı yaşanmaz (sorgu 4 sıralama için tek cache girdisi).
   const queryFilters = useMemo(() => {
     const { sort: _sort, ...rest } = filters
     return rest
   }, [filters])
-  const { data: venues, isLoading, isError } = useVenues(queryFilters)
-
+  const { data: venues, isLoading, isError, isFetching, refetch } = useVenues(queryFilters)
   const displayVenues = useMemo(
     () => orderVenues(venues ?? [], filters.sort, userLoc),
     [venues, filters.sort, userLoc],
@@ -108,23 +75,12 @@ export function VenueList() {
     if (next.sort) params.set('sort', next.sort)
     setSearchParams(params, { replace: true })
   }
-
-  // Sıralama filtre sayılmaz: "Temizle" filtreleri sıfırlar, sıralama seçimini korur.
   const clearFilters = () => {
     const params = new URLSearchParams()
     if (filters.sort) params.set('sort', filters.sort)
     setSearchParams(params, { replace: true })
   }
-
-  const activeFilterCount = [
-    filters.sport,
-    filters.city,
-    filters.district,
-    filters.date,
-    filters.q,
-  ].filter(Boolean).length
-
-  /** "Yakınımdakiler": konum izni iste; açıksa kapat. */
+  const activeFilterCount = [filters.sport, filters.city, filters.district, filters.date, filters.q].filter(Boolean).length
   const toggleNearMe = () => {
     if (userLoc) {
       setUserLoc(null)
@@ -153,180 +109,27 @@ export function VenueList() {
       { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 },
     )
   }
-
   const listTitle = filters.city ? `${filters.city} Spor Tesisleri` : 'Spor Tesisleri'
 
   return (
     <>
-      <Seo
-        title={listTitle}
-        description={`${filters.city ?? "Türkiye'de"} spor tesislerini keşfet, müsait saatleri gör ve online rezervasyon yap.`}
-        canonicalPath="/tesisler"
-      />
+      <Seo title={listTitle} description={`${filters.city ?? "Türkiye'de"} spor tesislerini keşfet, müsait saatleri gör ve online rezervasyon yap.`} canonicalPath="/tesisler" />
       <PublicPageHero
         eyebrow="Tesisleri keşfet"
         title={listTitle}
         description="Konumuna, sporuna ve tarihine uygun sahaları karşılaştır; sana en uygun saati seç."
-        aside={
-          <div className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm dark:border-ink-700 dark:bg-ink-900 dark:text-ink-200">
-            {venues ? `${venues.length} tesis bulundu` : 'Tesisler yükleniyor...'}
-          </div>
-        }
+        aside={<div className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm dark:border-ink-700 dark:bg-ink-900 dark:text-ink-200">{venues ? `${venues.length} tesis bulundu` : 'Tesisler yükleniyor...'}</div>}
       />
       <section className="bg-[#fafbf8] py-8 dark:bg-ink-950 sm:py-10">
         <Container>
-          <div className="flex flex-wrap items-center justify-end gap-2">
-          {/* Yakınımdakiler */}
-          <Button
-            variant={userLoc ? 'secondary' : 'outline'}
-            size="sm"
-            isLoading={locating}
-            onClick={toggleNearMe}
-            aria-pressed={userLoc !== null}
-          >
-            <LocateFixed className="size-4" aria-hidden />
-            {userLoc ? 'Yakınımdakiler ✓' : 'Yakınımdakiler'}
-          </Button>
-
-          {/* Liste / Harita geçişi — görünüm anahtarı (tab paneli değil), bu yüzden aria-pressed */}
-          <div className="inline-flex rounded-xl border border-slate-200 p-0.5 dark:border-ink-700" role="group" aria-label="Görünüm">
-            {(
-              [
-                { key: 'list', label: 'Liste', icon: List },
-                { key: 'map', label: 'Harita', icon: MapIcon },
-              ] as const
-            ).map((option) => (
-              <button
-                key={option.key}
-                type="button"
-                aria-pressed={view === option.key}
-                onClick={() => setView(option.key)}
-                className={cn(
-                  'flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors',
-                  view === option.key
-                    ? 'bg-primary-600 text-white'
-                    : 'text-slate-600 hover:bg-slate-100 dark:text-ink-300 dark:hover:bg-ink-800',
-                )}
-              >
-                <option.icon className="size-4" aria-hidden />
-                {option.label}
-              </button>
-            ))}
+          <VenueListToolbar activeFilterCount={activeFilterCount} isNearMe={userLoc !== null} locating={locating} view={view} onToggleNearMe={toggleNearMe} onViewChange={setView} onOpenFilters={() => setSheetOpen(true)} />
+          <div className="mt-5 grid gap-8 lg:grid-cols-[280px_1fr]">
+            <VenueFilterSidebar filters={filters} activeFilterCount={activeFilterCount} onChange={applyFilters} onClear={clearFilters} />
+            <VenueResults venues={venues} displayVenues={displayVenues} filters={filters} view={view} userLocation={userLoc} isLoading={isLoading} isError={isError} isRetrying={isFetching} activeFilterCount={activeFilterCount} onFiltersChange={applyFilters} onClearFilters={clearFilters} onRetry={() => { void refetch() }} />
           </div>
-
-          {/* Mobil filtre butonu */}
-          <Button
-            variant="outline"
-            size="sm"
-            className="lg:hidden"
-            onClick={() => setSheetOpen(true)}
-          >
-            <SlidersHorizontal className="size-4" aria-hidden />
-            Filtreler
-            {activeFilterCount > 0 && (
-              <span className="flex size-5 items-center justify-center rounded-full bg-primary-600 text-xs font-bold text-white">
-                {activeFilterCount}
-              </span>
-            )}
-          </Button>
-          </div>
-
-      <div className="mt-5 grid gap-8 lg:grid-cols-[280px_1fr]">
-        {/* Masaüstü filtre paneli */}
-        <aside className="hidden lg:block">
-          <div className="sticky top-24 rounded-3xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-ink-700 dark:bg-ink-900">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="font-semibold text-slate-900 dark:text-ink-50">Filtreler</h2>
-              {activeFilterCount > 0 && (
-                <button
-                  type="button"
-                  onClick={clearFilters}
-                  className="text-sm font-medium text-primary-600 hover:text-primary-700"
-                >
-                  Temizle
-                </button>
-              )}
-            </div>
-            <VenueFilterFields filters={filters} onChange={applyFilters} />
-          </div>
-        </aside>
-
-        {/* Sonuçlar */}
-        <div>
-          {/* Sıralama */}
-          <div className="mb-4 flex justify-end">
-            <div className="w-full sm:w-56">
-              <Select
-                aria-label="Sıralama"
-                placeholder="Önerilen"
-                value={filters.sort ?? ''}
-                onChange={(event) => {
-                  const value = event.target.value
-                  applyFilters({ ...filters, sort: isVenueSort(value) ? value : undefined })
-                }}
-                options={VENUE_SORT_OPTIONS}
-              />
-            </div>
-          </div>
-
-          {isLoading && (
-            <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-              {Array.from({ length: 6 }, (_, index) => (
-                <Skeleton key={index} className="h-80 rounded-3xl" />
-              ))}
-            </div>
-          )}
-          {isError && (
-            <EmptyState
-              title="Bir şeyler ters gitti"
-              description="Tesisler yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin."
-            />
-          )}
-          {venues && venues.length === 0 && (
-            <EmptyState
-              title="Tesis bulunamadı"
-              description="Filtrelerinize uyan tesis yok. Filtreleri genişletmeyi deneyin."
-              action={
-                activeFilterCount > 0 ? (
-                  <Button variant="outline" size="sm" onClick={clearFilters}>
-                    Filtreleri Temizle
-                  </Button>
-                ) : undefined
-              }
-            />
-          )}
-          {venues && venues.length > 0 && view === 'list' && (
-            <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-              {displayVenues.map(({ venue, distanceKm }) => (
-                <VenueCard
-                  key={venue.id}
-                  venue={venue}
-                  distanceKm={distanceKm}
-                  selectedDate={filters.date}
-                />
-              ))}
-            </div>
-          )}
-          {venues && venues.length > 0 && view === 'map' && (
-            <VenueMap venues={venues} userLocation={userLoc} className="h-[65dvh] min-h-96" />
-          )}
-        </div>
-      </div>
         </Container>
       </section>
-
-      {/* Mobil filtre sheet */}
-      <Sheet open={sheetOpen} onClose={() => setSheetOpen(false)} title="Filtreler" side="bottom">
-        <VenueFilterFields filters={filters} onChange={applyFilters} />
-        <div className="mt-5 flex gap-2">
-          <Button variant="outline" className="flex-1" onClick={clearFilters}>
-            Temizle
-          </Button>
-          <Button className="flex-1" onClick={() => setSheetOpen(false)}>
-            Sonuçları Göster
-          </Button>
-        </div>
-      </Sheet>
+      <VenueMobileFilters open={sheetOpen} filters={filters} onChange={applyFilters} onClear={clearFilters} onClose={() => setSheetOpen(false)} />
     </>
   )
 }

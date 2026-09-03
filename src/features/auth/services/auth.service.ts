@@ -1,6 +1,12 @@
 import { supabase } from '@/lib/supabase'
+import type { AuthChangeEvent, Session } from '@supabase/supabase-js'
 import type { Profile } from '@/types/database.types'
 import { loginSchema, registerSchema, type LoginInput, type RegisterInput } from '../schemas'
+
+export type AuthStateChangeHandler = (
+  event: AuthChangeEvent,
+  session: Session | null,
+) => void
 
 export interface SignUpResult {
   /** E-posta doğrulaması açıksa oturum oluşmaz; kullanıcı bilgilendirilmelidir. */
@@ -42,6 +48,19 @@ export async function signOut(): Promise<void> {
   if (error) {
     throw new Error('Çıkış yapılırken bir hata oluştu')
   }
+}
+
+export async function getCurrentSession(): Promise<Session | null> {
+  const { data, error } = await supabase.auth.getSession()
+  if (error) {
+    throw new Error('Oturum bilgisi alınamadı')
+  }
+  return data.session
+}
+
+export function subscribeToAuthChanges(handler: AuthStateChangeHandler): () => void {
+  const { data } = supabase.auth.onAuthStateChange(handler)
+  return () => data.subscription.unsubscribe()
 }
 
 export async function getProfile(userId: string): Promise<Profile | null> {

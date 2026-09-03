@@ -2,28 +2,34 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { ReservationStatus } from '@/types/database.types'
 import {
   createBlockSlot,
-  createCourt,
   createManualReservation,
-  createPriceRule,
-  createVenue,
   deleteOwnerReservation,
+  listOwnerDaySchedule,
+  setReservationNoShow,
+} from '../services/calendar.service'
+import {
+  createCourt,
+  createPriceRule,
   deletePriceRule,
   getOpeningHours,
   listCourtPriceRules,
-  listMyVenues,
-  listOwnerDaySchedule,
-  listOwnerReservations,
-  listOwnerReservationsForStats,
   listVenueCourts,
   saveOpeningHours,
   setCourtActive,
-  setReservationNoShow,
-  submitVenueForApproval,
   updateCourt,
+} from '../services/courts.service'
+import {
+  listOwnerReservations,
+  listOwnerReservationsForStats,
   updateReservationStatus,
-  updateVenue,
   type OwnerReservationFilters,
-} from '../services/dashboard.service'
+} from '../services/ownerReservations.service'
+import {
+  createVenue,
+  listMyVenues,
+  submitVenueForApproval,
+  updateVenue,
+} from '../services/ownerVenues.service'
 import type {
   BlockSlotInput,
   CourtInput,

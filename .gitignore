@@ -34,3 +34,8 @@ supabase/.branches/
 
 # Üretilen sitemap (build öncesi oluşturulur)
 public/sitemap.xml
+
+# Yerel ürün planlama ve test raporu dokümanları
+/PRODUCT_TODO.md
+/PHASE_13_TEST_REPORT.md
+/strategy.md

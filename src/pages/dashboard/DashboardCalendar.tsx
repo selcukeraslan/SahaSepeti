@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { addDays, format, parseISO } from 'date-fns'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Select } from '@/components/ui/Select'
 import { Button } from '@/components/ui/Button'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { QueryErrorState } from '@/components/ui/QueryErrorState'
 import { CalendarSlotDialog } from '@/features/dashboard/components/CalendarSlotDialog'
 import { useMyVenues, useOwnerDaySchedule } from '@/features/dashboard/hooks/useDashboard'
 import type { ScheduleSlot } from '@/features/dashboard/types'
@@ -90,7 +92,13 @@ function SlotChip({ slot, onOpen }: { slot: ScheduleSlot; onOpen: () => void }) 
 }
 
 export function DashboardCalendar() {
-  const { data: venues } = useMyVenues()
+  const {
+    data: venues,
+    isLoading: venuesLoading,
+    isError: venuesError,
+    isFetching: venuesFetching,
+    refetch: refetchVenues,
+  } = useMyVenues()
   const [venueId, setVenueId] = useState('')
   const [date, setDate] = useState(() => nowInIstanbul().date)
   const [active, setActive] = useState<ActiveSlot | null>(null)
@@ -100,7 +108,13 @@ export function DashboardCalendar() {
     if (!venueId && venues && venues[0]) setVenueId(venues[0].id)
   }, [venues, venueId])
 
-  const { data: schedule, isLoading } = useOwnerDaySchedule(venueId || undefined, date)
+  const {
+    data: schedule,
+    isLoading,
+    isError,
+    isFetching,
+    refetch,
+  } = useOwnerDaySchedule(venueId || undefined, date)
 
   const shiftDay = (delta: number) =>
     setDate((current) => format(addDays(parseISO(current), delta), 'yyyy-MM-dd'))
@@ -112,6 +126,20 @@ export function DashboardCalendar() {
     }
   }
 
+  if (venuesLoading) {
+    return <Skeleton className="h-96" />
+  }
+
+  if (venuesError) {
+    return (
+      <QueryErrorState
+        title="Tesisler yüklenemedi"
+        isRetrying={venuesFetching}
+        onRetry={() => { void refetchVenues() }}
+      />
+    )
+  }
+
   if (venues && venues.length === 0) {
     return (
       <div>
@@ -120,6 +148,11 @@ export function DashboardCalendar() {
           <EmptyState
             title="Önce bir tesis ekleyin"
             description="Takvimi kullanmak için en az bir tesisiniz olmalı."
+            action={
+              <Link to="/panel/tesisler/yeni">
+                <Button>Tesis Ekle</Button>
+              </Link>
+            }
           />
         </div>
       </div>
@@ -187,10 +220,23 @@ export function DashboardCalendar() {
         {isLoading &&
           Array.from({ length: 2 }, (_, index) => <Skeleton key={index} className="h-40" />)}
 
+        {isError && (
+          <QueryErrorState
+            title="Takvim yüklenemedi"
+            isRetrying={isFetching}
+            onRetry={() => { void refetch() }}
+          />
+        )}
+
         {schedule && schedule.length === 0 && (
           <EmptyState
             title="Aktif saha yok"
             description="Bu tesiste rezervasyona açık saha bulunmuyor. Tesis panelinden saha ekleyin."
+            action={
+              <Link to={`/panel/tesisler/${venueId}`}>
+                <Button variant="outline">Tesisi Yönet</Button>
+              </Link>
+            }
           />
         )}
 
