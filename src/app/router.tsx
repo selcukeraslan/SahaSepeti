@@ -1,6 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom'
 import { PageShell } from '@/components/layout/PageShell'
-import { RequireAuth, RequireRole } from '@/app/guards'
+import { RequireRole } from '@/app/guards'
 
 export const router = createBrowserRouter([
   {
@@ -29,7 +29,7 @@ export const router = createBrowserRouter([
         lazy: async () => ({ Component: (await import('@/pages/Register')).Register }),
       },
       {
-        element: <RequireAuth />,
+        element: <RequireRole role="customer" />,
         children: [
           {
             path: '/rezervasyonlarim',

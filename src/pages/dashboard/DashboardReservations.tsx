@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button'
 import { Select } from '@/components/ui/Select'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { QueryErrorState } from '@/components/ui/QueryErrorState'
 import { useToast } from '@/components/ui/useToast'
 import {
   useMyVenues,
@@ -16,7 +17,9 @@ import {
   RESERVATION_STATUS_LABELS,
   RESERVATION_STATUS_VARIANTS,
 } from '@/features/reservations/types'
+import { getReservationActionAvailability } from '@/features/dashboard/services/reservationActions'
 import { formatDateShort, formatPrice, formatTime } from '@/lib/format'
+import { nowInIstanbul } from '@/features/venues/services/slots'
 import type { ReservationStatus } from '@/types/database.types'
 
 export function DashboardReservations() {
@@ -25,7 +28,7 @@ export function DashboardReservations() {
   const [status, setStatus] = useState('')
   const [date, setDate] = useState('')
 
-  const { data: reservations, isLoading } = useOwnerReservations({
+  const { data: reservations, isLoading, isError, isFetching, refetch } = useOwnerReservations({
     venueId: venueId || undefined,
     status: (status || undefined) as ReservationStatus | undefined,
     date: date || undefined,
@@ -33,6 +36,7 @@ export function DashboardReservations() {
   const updateStatus = useUpdateReservationStatus()
   const { setNoShow } = useScheduleMutations()
   const { toast } = useToast()
+  const now = nowInIstanbul()
 
   const handleStatusChange = (reservationId: string, nextStatus: ReservationStatus) => {
     updateStatus.mutate(
@@ -94,14 +98,30 @@ export function DashboardReservations() {
         {isLoading &&
           Array.from({ length: 4 }, (_, index) => <Skeleton key={index} className="h-24" />)}
 
+        {isError && (
+          <QueryErrorState
+            title="Rezervasyonlar yüklenemedi"
+            isRetrying={isFetching}
+            onRetry={() => { void refetch() }}
+          />
+        )}
+
         {visible && visible.length === 0 && (
           <EmptyState
             title="Rezervasyon bulunamadı"
             description="Seçili filtrelere uyan rezervasyon yok."
+            action={(venueId || status || date) ? (
+              <Button variant="outline" size="sm" onClick={() => { setVenueId(''); setStatus(''); setDate('') }}>
+                Filtreleri Temizle
+              </Button>
+            ) : undefined}
           />
         )}
 
-        {visible?.map((reservation) => (
+        {visible?.map((reservation) => {
+            const actions = getReservationActionAvailability(reservation, now)
+            const mutationsPending = updateStatus.isPending || setNoShow.isPending
+            return (
           <div
             key={reservation.id}
             className="flex flex-col gap-3 rounded-2xl border border-slate-200 dark:border-ink-800 bg-white dark:bg-ink-900 p-4 shadow-soft sm:flex-row sm:items-center"
@@ -147,6 +167,8 @@ export function DashboardReservations() {
                 <>
                   <Button
                     size="sm"
+                    isLoading={updateStatus.isPending && updateStatus.variables?.reservationId === reservation.id && updateStatus.variables.status === 'confirmed'}
+                    disabled={updateStatus.isPending || setNoShow.isPending}
                     onClick={() => handleStatusChange(reservation.id, 'confirmed')}
                   >
                     <Check className="size-4" aria-hidden />
@@ -155,6 +177,8 @@ export function DashboardReservations() {
                   <Button
                     variant="outline"
                     size="sm"
+                    isLoading={updateStatus.isPending && updateStatus.variables?.reservationId === reservation.id && updateStatus.variables.status === 'cancelled'}
+                    disabled={updateStatus.isPending || setNoShow.isPending}
                     onClick={() => handleStatusChange(reservation.id, 'cancelled')}
                   >
                     <X className="size-4" aria-hidden />
@@ -167,6 +191,9 @@ export function DashboardReservations() {
                   <Button
                     variant="secondary"
                     size="sm"
+                    isLoading={updateStatus.isPending && updateStatus.variables?.reservationId === reservation.id && updateStatus.variables.status === 'completed'}
+                    disabled={mutationsPending || !actions.canComplete}
+                    title={!actions.canComplete ? 'Rezervasyon bitiş saatinden sonra tamamlanabilir' : undefined}
                     onClick={() => handleStatusChange(reservation.id, 'completed')}
                   >
                     Tamamlandı
@@ -174,6 +201,9 @@ export function DashboardReservations() {
                   <Button
                     variant={reservation.no_show ? 'outline' : 'ghost'}
                     size="sm"
+                    isLoading={setNoShow.isPending && setNoShow.variables?.reservationId === reservation.id}
+                    disabled={mutationsPending || !actions.canMarkNoShow}
+                    title={!actions.canMarkNoShow ? 'No-show rezervasyon başladıktan sonra işaretlenebilir' : undefined}
                     onClick={() => handleNoShow(reservation.id, !reservation.no_show)}
                   >
                     {reservation.no_show ? "No-show'u kaldır" : 'Gelmedi'}
@@ -181,6 +211,9 @@ export function DashboardReservations() {
                   <Button
                     variant="outline"
                     size="sm"
+                    isLoading={updateStatus.isPending && updateStatus.variables?.reservationId === reservation.id && updateStatus.variables.status === 'cancelled'}
+                    disabled={mutationsPending || !actions.canCancel}
+                    title={!actions.canCancel ? 'Başlamış rezervasyon iptal edilemez' : undefined}
                     onClick={() => handleStatusChange(reservation.id, 'cancelled')}
                   >
                     İptal Et
@@ -189,7 +222,8 @@ export function DashboardReservations() {
               )}
             </div>
           </div>
-        ))}
+            )
+        })}
       </div>
     </div>
   )

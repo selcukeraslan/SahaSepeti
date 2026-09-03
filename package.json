@@ -12,6 +12,7 @@
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
     "test": "vitest run",
+    "test:phase13": "node scripts/phase13-smoke.mjs",
     "test:db": "SUPABASE_TELEMETRY_DISABLED=1 supabase test db --local supabase/tests"
   },
   "dependencies": {

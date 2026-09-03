@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Skeleton } from '@/components/ui/Skeleton'
+import { QueryErrorState } from '@/components/ui/QueryErrorState'
 import { useToast } from '@/components/ui/useToast'
 import { formatTime } from '@/lib/format'
 import { useOpeningHours, useSaveOpeningHours } from '../hooks/useDashboard'
@@ -15,7 +16,7 @@ const DEFAULT_HOURS: OpeningHourInput[] = Array.from({ length: 7 }, (_, day) => 
 }))
 
 export function OpeningHoursEditor({ venueId }: { venueId: string }) {
-  const { data: saved, isLoading } = useOpeningHours(venueId)
+  const { data: saved, isLoading, isError, isFetching, refetch } = useOpeningHours(venueId)
   const saveHours = useSaveOpeningHours(venueId)
   const { toast } = useToast()
   const [hours, setHours] = useState<OpeningHourInput[]>(DEFAULT_HOURS)
@@ -62,6 +63,16 @@ export function OpeningHoursEditor({ venueId }: { venueId: string }) {
     return <Skeleton className="h-80" />
   }
 
+  if (isError) {
+    return (
+      <QueryErrorState
+        title="Çalışma saatleri yüklenemedi"
+        isRetrying={isFetching}
+        onRetry={() => { void refetch() }}
+      />
+    )
+  }
+
   return (
     <div>
       <p className="text-sm text-slate-500 dark:text-ink-400">
@@ -80,6 +91,7 @@ export function OpeningHoursEditor({ venueId }: { venueId: string }) {
               <label className="flex min-w-32 items-center gap-2 text-sm font-medium text-slate-700 dark:text-ink-200">
                 <input
                   type="checkbox"
+                  disabled={saveHours.isPending}
                   checked={!hour.isClosed}
                   onChange={(event) => updateDay(day, { isClosed: !event.target.checked })}
                   className="size-4 rounded border-slate-300 dark:border-ink-700 accent-primary-600"
@@ -92,6 +104,7 @@ export function OpeningHoursEditor({ venueId }: { venueId: string }) {
                 <div className="flex items-center gap-2">
                   <input
                     type="time"
+                    disabled={saveHours.isPending}
                     aria-label={`${DAY_NAMES_TR[day]} açılış`}
                     value={hour.openTime}
                     onChange={(event) => updateDay(day, { openTime: event.target.value })}
@@ -100,6 +113,7 @@ export function OpeningHoursEditor({ venueId }: { venueId: string }) {
                   <span className="text-slate-400 dark:text-ink-500">–</span>
                   <input
                     type="time"
+                    disabled={saveHours.isPending}
                     aria-label={`${DAY_NAMES_TR[day]} kapanış`}
                     value={hour.closeTime}
                     onChange={(event) => updateDay(day, { closeTime: event.target.value })}

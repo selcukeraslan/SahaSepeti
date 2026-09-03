@@ -4,6 +4,7 @@ import { ArrowLeft, Send } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Skeleton } from '@/components/ui/Skeleton'
+import { QueryErrorState } from '@/components/ui/QueryErrorState'
 import { useToast } from '@/components/ui/useToast'
 import { VenueForm } from '@/features/dashboard/components/VenueForm'
 import { CourtManager } from '@/features/dashboard/components/CourtManager'
@@ -25,13 +26,23 @@ const TABS: { key: Tab; label: string }[] = [
 
 export function VenueManage() {
   const { id } = useParams<{ id: string }>()
-  const { data: venues, isLoading } = useMyVenues()
+  const { data: venues, isLoading, isError, isFetching, refetch } = useMyVenues()
   const { update, submit } = useVenueMutations()
   const { toast } = useToast()
   const [activeTab, setActiveTab] = useState<Tab>('info')
 
   if (isLoading) {
     return <Skeleton className="h-96" />
+  }
+
+  if (isError) {
+    return (
+      <QueryErrorState
+        title="Tesis bilgileri yüklenemedi"
+        isRetrying={isFetching}
+        onRetry={() => { void refetch() }}
+      />
+    )
   }
 
   const venue = venues?.find((item) => item.id === id)

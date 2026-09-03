@@ -5,12 +5,13 @@ import { Dialog } from '@/components/ui/Dialog'
 import { Textarea } from '@/components/ui/Textarea'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { QueryErrorState } from '@/components/ui/QueryErrorState'
 import { useToast } from '@/components/ui/useToast'
 import { useAdminVenueMutations, useAdminVenues } from '@/features/admin/hooks/useAdmin'
 import type { AdminVenue } from '@/features/admin/services/admin.service'
 
 export function AdminVenueQueue() {
-  const { data: venues, isLoading } = useAdminVenues('pending')
+  const { data: venues, isLoading, isError, isFetching, refetch } = useAdminVenues('pending')
   const { approve, reject } = useAdminVenueMutations()
   const { toast } = useToast()
   const [rejectTarget, setRejectTarget] = useState<AdminVenue | null>(null)
@@ -52,6 +53,14 @@ export function AdminVenueQueue() {
       <div className="mt-5 space-y-3">
         {isLoading &&
           Array.from({ length: 2 }, (_, index) => <Skeleton key={index} className="h-32" />)}
+
+        {isError && (
+          <QueryErrorState
+            title="Onay kuyruğu yüklenemedi"
+            isRetrying={isFetching}
+            onRetry={() => { void refetch() }}
+          />
+        )}
 
         {venues && venues.length === 0 && (
           <EmptyState
@@ -96,6 +105,7 @@ export function AdminVenueQueue() {
               <Button
                 variant="outline"
                 size="sm"
+                disabled={approve.isPending || reject.isPending}
                 onClick={() => {
                   setRejectTarget(venue)
                   setReason('')
@@ -104,7 +114,12 @@ export function AdminVenueQueue() {
                 <X className="size-4" aria-hidden />
                 Reddet
               </Button>
-              <Button size="sm" isLoading={approve.isPending} onClick={() => handleApprove(venue.id)}>
+              <Button
+                size="sm"
+                isLoading={approve.isPending && approve.variables === venue.id}
+                disabled={approve.isPending || reject.isPending}
+                onClick={() => handleApprove(venue.id)}
+              >
                 <Check className="size-4" aria-hidden />
                 Onayla ve Yayınla
               </Button>
@@ -123,10 +138,11 @@ export function AdminVenueQueue() {
           label="Red Gerekçesi"
           placeholder="Tesis sahibine iletilecek gerekçeyi yazın..."
           value={reason}
+          disabled={reject.isPending}
           onChange={(event) => setReason(event.target.value)}
         />
         <div className="mt-4 flex gap-2">
-          <Button variant="outline" className="flex-1" onClick={() => setRejectTarget(null)}>
+          <Button variant="outline" className="flex-1" disabled={reject.isPending} onClick={() => setRejectTarget(null)}>
             Vazgeç
           </Button>
           <Button

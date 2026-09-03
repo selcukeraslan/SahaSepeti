@@ -97,6 +97,7 @@ export function ReservationDialog({
               placeholder="Tesise iletmek istediğiniz bir not var mı?"
               value={notes}
               maxLength={500}
+              disabled={createReservation.isPending}
               onChange={(event) => setNotes(event.target.value)}
             />
           </div>
@@ -104,7 +105,7 @@ export function ReservationDialog({
             Rezervasyonunuz tesis onayına gönderilir. Ödeme tesiste yapılır; online ödeme yakında.
           </p>
           <div className="mt-4 flex gap-2">
-            <Button variant="outline" className="flex-1" onClick={onClose}>
+            <Button variant="outline" className="flex-1" disabled={createReservation.isPending} onClick={onClose}>
               Vazgeç
             </Button>
             <Button
