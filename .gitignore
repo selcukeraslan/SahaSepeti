@@ -36,8 +36,6 @@ supabase/.branches/
 public/sitemap.xml
 
 # Yerel ürün planlama ve test raporu dokümanları
-/README.md
-/TODO.md
 /PRODUCT_TODO.md
 /PHASE_13_TEST_REPORT.md
 /strategy.md
