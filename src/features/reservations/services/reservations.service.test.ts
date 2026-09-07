@@ -26,6 +26,18 @@ const input = {
 }
 
 describe('createReservation', () => {
+  it('istemcinin kaynak ve referans alanlarını DB isteğine taşımaz', async () => {
+    supabaseMocks.single.mockResolvedValue({ data: { id: 'reservation-1', source: 'marketplace' }, error: null })
+    await createReservation({ ...input, ...{
+      source: 'manual', created_by: 'other-user', guest_reference: 'fake',
+      external_provider: 'fake', external_reservation_id: 'fake',
+    } })
+    const payload: unknown = supabaseMocks.insert.mock.calls[0]?.[0]
+    expect(payload).toMatchObject({ customer_id: 'customer-1' })
+    for (const field of ['source', 'created_by', 'guest_reference', 'external_provider', 'external_reservation_id']) {
+      expect(payload).not.toHaveProperty(field)
+    }
+  })
   beforeEach(() => {
     vi.clearAllMocks()
     supabaseMocks.getUser.mockResolvedValue({ data: { user: { id: 'customer-1' } } })

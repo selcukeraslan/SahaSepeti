@@ -23,6 +23,12 @@ export function formatDateShort(dateString: string): string {
   return format(parseISO(dateString), 'd MMM yyyy', { locale: tr })
 }
 
+/** Timestamp'i tarayıcının konumundan bağımsız olarak İstanbul günüyle gösterir. */
+export function formatIstanbulTimestamp(timestamp: string): string {
+  return new Intl.DateTimeFormat('tr-TR', { timeZone: 'Europe/Istanbul', day: 'numeric', month: 'short', year: 'numeric' })
+    .format(new Date(timestamp))
+}
+
 /** "20:00:00" veya "20:00" → "20:00" */
 export function formatTime(timeString: string): string {
   return timeString.slice(0, 5)

@@ -1,6 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { recordManualBookingDuration } from '../services/bookingMetrics'
+import { SeriesManager } from './SeriesManager'
 import { CalendarPlus, Trash2, Wrench } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
+import { ReservationSourceBadge } from '@/features/reservations/components/ReservationSourceBadge'
 import { Button } from '@/components/ui/Button'
 import { Dialog } from '@/components/ui/Dialog'
 import { useToast } from '@/components/ui/useToast'
@@ -25,6 +28,7 @@ export function CalendarSlotDialog({ open, onClose, venueId, courtId, courtName,
   const { addManual, addBlock, remove, setNoShow } = useScheduleMutations()
   const { toast } = useToast()
   const [mode, setMode] = useState<'manual' | 'block'>('manual')
+  const bookingStartedAt = useRef(performance.now())
 
   useEffect(() => {
     if (open) setMode('manual')
@@ -58,6 +62,9 @@ export function CalendarSlotDialog({ open, onClose, venueId, courtId, courtName,
     }
     return (
       <Dialog open={open} onClose={onClose} title={`${courtName} · ${timeLabel}`}>
+        <div className="mb-3 flex items-center gap-2 text-sm">
+          <span>Kaynak:</span><ReservationSourceBadge source={reservation.source} />
+        </div>
         {reservation.isBlock ? (
           <div className="flex items-center gap-2"><Badge variant="neutral">Bakım / Blok</Badge></div>
         ) : (
@@ -71,6 +78,8 @@ export function CalendarSlotDialog({ open, onClose, venueId, courtId, courtName,
         )}
         {reservation.notes && <p className="mt-3 rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-600 dark:bg-ink-950 dark:text-ink-300">{reservation.notes}</p>}
         <div className="mt-5 flex flex-wrap gap-2">
+          {reservation.seriesId && <SeriesManager seriesId={reservation.seriesId}
+            reservationId={reservation.id} customerName={reservation.customerName} inline onSaved={onClose} />}
           {!reservation.isBlock && (
             <Button variant={reservation.noShow ? 'outline' : 'secondary'} className="flex-1" isLoading={setNoShow.isPending} onClick={handleNoShow}>
               {reservation.noShow ? "No-show'u kaldır" : 'Gelmedi (No-show)'}
@@ -93,6 +102,7 @@ export function CalendarSlotDialog({ open, onClose, venueId, courtId, courtName,
       {
         onSuccess: () => {
           toast('Manuel rezervasyon eklendi', 'success')
+          recordManualBookingDuration(bookingStartedAt.current)
           onClose()
         },
         onError: (error) => toast(error.message, 'error'),
@@ -143,7 +153,8 @@ export function CalendarSlotDialog({ open, onClose, venueId, courtId, courtName,
         ))}
       </div>
       {mode === 'manual' ? (
-        <ManualReservationForm key={`manual-${formKey}`} isSaving={addManual.isPending} onSubmit={submitManual} />
+        <ManualReservationForm key={`manual-${formKey}`} isSaving={addManual.isPending} onSubmit={submitManual}
+          seriesContext={{ venueId, courtId, date, startTime: slot.startTime, endTime: slot.endTime }} onSeriesSaved={onClose} />
       ) : (
         <BlockSlotForm key={`block-${formKey}`} isSaving={addBlock.isPending} onSubmit={submitBlock} />
       )}

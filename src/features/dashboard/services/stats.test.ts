@@ -3,6 +3,7 @@ import { computeOwnerStats, rangeStartDate, type StatsReservation } from './stat
 
 function make(overrides: Partial<StatsReservation> = {}): StatsReservation {
   return {
+    source: 'marketplace',
     reservation_date: '2026-07-10',
     start_time: '20:00:00',
     status: 'completed',
@@ -25,6 +26,27 @@ describe('rangeStartDate', () => {
 })
 
 describe('computeOwnerStats', () => {
+  it('kaynakları ayırır; blokları ve gelecek tarihleri saymaz, iptal cirosunu dışarıda tutar', () => {
+    const stats = computeOwnerStats([
+      make({ source: 'marketplace', total_price: 1200 }),
+      make({ source: 'manual', total_price: 800, status: 'confirmed' }),
+      make({ source: 'manual', total_price: 900, status: 'cancelled' }),
+      make({ source: 'external', total_price: 700, status: 'pending' }),
+      make({ source: 'block', total_price: 5000 }),
+      make({ source: 'marketplace', reservation_date: '2026-07-13' }),
+      make({ source: 'manual', reservation_date: '2026-06-01' }),
+    ], TODAY, '1w')
+    expect(stats.bySource).toEqual({
+      marketplace: { count: 1, revenue: 1200 },
+      manual: { count: 2, revenue: 800 },
+      external: { count: 1, revenue: 0 },
+      block: { count: 0, revenue: 0 },
+    })
+    expect(stats.total).toBe(4)
+    expect(stats.revenue).toBe(2000)
+    expect(Object.values(stats.bySource).reduce((sum, item) => sum + item.count, 0)).toBe(stats.total)
+  })
+
   it('boş listede güvenli sıfırlar döner', () => {
     const stats = computeOwnerStats([], TODAY)
     expect(stats.total).toBe(0)

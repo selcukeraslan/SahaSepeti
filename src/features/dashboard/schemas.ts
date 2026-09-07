@@ -72,6 +72,7 @@ const timeRegex = /^\d{2}:\d{2}$/
 
 /** Owner'ın haritadan/kırpma... değil, takvimden eklediği misafir rezervasyonu. */
 export const manualReservationSchema = z.object({
+  venueCustomerId: uuid().optional(),
   venueId: uuid(),
   courtId: uuid('Saha seçin'),
   date: z.string().regex(dateRegex, 'Geçersiz tarih'),

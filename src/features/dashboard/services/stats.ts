@@ -12,10 +12,11 @@ import {
   subYears,
 } from 'date-fns'
 import { tr } from 'date-fns/locale'
-import type { ReservationStatus } from '@/types/database.types'
+import type { ReservationSource, ReservationStatus } from '@/types/database.types'
 
 /** İstatistik hesabı için gereken minimal rezervasyon alanları. */
 export interface StatsReservation {
+  source: ReservationSource
   reservation_date: string // yyyy-MM-dd
   start_time: string // HH:mm[:ss]
   status: ReservationStatus
@@ -53,6 +54,7 @@ export interface StatusBreakdown {
 }
 
 export interface OwnerStats {
+  bySource: Record<ReservationSource, { count: number; revenue: number }>
   total: number
   /** iptal olmayan rezervasyon sayısı */
   active: number
@@ -175,16 +177,22 @@ export function computeOwnerStats(
   const startStr = rangeStartDate(range, todayYmd)
   // Dönem: [start, bugün] — gelecek tarihli rezervasyonlar istatistiğe girmez.
   const filtered = reservations.filter(
-    (r) => r.reservation_date <= todayYmd && (startStr === null || r.reservation_date >= startStr),
+    (r) => r.source !== 'block' && r.reservation_date <= todayYmd && (startStr === null || r.reservation_date >= startStr),
   )
 
   const status: StatusBreakdown = { pending: 0, confirmed: 0, completed: 0, cancelled: 0 }
+  const bySource: OwnerStats['bySource'] = {
+    marketplace: { count: 0, revenue: 0 }, manual: { count: 0, revenue: 0 },
+    block: { count: 0, revenue: 0 }, external: { count: 0, revenue: 0 },
+  }
   let revenue = 0
   const hourCount = new Array<number>(24).fill(0)
   const dayCount = new Array<number>(7).fill(0)
   let minDate: string | null = null
 
   for (const r of filtered) {
+    bySource[r.source].count += 1
+    if (REVENUE_STATUSES.has(r.status)) bySource[r.source].revenue += r.total_price
     status[r.status] += 1
     if (REVENUE_STATUSES.has(r.status)) revenue += r.total_price
     if (r.status !== 'cancelled') {
@@ -235,6 +243,7 @@ export function computeOwnerStats(
 
   return {
     total,
+    bySource,
     active: total - status.cancelled,
     revenue,
     cancellationRate: total > 0 ? status.cancelled / total : 0,

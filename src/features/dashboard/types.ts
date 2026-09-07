@@ -1,4 +1,4 @@
-import type { ReservationStatus, VenueStatus } from '@/types/database.types'
+import type { ReservationSource, ReservationStatus, VenueStatus } from '@/types/database.types'
 
 export const VENUE_STATUS_LABELS: Record<VenueStatus, string> = {
   draft: 'Taslak',
@@ -37,6 +37,8 @@ export const WEEK_DAY_ORDER = [1, 2, 3, 4, 5, 6, 0] as const
 /** Bir slotta oturan rezervasyon/blok özeti (owner görünümü). */
 export interface ScheduleReservation {
   id: string
+  seriesId: string | null
+  source: ReservationSource
   status: ReservationStatus
   isBlock: boolean
   noShow: boolean

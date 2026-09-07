@@ -5,9 +5,35 @@
  */
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
+export type ReservationSeriesRow = {
+  id: string; venue_id: string; court_id: string; name: string; guest_name: string
+  guest_phone: string | null; weekday: number; start_time: string; end_time: string
+  start_date: string; end_date: string; source: 'manual'; status: 'active' | 'cancelled'
+  created_by: string | null; created_at: string; updated_at: string
+}
+type SeriesDefaultFields = 'id' | 'guest_phone' | 'source' | 'status' | 'created_by' | 'created_at' | 'updated_at'
+
+export type VenueCustomerRow = {
+  id: string; venue_id: string; normalized_phone: string; display_name: string; notes: string
+  profile_id: string | null; is_blacklisted: boolean; blacklist_reason: string
+  last_booking_at: string | null; created_at: string; updated_at: string; deleted_at: string | null
+}
+
 export interface Database {
   public: {
     Tables: {
+      venue_customers: {
+        Row: VenueCustomerRow
+        Insert: Pick<VenueCustomerRow, 'venue_id' | 'normalized_phone' | 'display_name'> & Partial<VenueCustomerRow>
+        Update: Partial<VenueCustomerRow>
+        Relationships: []
+      }
+      reservation_series: {
+        Row: ReservationSeriesRow
+        Insert: Omit<ReservationSeriesRow, SeriesDefaultFields> & Partial<Pick<ReservationSeriesRow, SeriesDefaultFields>>
+        Update: Partial<ReservationSeriesRow>
+        Relationships: []
+      }
       profiles: {
         Row: {
           id: string
@@ -345,6 +371,14 @@ export interface Database {
           guest_name: string | null
           guest_phone: string | null
           created_by: string | null
+          source: Database['public']['Enums']['reservation_source']
+          series_id: string | null
+          venue_customer_id: string | null
+          occurrence_date: string | null
+          series_superseded: boolean
+          guest_reference: string | null
+          external_provider: string | null
+          external_reservation_id: string | null
           created_at: string
           updated_at: string
         }
@@ -367,6 +401,14 @@ export interface Database {
           guest_name?: string | null
           guest_phone?: string | null
           created_by?: string | null
+          source?: Database['public']['Enums']['reservation_source']
+          series_id?: string | null
+          venue_customer_id?: string | null
+          occurrence_date?: string | null
+          series_superseded?: boolean
+          guest_reference?: string | null
+          external_provider?: string | null
+          external_reservation_id?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -389,6 +431,14 @@ export interface Database {
           guest_name?: string | null
           guest_phone?: string | null
           created_by?: string | null
+          source?: Database['public']['Enums']['reservation_source']
+          series_id?: string | null
+          venue_customer_id?: string | null
+          occurrence_date?: string | null
+          series_superseded?: boolean
+          guest_reference?: string | null
+          external_provider?: string | null
+          external_reservation_id?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -548,6 +598,17 @@ export interface Database {
     }
     Views: Record<string, never>
     Functions: {
+      save_venue_customer: { Args: { p_input: Json }; Returns: string }
+      delete_venue_customer: { Args: { p_id: string }; Returns: undefined }
+      search_venue_customers: {
+        Args: { p_venue_id: string; p_query: string; p_filter: string; p_limit: number; p_offset: number }
+        Returns: Json
+      }
+      normalize_customer_phone: { Args: { p_phone: string }; Returns: string | null }
+      manage_reservation_series: {
+        Args: { p_input: Json; p_preview: boolean }
+        Returns: Json
+      }
       is_admin: {
         Args: Record<string, never>
         Returns: boolean
@@ -591,6 +652,7 @@ export interface Database {
       user_role: 'customer' | 'venue_owner' | 'admin'
       venue_status: 'draft' | 'pending' | 'approved' | 'rejected' | 'suspended'
       reservation_status: 'pending' | 'confirmed' | 'cancelled' | 'completed'
+      reservation_source: 'marketplace' | 'manual' | 'block' | 'external'
       payment_type: 'deposit' | 'full'
       payment_status: 'pending' | 'paid' | 'refunded' | 'failed'
     }
@@ -621,3 +683,4 @@ export type Favorite = Tables<'favorites'>
 export type UserRole = Enums<'user_role'>
 export type VenueStatus = Enums<'venue_status'>
 export type ReservationStatus = Enums<'reservation_status'>
+export type ReservationSource = Enums<'reservation_source'>

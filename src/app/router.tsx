@@ -65,6 +65,10 @@ export const router = createBrowserRouter([
                 }),
               },
               {
+                path: 'musteriler',
+                lazy: async () => ({ Component: (await import('@/pages/dashboard/DashboardCustomers')).DashboardCustomers }),
+              },
+              {
                 path: 'tesisler',
                 lazy: async () => ({
                   Component: (await import('@/pages/dashboard/DashboardVenues')).DashboardVenues,

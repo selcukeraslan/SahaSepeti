@@ -1,7 +1,9 @@
 import { supabase } from '@/lib/supabase'
+import { reservationSourceSchema } from '@/features/reservations/schemas'
 import type {
   Reservation,
   ReservationStatus,
+  ReservationSource,
   TablesUpdate,
 } from '@/types/database.types'
 import type { StatsReservation } from './stats'
@@ -15,6 +17,8 @@ export interface OwnerReservation extends Reservation {
 export interface OwnerReservationFilters {
   venueId?: string
   status?: ReservationStatus
+  source?: ReservationSource
+  repeating?: boolean
   /** yyyy-MM-dd */
   date?: string
 }
@@ -30,13 +34,17 @@ export async function listOwnerReservations(
        venues(name),
        profiles!reservations_customer_id_fkey(full_name, phone)`,
     )
+    .eq('is_block', false)
+    .eq('series_superseded', false)
     .order('reservation_date', { ascending: false })
     .order('start_time', { ascending: false })
     .limit(200)
 
   if (filters.venueId) query = query.eq('venue_id', filters.venueId)
   if (filters.status) query = query.eq('status', filters.status)
+  if (filters.source) query = query.eq('source', reservationSourceSchema.parse(filters.source))
   if (filters.date) query = query.eq('reservation_date', filters.date)
+  if (filters.repeating) query = query.not('series_id', 'is', null)
 
   const { data, error } = await query
   if (error) throw new Error('Rezervasyonlar yüklenemedi')
@@ -58,7 +66,9 @@ export async function listOwnerReservations(
 export async function listOwnerReservationsForStats(venueId?: string): Promise<StatsReservation[]> {
   let query = supabase
     .from('reservations')
-    .select('reservation_date, start_time, status, total_price, venue_id')
+    .select('reservation_date, start_time, status, total_price, venue_id, source')
+    .eq('is_block', false)
+    .eq('series_superseded', false)
     .order('reservation_date', { ascending: false })
     .limit(2000)
 

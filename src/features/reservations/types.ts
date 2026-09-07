@@ -1,4 +1,11 @@
-import type { Reservation, ReservationStatus } from '@/types/database.types'
+import type { Reservation, ReservationSource, ReservationStatus } from '@/types/database.types'
+
+export const RESERVATION_SOURCE_LABELS: Record<ReservationSource, string> = {
+  marketplace: 'SahaSepeti',
+  manual: 'Telefon / Manuel',
+  block: 'Blok',
+  external: 'Dış sistem',
+}
 
 /** "Rezervasyonlarım" listesi için tesis/saha özetiyle birlikte */
 export interface ReservationWithVenue extends Reservation {

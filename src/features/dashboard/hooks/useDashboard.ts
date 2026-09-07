@@ -176,6 +176,11 @@ export function useUpdateReservationStatus() {
     }) => updateReservationStatus(reservationId, status),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['owner-reservations'] })
+      for (const key of ['venue-customers', 'venue-customer', 'venue-customer-history']) {
+        void queryClient.invalidateQueries({ queryKey: [key] })
+      }
+      void queryClient.invalidateQueries({ queryKey: ['owner-series'] })
+      void queryClient.invalidateQueries({ queryKey: ['owner-stats'] })
       void queryClient.invalidateQueries({ queryKey: ['owner-schedule'] })
       void queryClient.invalidateQueries({ queryKey: ['availability'] })
     },
@@ -196,7 +201,12 @@ export function useOwnerDaySchedule(venueId: string | undefined, date: string) {
 export function useScheduleMutations() {
   const queryClient = useQueryClient()
   const invalidate = () => {
+    for (const key of ['venue-customers', 'venue-customer', 'venue-customer-history']) {
+      void queryClient.invalidateQueries({ queryKey: [key] })
+    }
     void queryClient.invalidateQueries({ queryKey: ['owner-schedule'] })
+    void queryClient.invalidateQueries({ queryKey: ['owner-series'] })
+    void queryClient.invalidateQueries({ queryKey: ['owner-stats'] })
     void queryClient.invalidateQueries({ queryKey: ['owner-reservations'] })
     void queryClient.invalidateQueries({ queryKey: ['availability'] })
   }
