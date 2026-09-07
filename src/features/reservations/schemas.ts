@@ -4,6 +4,8 @@ import { uuid } from '@/lib/validation'
 const dateRegex = /^\d{4}-\d{2}-\d{2}$/
 const timeRegex = /^\d{2}:\d{2}$/
 
+export const reservationSourceSchema = z.enum(['marketplace', 'manual', 'block', 'external'])
+
 export const createReservationSchema = z
   .object({
     courtId: uuid('Geçersiz saha'),

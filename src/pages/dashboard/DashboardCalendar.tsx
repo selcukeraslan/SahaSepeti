@@ -8,6 +8,7 @@ import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { QueryErrorState } from '@/components/ui/QueryErrorState'
 import { CalendarSlotDialog } from '@/features/dashboard/components/CalendarSlotDialog'
+import { RESERVATION_SOURCE_LABELS } from '@/features/reservations/types'
 import { useMyVenues, useOwnerDaySchedule } from '@/features/dashboard/hooks/useDashboard'
 import type { ScheduleSlot } from '@/features/dashboard/types'
 import { nowInIstanbul } from '@/features/venues/services/slots'
@@ -57,7 +58,11 @@ function SlotChip({ slot, onOpen }: { slot: ScheduleSlot; onOpen: () => void }) 
         {time}
         <span className="block truncate text-[10px] font-normal opacity-90">
           {slot.reservation?.customerName}
+          {slot.reservation?.seriesId && ' · ↻ Haftalık'}
         </span>
+        {slot.reservation && <span className="block text-[10px] font-normal opacity-90">
+          {RESERVATION_SOURCE_LABELS[slot.reservation.source]}
+        </span>}
       </button>
     )
   }
@@ -70,7 +75,7 @@ function SlotChip({ slot, onOpen }: { slot: ScheduleSlot; onOpen: () => void }) 
         className={cn(CHIP_BASE, 'bg-slate-400 text-white hover:bg-slate-500 dark:bg-ink-600 dark:hover:bg-ink-500')}
       >
         {time}
-        <span className="block text-[10px] font-normal opacity-90">Bakım</span>
+        <span className="block text-[10px] font-normal opacity-90">Bakım / Blok</span>
       </button>
     )
   }

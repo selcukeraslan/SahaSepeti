@@ -9,6 +9,7 @@ import type {
   OpeningHour,
   PriceRule,
   ReservationStatus,
+  ReservationSource,
 } from '@/types/database.types'
 import {
   blockSlotSchema,
@@ -30,6 +31,8 @@ interface ScheduleCourtRow {
 
 interface ScheduleReservationRow {
   id: string
+  series_id: string | null
+  source: ReservationSource
   court_id: string
   start_time: string
   end_time: string
@@ -56,7 +59,7 @@ export async function listOwnerDaySchedule(venueId: string, date: string): Promi
     supabase
       .from('reservations')
       .select(
-        'id, court_id, start_time, end_time, status, is_block, no_show, guest_name, guest_phone, notes, profiles!reservations_customer_id_fkey(full_name, phone)',
+        'id, series_id, court_id, start_time, end_time, status, source, is_block, no_show, guest_name, guest_phone, notes, profiles!reservations_customer_id_fkey(full_name, phone)',
       )
       .eq('venue_id', venueId)
       .eq('reservation_date', date)
@@ -102,11 +105,13 @@ export async function listOwnerDaySchedule(venueId: string, date: string): Promi
         status: match.is_block ? 'blocked' : 'booked',
         reservation: {
           id: match.id,
+          seriesId: match.series_id,
+          source: match.source,
           status: match.status,
           isBlock: match.is_block,
           noShow: match.no_show,
           // RLS: owner yalnızca blok ya da misafir (customer_id null → profiles null) siler
-          deletable: match.is_block || match.profiles === null,
+          deletable: !match.series_id && (match.source === 'block' || match.source === 'manual'),
           customerName: match.profiles?.full_name || match.guest_name || 'Müşteri',
           customerPhone: match.profiles?.phone ?? match.guest_phone,
           notes: match.notes,
@@ -127,6 +132,7 @@ export async function listOwnerDaySchedule(venueId: string, date: string): Promi
 export async function createManualReservation(input: ManualReservationInput): Promise<void> {
   const data = manualReservationSchema.parse(input)
   const { error } = await supabase.from('reservations').insert({
+    venue_customer_id: data.venueCustomerId ?? null,
     court_id: data.courtId,
     venue_id: data.venueId,
     customer_id: null,
@@ -142,7 +148,9 @@ export async function createManualReservation(input: ManualReservationInput): Pr
     if (error.code === EXCLUSION_VIOLATION) {
       throw new Error('Bu saat dolu — çakışan bir kayıt var.')
     }
-    // Ham Postgres/trigger mesajını sızdırma
+    if (error.code === 'P0001' && error.message === 'Müşteri kara listede; yeni rezervasyon oluşturulamaz') {
+      throw new Error(error.message)
+    }
     throw new Error('Rezervasyon eklenemedi. Bilgileri kontrol edip tekrar deneyin.')
   }
 }

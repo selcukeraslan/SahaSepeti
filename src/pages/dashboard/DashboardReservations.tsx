@@ -1,6 +1,7 @@
+import { OwnerReservationCard } from '@/features/dashboard/components/OwnerReservationCard'
 import { useState } from 'react'
-import { Check, X } from 'lucide-react'
-import { Badge } from '@/components/ui/Badge'
+import { reservationSourceSchema } from '@/features/reservations/schemas'
+import { RESERVATION_SOURCE_LABELS } from '@/features/reservations/types'
 import { Button } from '@/components/ui/Button'
 import { Select } from '@/components/ui/Select'
 import { Skeleton } from '@/components/ui/Skeleton'
@@ -15,11 +16,7 @@ import {
 } from '@/features/dashboard/hooks/useDashboard'
 import {
   RESERVATION_STATUS_LABELS,
-  RESERVATION_STATUS_VARIANTS,
 } from '@/features/reservations/types'
-import { getReservationActionAvailability } from '@/features/dashboard/services/reservationActions'
-import { formatDateShort, formatPrice, formatTime } from '@/lib/format'
-import { nowInIstanbul } from '@/features/venues/services/slots'
 import type { ReservationStatus } from '@/types/database.types'
 
 export function DashboardReservations() {
@@ -27,16 +24,19 @@ export function DashboardReservations() {
   const [venueId, setVenueId] = useState('')
   const [status, setStatus] = useState('')
   const [date, setDate] = useState('')
+  const [source, setSource] = useState('')
+  const [repeating, setRepeating] = useState(false)
 
   const { data: reservations, isLoading, isError, isFetching, refetch } = useOwnerReservations({
     venueId: venueId || undefined,
     status: (status || undefined) as ReservationStatus | undefined,
     date: date || undefined,
+    source: source ? reservationSourceSchema.parse(source) : undefined,
+    repeating,
   })
   const updateStatus = useUpdateReservationStatus()
   const { setNoShow } = useScheduleMutations()
   const { toast } = useToast()
-  const now = nowInIstanbul()
 
   const handleStatusChange = (reservationId: string, nextStatus: ReservationStatus) => {
     updateStatus.mutate(
@@ -66,7 +66,16 @@ export function DashboardReservations() {
       <h1 className="text-2xl font-bold text-slate-900 dark:text-ink-50">Rezervasyonlar</h1>
 
       {/* Filtreler */}
-      <div className="mt-4 grid gap-3 sm:grid-cols-3">
+      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <Select
+          aria-label="Kaynak filtresi"
+          placeholder="Tüm kaynaklar"
+          value={source}
+          onChange={(event) => setSource(event.target.value)}
+          options={Object.entries(RESERVATION_SOURCE_LABELS)
+            .filter(([value]) => value !== 'block')
+            .map(([value, label]) => ({ value, label }))}
+        />
         <Select
           aria-label="Tesis filtresi"
           placeholder="Tüm tesisler"
@@ -94,6 +103,10 @@ export function DashboardReservations() {
       </div>
 
       {/* Liste */}
+      <label className="mt-3 flex items-center gap-2 text-sm">
+        <input type="checkbox" checked={repeating} onChange={(e) => setRepeating(e.target.checked)} />
+        Yalnızca tekrarlayan rezervasyonlar
+      </label>
       <div className="mt-5 space-y-3">
         {isLoading &&
           Array.from({ length: 4 }, (_, index) => <Skeleton key={index} className="h-24" />)}
@@ -110,120 +123,19 @@ export function DashboardReservations() {
           <EmptyState
             title="Rezervasyon bulunamadı"
             description="Seçili filtrelere uyan rezervasyon yok."
-            action={(venueId || status || date) ? (
-              <Button variant="outline" size="sm" onClick={() => { setVenueId(''); setStatus(''); setDate('') }}>
+            action={(venueId || status || date || source || repeating) ? (
+              <Button variant="outline" size="sm" onClick={() => { setVenueId(''); setStatus(''); setDate(''); setSource(''); setRepeating(false) }}>
                 Filtreleri Temizle
               </Button>
             ) : undefined}
           />
         )}
 
-        {visible?.map((reservation) => {
-            const actions = getReservationActionAvailability(reservation, now)
-            const mutationsPending = updateStatus.isPending || setNoShow.isPending
-            return (
-          <div
-            key={reservation.id}
-            className="flex flex-col gap-3 rounded-2xl border border-slate-200 dark:border-ink-800 bg-white dark:bg-ink-900 p-4 shadow-soft sm:flex-row sm:items-center"
-          >
-            <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap items-center gap-2">
-                <Badge variant={RESERVATION_STATUS_VARIANTS[reservation.status]}>
-                  {RESERVATION_STATUS_LABELS[reservation.status]}
-                </Badge>
-                <span className="text-sm font-semibold text-slate-900 dark:text-ink-50">
-                  {formatPrice(reservation.total_price)}
-                </span>
-              </div>
-              <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1">
-                <span className="font-semibold text-slate-900 dark:text-ink-50">
-                  {reservation.customer?.full_name || reservation.guest_name || 'Müşteri'}
-                </span>
-                {(reservation.customer?.phone || reservation.guest_phone) && (
-                  <span className="font-normal text-slate-500 dark:text-ink-400">
-                    {reservation.customer?.phone || reservation.guest_phone}
-                  </span>
-                )}
-                {!reservation.customer && reservation.guest_name && (
-                  <Badge variant="info">Manuel</Badge>
-                )}
-                {reservation.no_show && <Badge variant="danger">Gelmedi</Badge>}
-              </div>
-              <p className="text-sm text-slate-500 dark:text-ink-400">
-                {reservation.venue?.name} · {reservation.court?.name} ·{' '}
-                {formatDateShort(reservation.reservation_date)} ·{' '}
-                {formatTime(reservation.start_time)}–{formatTime(reservation.end_time)}
-              </p>
-              {reservation.notes && (
-                <p className="mt-1.5 rounded-lg bg-slate-50 dark:bg-ink-950 px-3 py-1.5 text-sm text-slate-600 dark:text-ink-300">
-                  Not: {reservation.notes}
-                </p>
-              )}
-            </div>
-
-            {/* Durum aksiyonları */}
-            <div className="flex shrink-0 flex-wrap items-center gap-2">
-              {reservation.status === 'pending' && (
-                <>
-                  <Button
-                    size="sm"
-                    isLoading={updateStatus.isPending && updateStatus.variables?.reservationId === reservation.id && updateStatus.variables.status === 'confirmed'}
-                    disabled={updateStatus.isPending || setNoShow.isPending}
-                    onClick={() => handleStatusChange(reservation.id, 'confirmed')}
-                  >
-                    <Check className="size-4" aria-hidden />
-                    Onayla
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    isLoading={updateStatus.isPending && updateStatus.variables?.reservationId === reservation.id && updateStatus.variables.status === 'cancelled'}
-                    disabled={updateStatus.isPending || setNoShow.isPending}
-                    onClick={() => handleStatusChange(reservation.id, 'cancelled')}
-                  >
-                    <X className="size-4" aria-hidden />
-                    Reddet
-                  </Button>
-                </>
-              )}
-              {reservation.status === 'confirmed' && (
-                <>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    isLoading={updateStatus.isPending && updateStatus.variables?.reservationId === reservation.id && updateStatus.variables.status === 'completed'}
-                    disabled={mutationsPending || !actions.canComplete}
-                    title={!actions.canComplete ? 'Rezervasyon bitiş saatinden sonra tamamlanabilir' : undefined}
-                    onClick={() => handleStatusChange(reservation.id, 'completed')}
-                  >
-                    Tamamlandı
-                  </Button>
-                  <Button
-                    variant={reservation.no_show ? 'outline' : 'ghost'}
-                    size="sm"
-                    isLoading={setNoShow.isPending && setNoShow.variables?.reservationId === reservation.id}
-                    disabled={mutationsPending || !actions.canMarkNoShow}
-                    title={!actions.canMarkNoShow ? 'No-show rezervasyon başladıktan sonra işaretlenebilir' : undefined}
-                    onClick={() => handleNoShow(reservation.id, !reservation.no_show)}
-                  >
-                    {reservation.no_show ? "No-show'u kaldır" : 'Gelmedi'}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    isLoading={updateStatus.isPending && updateStatus.variables?.reservationId === reservation.id && updateStatus.variables.status === 'cancelled'}
-                    disabled={mutationsPending || !actions.canCancel}
-                    title={!actions.canCancel ? 'Başlamış rezervasyon iptal edilemez' : undefined}
-                    onClick={() => handleStatusChange(reservation.id, 'cancelled')}
-                  >
-                    İptal Et
-                  </Button>
-                </>
-              )}
-            </div>
-          </div>
-            )
-        })}
+        {visible?.map((reservation) => (
+          <OwnerReservationCard key={reservation.id} reservation={reservation}
+            updateStatus={updateStatus} setNoShow={setNoShow}
+            onStatusChange={handleStatusChange} onNoShow={handleNoShow} />
+        ))}
       </div>
     </div>
   )

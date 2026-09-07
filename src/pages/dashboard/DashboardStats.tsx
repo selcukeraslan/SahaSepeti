@@ -6,6 +6,8 @@ import { Badge } from '@/components/ui/Badge'
 import { Select } from '@/components/ui/Select'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { QueryErrorState } from '@/components/ui/QueryErrorState'
+import { ReservationSourceCards } from '@/features/dashboard/components/ReservationSourceCards'
 import { BarChart, type BarChartItem } from '@/features/dashboard/components/BarChart'
 import { useMyVenues, useOwnerStats } from '@/features/dashboard/hooks/useDashboard'
 import {
@@ -91,7 +93,7 @@ export function DashboardStats() {
   const [range, setRange] = useState<StatsRange>('6m')
   const [metric, setMetric] = useState<'count' | 'revenue'>('revenue')
   const { data: venues } = useMyVenues()
-  const { data: reservations, isLoading } = useOwnerStats(venueId || undefined)
+  const { data: reservations, isLoading, isError, isFetching, refetch } = useOwnerStats(venueId || undefined)
 
   const today = useMemo(() => nowInIstanbul().date, [])
   const stats = useMemo(
@@ -147,7 +149,10 @@ export function DashboardStats() {
         </div>
       </div>
 
-      {isLoading ? (
+      {isError ? (
+        <QueryErrorState title="İstatistikler yüklenemedi" isRetrying={isFetching}
+          onRetry={() => { void refetch() }} />
+      ) : isLoading ? (
         <div className="mt-5 space-y-5">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {Array.from({ length: 4 }, (_, index) => (
@@ -189,6 +194,11 @@ export function DashboardStats() {
           </div>
 
           {/* Ciro / rezervasyon trendi */}
+          <ChartCard title="Rezervasyon Kaynakları">
+            <ReservationSourceCards bySource={stats.bySource} />
+            <p className="mt-4 text-xs leading-relaxed text-slate-500 dark:text-ink-400">Seçili dönemde bugüne kadarki kayıtlar; iptaller sayıya dahildir.
+              Ciro yalnızca onaylı ve tamamlanmış rezervasyonları içerir. Bloklar hariçtir.</p>
+          </ChartCard>
           <ChartCard
             title={`Trend · ${rangeLabel}`}
             action={
