@@ -2,7 +2,7 @@
 
 ## Ürün Bağlamı
 
-Türkiye için spor tesisi rezervasyon platformu (halı saha, basketbol, tenis, padel...). Kullanıcılar tesis arar, müsait saatleri görür, rezervasyon yapar. Tesis sahipleri panelden tesis/saha/fiyat/rezervasyon yönetir; admin tesisleri onaylar. Roller: `customer`, `venue_owner`, `admin`. Yol haritası: `TODO.md`.
+Türkiye için spor tesisi rezervasyon platformu (halı saha, basketbol, tenis, padel...). Kullanıcılar tesis arar, müsait saatleri görür, rezervasyon yapar. Tesis sahipleri panelden tesis/saha/fiyat/rezervasyon yönetir; admin tesisleri onaylar. Roller: `customer`, `venue_owner`, `admin`. Yol haritası: `TODO.md`; ürün stratejisi: `strategy.md`.
 
 **UI dili Türkçe, kod/DB İngilizce.** Gerçek ödeme entegre edilmez (payments tablosu placeholder).
 

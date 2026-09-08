@@ -4,6 +4,7 @@
 
 1. `CLAUDE.md` — mimari kurallar ve kodlama standartları (bağlayıcıdır).
 2. `TODO.md` — faz planı; hangi fazda olduğumuzu buradan anla, faz sırasına uy.
+3. `strategy.md` — ürün amacı, kapsam sınırları ve ertelenen işler.
 
 ## Bu Repoda Nasıl Çalışılır
 
