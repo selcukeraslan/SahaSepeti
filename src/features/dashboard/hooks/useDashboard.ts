@@ -154,6 +154,10 @@ export function useOwnerReservations(filters: OwnerReservationFilters) {
   return useQuery({
     queryKey: ['owner-reservations', filters],
     queryFn: () => listOwnerReservations(filters),
+    // Owner farklı cihazdan gelen rezervasyon/onay değişikliklerini kaçırmamalı.
+    staleTime: 10_000,
+    refetchInterval: 30_000,
+    refetchOnWindowFocus: true,
   })
 }
 
@@ -161,6 +165,9 @@ export function useOwnerStats(venueId?: string) {
   return useQuery({
     queryKey: ['owner-stats', venueId ?? 'all'],
     queryFn: () => listOwnerReservationsForStats(venueId),
+    staleTime: 60_000,
+    refetchInterval: 60_000,
+    refetchOnWindowFocus: true,
   })
 }
 
@@ -194,6 +201,10 @@ export function useOwnerDaySchedule(venueId: string | undefined, date: string) {
     queryKey: ['owner-schedule', venueId ?? '', date],
     queryFn: () => listOwnerDaySchedule(venueId ?? '', date),
     enabled: Boolean(venueId),
+    // Takvim tesis sahibinin ana operasyon ekranıdır; kısa aralıkta yenilenir.
+    staleTime: 10_000,
+    refetchInterval: 15_000,
+    refetchOnWindowFocus: true,
   })
 }
 

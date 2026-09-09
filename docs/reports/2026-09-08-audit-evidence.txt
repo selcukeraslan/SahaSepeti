@@ -1,0 +1,168 @@
+SahaSepeti audit evidence — 2026-09-08
+Commit: aedcd43
+PostgreSQL 16.14 (Homebrew). Disposable local database; no production data.
+Minimal auth/storage stand-ins; anon/authenticated table grants emulate the existing Supabase API privilege model. All 001–012 migrations applied unchanged. This is not a full Supabase/PostgREST integration test.
+The completed reservation is a trusted synthetic fixture, not a customer-created completed booking. All probes end in ROLLBACK.
+
+Validation: typecheck PASS; lint PASS; Vitest 15 files / 85 tests PASS; build PASS with sitemap fetch warning; npm audit returned zero known vulnerabilities (network retry succeeded). Official npm run test:db could not connect to a local Supabase instance.
+
+
+===== bootstrap.sql =====
+create role anon nologin;
+create role authenticated nologin;
+create schema auth;
+create schema storage;
+create schema extensions;
+create table auth.users(id uuid primary key, raw_user_meta_data jsonb default '{}'::jsonb);
+create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
+grant usage on schema public,auth,storage to anon,authenticated;
+grant execute on function auth.uid() to anon,authenticated;
+alter default privileges in schema public grant select,insert,update,delete on tables to anon,authenticated;
+create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]);
+create table storage.objects(id uuid primary key,bucket_id text,name text);
+alter table storage.objects enable row level security;
+create function storage.foldername(text) returns text[] language sql as $$ select string_to_array($1,'/') $$;
+
+
+===== probes.sql =====
+\set ON_ERROR_STOP on
+begin;
+insert into auth.users(id,raw_user_meta_data) values
+('10000000-0000-0000-0000-000000000001','{"role":"venue_owner","full_name":"Audit Owner A"}'),
+('10000000-0000-0000-0000-000000000002','{"role":"venue_owner","full_name":"Audit Owner B"}'),
+('10000000-0000-0000-0000-000000000003','{"full_name":"Audit Customer"}');
+insert into venues(id,owner_id,name,slug,city,district,status) values
+('20000000-0000-0000-0000-000000000001','10000000-0000-0000-0000-000000000001','Audit A','audit-a','Istanbul','A','approved'),
+('20000000-0000-0000-0000-000000000002','10000000-0000-0000-0000-000000000001','Audit B','audit-b','Istanbul','B','approved'),
+('20000000-0000-0000-0000-000000000003','10000000-0000-0000-0000-000000000002','Other Owner','audit-c','Istanbul','C','approved');
+insert into sports(id,name,slug) values ('30000000-0000-0000-0000-000000000001','Audit Sport','audit');
+insert into courts(id,venue_id,sport_id,name) values
+('40000000-0000-0000-0000-000000000001','20000000-0000-0000-0000-000000000001','30000000-0000-0000-0000-000000000001','Audit Court');
+insert into opening_hours(venue_id,day_of_week,open_time,close_time)
+select v.id,d,'09:00','23:00' from venues v cross join generate_series(0,6) d;
+insert into price_rules(court_id,start_time,end_time,price) values ('40000000-0000-0000-0000-000000000001','09:00','23:00',1000);
+insert into reservations(id,court_id,venue_id,customer_id,reservation_date,start_time,end_time,status)
+values ('50000000-0000-0000-0000-000000000001','40000000-0000-0000-0000-000000000001','20000000-0000-0000-0000-000000000001','10000000-0000-0000-0000-000000000003',current_date+1,'09:00','10:00','completed');
+set local role authenticated;
+select set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000003',true);
+insert into reviews(venue_id,customer_id,reservation_id,rating,comment)
+values('20000000-0000-0000-0000-000000000001',auth.uid(),'50000000-0000-0000-0000-000000000001',5,'Synthetic audit review');
+update reviews set venue_id='20000000-0000-0000-0000-000000000002';
+select 'REVIEW_MOVED_TO_UNVISITED_VENUE' as probe, count(*)=1 as reproduced from reviews where venue_id='20000000-0000-0000-0000-000000000002';
+insert into reservations(court_id,venue_id,customer_id,reservation_date,start_time,end_time,total_price)
+select '40000000-0000-0000-0000-000000000001','20000000-0000-0000-0000-000000000001',auth.uid(),current_date+10+i,'09:00','10:00',1 from generate_series(1,100) i;
+select 'ONE_CUSTOMER_100_PENDING_BOOKINGS' as probe,count(*)=100 as reproduced, min(total_price)=1000 as server_price_protected from reservations where status='pending';
+insert into reservations(court_id,venue_id,customer_id,reservation_date,start_time,end_time,notes)
+values('40000000-0000-0000-0000-000000000001','20000000-0000-0000-0000-000000000001',auth.uid(),'2099-01-01','09:00','10:00',repeat('x',10000));
+select 'YEAR_2099_AND_10000_CHAR_NOTE' as probe,count(*)=1 as reproduced from reservations where reservation_date='2099-01-01' and length(notes)=10000;
+do $$
+begin
+  begin
+    update profiles set role='admin' where id=auth.uid();
+    raise exception 'AUDIT: role escalation unexpectedly allowed';
+  exception when raise_exception then
+    if sqlerrm='AUDIT: role escalation unexpectedly allowed' then raise; end if;
+    raise notice 'ROLE_ESCALATION_BLOCKED: %',sqlerrm;
+  end;
+  begin
+    insert into reservations(court_id,venue_id,customer_id,reservation_date,start_time,end_time)
+    values('40000000-0000-0000-0000-000000000001','20000000-0000-0000-0000-000000000001',auth.uid(),'2099-01-01','09:00','10:00');
+    raise exception 'AUDIT: duplicate unexpectedly allowed';
+  exception when exclusion_violation then raise notice 'DOUBLE_BOOKING_BLOCKED: SQLSTATE 23P01'; end;
+end;
+$$;
+select set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000002',true);
+select 'OTHER_OWNER_CANNOT_READ_RESERVATIONS' as probe,count(*)=0 as protected from reservations;
+select set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000001',true);
+update courts set venue_id='20000000-0000-0000-0000-000000000002' where id='40000000-0000-0000-0000-000000000001';
+select 'COURT_MOVED_RESERVATION_VENUE_STALE' as probe,count(*)>0 as reproduced from reservations r join courts c on c.id=r.court_id where r.venue_id<>c.venue_id;
+update venues set status='draft' where id='20000000-0000-0000-0000-000000000001';
+delete from venues where id='20000000-0000-0000-0000-000000000001';
+select 'OWNER_DELETED_MARKETPLACE_RESERVATION_HISTORY' as probe,count(*)=0 as reproduced from reservations;
+reset role;
+select set_config('request.jwt.claim.sub','',true);
+update venues set status='suspended' where id='20000000-0000-0000-0000-000000000002';
+set local role anon;
+select 'ANON_READS_SUSPENDED_VENUE_REVIEW' as probe,count(*)=1 as reproduced from get_venue_reviews('20000000-0000-0000-0000-000000000002');
+rollback;
+
+
+===== probes.log =====
+BEGIN
+INSERT 0 3
+INSERT 0 3
+INSERT 0 1
+INSERT 0 1
+INSERT 0 21
+INSERT 0 1
+INSERT 0 1
+SET
+              set_config              
+--------------------------------------
+ 10000000-0000-0000-0000-000000000003
+(1 row)
+
+INSERT 0 1
+UPDATE 1
+              probe              | reproduced 
+---------------------------------+------------
+ REVIEW_MOVED_TO_UNVISITED_VENUE | t
+(1 row)
+
+INSERT 0 100
+               probe               | reproduced | server_price_protected 
+-----------------------------------+------------+------------------------
+ ONE_CUSTOMER_100_PENDING_BOOKINGS | t          | t
+(1 row)
+
+INSERT 0 1
+             probe             | reproduced 
+-------------------------------+------------
+ YEAR_2099_AND_10000_CHAR_NOTE | t
+(1 row)
+
+psql:/private/tmp/sahasepeti-audit.hicbuq/probes.sql:46: NOTICE:  ROLE_ESCALATION_BLOCKED: Rol değişikliği yalnızca admin tarafından yapılabilir
+psql:/private/tmp/sahasepeti-audit.hicbuq/probes.sql:46: NOTICE:  DOUBLE_BOOKING_BLOCKED: SQLSTATE 23P01
+DO
+              set_config              
+--------------------------------------
+ 10000000-0000-0000-0000-000000000002
+(1 row)
+
+                probe                 | protected 
+--------------------------------------+-----------
+ OTHER_OWNER_CANNOT_READ_RESERVATIONS | t
+(1 row)
+
+              set_config              
+--------------------------------------
+ 10000000-0000-0000-0000-000000000001
+(1 row)
+
+UPDATE 1
+                probe                | reproduced 
+-------------------------------------+------------
+ COURT_MOVED_RESERVATION_VENUE_STALE | t
+(1 row)
+
+UPDATE 1
+DELETE 1
+                     probe                     | reproduced 
+-----------------------------------------------+------------
+ OWNER_DELETED_MARKETPLACE_RESERVATION_HISTORY | t
+(1 row)
+
+RESET
+ set_config 
+------------
+ 
+(1 row)
+
+UPDATE 1
+SET
+               probe               | reproduced 
+-----------------------------------+------------
+ ANON_READS_SUSPENDED_VENUE_REVIEW | t
+(1 row)
+
+ROLLBACK

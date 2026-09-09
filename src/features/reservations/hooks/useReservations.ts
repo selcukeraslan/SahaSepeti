@@ -9,6 +9,10 @@ export function useMyReservations() {
   return useQuery({
     queryKey: ['my-reservations'],
     queryFn: listMyReservations,
+    // Owner onayı veya tesis iptali başka cihazdan değişebilir.
+    staleTime: 15_000,
+    refetchInterval: 30_000,
+    refetchOnWindowFocus: true,
   })
 }
 

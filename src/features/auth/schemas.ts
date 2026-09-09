@@ -5,6 +5,20 @@ export const loginSchema = z.object({
   password: z.string().min(1, 'Şifre gerekli'),
 })
 
+export const emailSchema = z.object({
+  email: z.string().min(1, 'E-posta gerekli').email('Geçerli bir e-posta girin'),
+})
+
+export const passwordResetSchema = z
+  .object({
+    password: z.string().min(8, 'Şifre en az 8 karakter olmalı'),
+    passwordConfirmation: z.string().min(1, 'Şifre tekrarı gerekli'),
+  })
+  .refine((data) => data.password === data.passwordConfirmation, {
+    message: 'Şifreler eşleşmiyor',
+    path: ['passwordConfirmation'],
+  })
+
 export const registerSchema = z.object({
   fullName: z.string().min(2, 'Ad soyad en az 2 karakter olmalı').max(100, 'Ad soyad çok uzun'),
   email: z.string().min(1, 'E-posta gerekli').email('Geçerli bir e-posta girin'),
@@ -18,4 +32,6 @@ export const registerSchema = z.object({
 })
 
 export type LoginInput = z.infer<typeof loginSchema>
+export type EmailInput = z.infer<typeof emailSchema>
+export type PasswordResetInput = z.infer<typeof passwordResetSchema>
 export type RegisterInput = z.infer<typeof registerSchema>

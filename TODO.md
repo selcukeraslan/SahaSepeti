@@ -197,3 +197,37 @@ Bir cümleyle kullanıcı veya sistem sonucunu yaz.
 - Son roadmap düzenlemesi: 2026-09-08
 - Sonraki iş: CURRENT bölümündeki Faz 10/13 manuel doğrulama kapısı
 - Bu roadmap public repoda tutulur; kişisel notlar için ayrı vault kullanılmaz.
+
+### 2026-09-09 manuel doğrulama notu
+
+- Demo customer, venue owner ve admin oturumlarıyla giriş ve rol bazlı ana ekranlar tarayıcıda doğrulandı.
+- Customer ve venue owner hesaplarının `/admin` erişimi ana sayfaya yönlendiriliyor; admin hesabı `/admin` onay kuyruğunu açabiliyor.
+- Venue owner `/panel` ekranını açabiliyor.
+- 390px mobil görünümde ana sayfada yatay taşma gözlenmedi (`scrollWidth` viewport genişliğini aşmadı).
+- Console'da uygulama hatası yok; geliştirme ortamında React Router `HydrateFallback` uyarısı mevcut. Network ve kalan uçtan uca rezervasyon adımları henüz tamamlanmadı.
+- Customer → slot seçimi → rezervasyon talebi → owner onayı → customer tarafında `Onaylandı` durumu uçtan uca tarayıcıda doğrulandı. Test kaydı canlı Supabase'de `Moda Arena (Demo)`, 9 Eyl 2026 13:00–14:00 olarak kaldı; temizleme için ayrıca onay gerekiyor.
+- Auth ekranları tarayıcıda doğrulandı: geçersiz e-posta ve eşleşmeyen şifre reddediliyor. Demo müşteri adresine doğrulama e-postası isteği başarılı döndü. Şifre sıfırlama testi Supabase `429 over_email_send_rate_limit` ile sınırlandı; uygulama bu durumu artık kullanıcı dostu Türkçe mesajla gösteriyor. Redirect URL ve özel SMTP ayarları canlı öncesi tamamlanmalı.
+
+### Sonraki yüksek öncelikli işler
+
+- [x] P1 — Rezervasyon fiyat teklifini sunucu tarafında doğrula; fiyat değişmişse güncel tutarı döndürüp yeniden onay iste. (`016_reservation_price_quote.sql`, canlı migration, typecheck/lint/test/build)
+- [x] P2 — Askıya alınmış/taslak tesis yorumlarının public RPC'den görünmesini engelle. (`017_public_reviews_visibility.sql`, canlı migration, typecheck/lint/test)
+- [x] P1 — Şifre sıfırlama, e-posta doğrulama dönüşü ve doğrulama e-postasını yeniden gönderme akışını ekle. (Kod ve kalite kontrolleri tamamlandı; Supabase e-posta/redirect ayarları canlıda ayrıca doğrulanmalı.)
+- [CURRENT] P1 — Bildirim Edge Function'ını etkinleştirmeden önce zorunlu secret, payload doğrulaması, rezervasyon eşleşmesi ve idempotency ekle.
+- [ ] P2 — Owner/admin rezervasyon listelerine sayfalama ve doğru toplam kayıt bilgisini ekle.
+- [ ] P2 — Çakışan fiyat kurallarını engelle ve aktif saha fiyatı hesaplamasını netleştir.
+- [ ] P2 — Çok adımlı tesis kayıtlarını transaction/RPC ile atomik hale getir.
+- [ ] P2 — Sıfır satır etkileyen update/delete işlemlerini başarı sayma.
+- [ ] P2 — Dialog ve Sheet bileşenlerinde focus trap ve eski odağa dönüşü tamamla.
+- [ ] Yayın öncesi — Demo hesaplarının üretimde olmadığını ve admin MFA durumunu doğrula.
+
+### 2026-09-09 birleştirme özeti
+
+1. **Güvenlik ve veri bütünlüğü:** Saha tesis bağlantısı değişmez hale getirildi, rezervasyon geçmişi olan tesisin silinmesi engellendi, tesis durum geçişleri sıkılaştırıldı ve yorumların rezervasyon/müşteri/tesis bağlantıları korundu. `013_security_integrity.sql`, `015_review_fk_cleanup.sql`
+2. **Rezervasyon sınırları:** Müşteri başına en fazla üç bekleyen rezervasyon ve en fazla 30 gün ileri rezervasyon kuralı, paralel istekleri de kapsayacak şekilde veritabanında uygulandı. `014_reservation_limits.sql`
+3. **Owner takvimi:** Pasif sahalar listeden çıkarılmıyor; kapalı gün veya çalışma saati dışındaki mevcut rezervasyonlar görünür kalıyor. Takvim ve rezervasyon sorgularında otomatik yenileme/odak dönüşü güncellendi.
+4. **Fiyat tutarlılığı:** Rezervasyon özeti açıldıktan sonra fiyat değişirse sunucu işlemi geri alıyor ve kullanıcıdan güncel fiyatı tekrar onaylamasını istiyor. `016_reservation_price_quote.sql`
+5. **Public yorum görünürlüğü:** Taslak, reddedilmiş veya askıya alınmış tesis yorumları public RPC’den gizlendi; owner/admin yetkili incelemesi korundu. `017_public_reviews_visibility.sql`
+6. **Auth hesap kurtarma:** Şifre sıfırlama, yeni şifre belirleme ve doğrulama e-postasını yeniden gönderme sayfaları/servisleri eklendi. Redirect URL, e-posta rate limit ve kullanıcı dostu hata akışları ele alındı.
+7. **Manuel doğrulama:** Customer → rezervasyon → owner onayı → customer tarafında onay durumu uçtan uca test edildi; customer/owner/admin route sınırları ve 390px mobil yatay taşma kontrol edildi.
+8. **Kalite kapısı:** Typecheck, lint, 85 frontend testi ve production build başarılı. Canlı Supabase migration zinciri 001–017 ile hizalı; 016 ve 017 canlıya uygulandı.

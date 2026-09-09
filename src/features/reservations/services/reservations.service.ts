@@ -19,28 +19,31 @@ export async function createReservation(input: CreateReservationInput): Promise<
     throw new Error('Rezervasyon için giriş yapmalısınız')
   }
 
-  // total_price ve venue_id sunucu tarafında (trigger) doğrulanır/hesaplanır.
-  const { data: reservation, error } = await supabase
-    .from('reservations')
-    .insert({
-      court_id: data.courtId,
-      venue_id: data.venueId,
-      customer_id: auth.user.id,
-      reservation_date: data.date,
-      start_time: data.startTime,
-      end_time: data.endTime,
-      notes: data.notes || null,
-    })
-    .select()
-    .single()
+  // Trigger nihai fiyatı sunucuda hesaplar; RPC de istemcinin gördüğü
+  // teklif ile bu nihai fiyatın aynı işlemde eşleşmesini kontrol eder.
+  const { data: reservation, error } = await supabase.rpc('create_marketplace_reservation', {
+    p_court_id: data.courtId,
+    p_venue_id: data.venueId,
+    p_reservation_date: data.date,
+    p_start_time: data.startTime,
+    p_end_time: data.endTime,
+    p_expected_total_price: data.expectedTotalPrice,
+    p_notes: data.notes || null,
+  })
 
   if (error) {
     if (error.code === EXCLUSION_VIOLATION) {
       throw new Error('Bu saat az önce doldu. Lütfen başka bir saat seçin.')
     }
+    if (error.code === 'P0002') {
+      throw new Error('Fiyat değişti. Güncel fiyatı kontrol edip tekrar deneyin.')
+    }
     throw new Error(error.message || 'Rezervasyon oluşturulamadı')
   }
-  return reservation
+  if (!reservation || typeof reservation !== 'object') {
+    throw new Error('Rezervasyon oluşturulamadı')
+  }
+  return reservation as unknown as Reservation
 }
 
 export async function listMyReservations(): Promise<ReservationWithVenue[]> {

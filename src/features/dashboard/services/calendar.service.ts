@@ -26,6 +26,7 @@ interface ScheduleCourtRow {
   id: string
   name: string
   is_indoor: boolean
+  is_active: boolean
   price_rules: PriceRule[]
 }
 
@@ -50,9 +51,8 @@ export async function listOwnerDaySchedule(venueId: string, date: string): Promi
   const [courtsRes, hoursRes, reservationsRes] = await Promise.all([
     supabase
       .from('courts')
-      .select('id, name, is_indoor, price_rules(*)')
+      .select('id, name, is_indoor, is_active, price_rules(*)')
       .eq('venue_id', venueId)
-      .eq('is_active', true)
       .order('created_at')
       .returns<ScheduleCourtRow[]>(),
     supabase.from('opening_hours').select('*').eq('venue_id', venueId).returns<OpeningHour[]>(),
@@ -92,6 +92,7 @@ export async function listOwnerDaySchedule(venueId: string, date: string): Promi
       nowMinutes,
     })
 
+    const representedReservationIds = new Set<string>()
     const slots: ScheduleSlot[] = baseSlots.map((slot) => {
       const slotStart = timeToMinutes(slot.startTime)
       const slotEnd = timeToMinutes(slot.endTime)
@@ -99,6 +100,7 @@ export async function listOwnerDaySchedule(venueId: string, date: string): Promi
         (r) => slotStart < timeToMinutes(r.end_time) && timeToMinutes(r.start_time) < slotEnd,
       )
       if (!match) return { ...slot, reservation: null }
+      representedReservationIds.add(match.id)
       return {
         ...slot,
         // Rezervasyonlu slot geçmişte bile "dolu" gösterilir (owner kimin aldığını görsün)
@@ -119,10 +121,39 @@ export async function listOwnerDaySchedule(venueId: string, date: string): Promi
       }
     })
 
+    // Kapalı günlerde (veya çalışma saatleri dışındaki kayıtlarda) temel slot
+    // üretilemez; yine de mevcut rezervasyonları owner'a görünür tut.
+    for (const reservation of courtReservations) {
+      if (representedReservationIds.has(reservation.id)) continue
+      slots.push({
+        startTime: reservation.start_time.slice(0, 5),
+        endTime: reservation.end_time.slice(0, 5),
+        price: null,
+        status: reservation.is_block ? 'blocked' : 'booked',
+        reservation: {
+          id: reservation.id,
+          seriesId: reservation.series_id,
+          source: reservation.source,
+          status: reservation.status,
+          isBlock: reservation.is_block,
+          noShow: reservation.no_show,
+          deletable:
+            !reservation.series_id &&
+            (reservation.source === 'block' || reservation.source === 'manual'),
+          customerName:
+            reservation.profiles?.full_name || reservation.guest_name || 'Müşteri',
+          customerPhone: reservation.profiles?.phone ?? reservation.guest_phone,
+          notes: reservation.notes,
+        },
+      })
+    }
+    slots.sort((a, b) => timeToMinutes(a.startTime) - timeToMinutes(b.startTime))
+
     return {
       courtId: court.id,
       courtName: court.name,
       isIndoor: court.is_indoor,
+      isActive: court.is_active,
       isClosedToday: !openingHour || openingHour.is_closed,
       slots,
     }

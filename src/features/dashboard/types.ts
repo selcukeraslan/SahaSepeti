@@ -64,6 +64,7 @@ export interface CourtSchedule {
   courtId: string
   courtName: string
   isIndoor: boolean
+  isActive: boolean
   /** O gün çalışma saati yoksa/kapalıysa */
   isClosedToday: boolean
   slots: ScheduleSlot[]

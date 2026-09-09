@@ -1,7 +1,16 @@
 import { supabase } from '@/lib/supabase'
 import type { AuthChangeEvent, Session } from '@supabase/supabase-js'
 import type { Profile } from '@/types/database.types'
-import { loginSchema, registerSchema, type LoginInput, type RegisterInput } from '../schemas'
+import {
+  emailSchema,
+  loginSchema,
+  passwordResetSchema,
+  registerSchema,
+  type EmailInput,
+  type LoginInput,
+  type PasswordResetInput,
+  type RegisterInput,
+} from '../schemas'
 
 export type AuthStateChangeHandler = (
   event: AuthChangeEvent,
@@ -43,6 +52,26 @@ export async function signIn(input: LoginInput): Promise<void> {
   }
 }
 
+export async function sendPasswordResetEmail(input: EmailInput): Promise<void> {
+  const data = emailSchema.parse(input)
+  const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
+    redirectTo: `${window.location.origin}/sifre-yenile`,
+  })
+  if (error) throw new Error(translateAuthError(error.message))
+}
+
+export async function updatePassword(input: PasswordResetInput): Promise<void> {
+  const data = passwordResetSchema.parse(input)
+  const { error } = await supabase.auth.updateUser({ password: data.password })
+  if (error) throw new Error(translateAuthError(error.message))
+}
+
+export async function resendConfirmationEmail(input: EmailInput): Promise<void> {
+  const data = emailSchema.parse(input)
+  const { error } = await supabase.auth.resend({ type: 'signup', email: data.email })
+  if (error) throw new Error(translateAuthError(error.message))
+}
+
 export async function signOut(): Promise<void> {
   const { error } = await supabase.auth.signOut()
   if (error) {
@@ -72,6 +101,9 @@ export async function getProfile(userId: string): Promise<Profile | null> {
 }
 
 function translateAuthError(message: string): string {
+  if (message.includes('rate limit') || message.includes('email rate')) {
+    return 'Çok kısa sürede fazla e-posta istendi. Lütfen birkaç dakika sonra tekrar deneyin.'
+  }
   if (message.includes('Invalid login credentials')) {
     return 'E-posta veya şifre hatalı'
   }

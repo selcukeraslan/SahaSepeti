@@ -24,6 +24,9 @@ export const router = createBrowserRouter([
         lazy: async () => ({ Component: (await import('@/pages/Contact')).Contact }),
       },
       { path: '/giris', lazy: async () => ({ Component: (await import('@/pages/Login')).Login }) },
+      { path: '/sifremi-unuttum', lazy: async () => ({ Component: (await import('@/pages/ForgotPassword')).ForgotPassword }) },
+      { path: '/sifre-yenile', lazy: async () => ({ Component: (await import('@/pages/ResetPassword')).ResetPassword }) },
+      { path: '/dogrulama-maili', lazy: async () => ({ Component: (await import('@/pages/ResendConfirmation')).ResendConfirmation }) },
       {
         path: '/kayit',
         lazy: async () => ({ Component: (await import('@/pages/Register')).Register }),
