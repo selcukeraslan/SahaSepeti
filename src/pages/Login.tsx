@@ -57,6 +57,12 @@ export function Login() {
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4" noValidate>
           <Input label="E-posta" type="email" autoComplete="email" placeholder="ornek@eposta.com" error={errors.email?.message} {...register('email')} />
           <Input label="Şifre" type="password" autoComplete="current-password" placeholder="••••••••" error={errors.password?.message} {...register('password')} />
+          <Link to="/sifremi-unuttum" className="-mt-2 self-end text-xs font-semibold text-primary-600 hover:text-primary-700">
+            Şifremi unuttum
+          </Link>
+          <Link to="/dogrulama-maili" className="-mt-2 self-end text-xs font-semibold text-primary-600 hover:text-primary-700">
+            Doğrulama e-postasını yeniden gönder
+          </Link>
           <Button type="submit" size="lg" isLoading={isSubmitting} className="mt-2 rounded-full">Giriş yap</Button>
         </form>
       </AuthShell>

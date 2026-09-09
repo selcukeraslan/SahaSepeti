@@ -13,6 +13,7 @@ export const createReservationSchema = z
     date: z.string().regex(dateRegex, 'Geçersiz tarih'),
     startTime: z.string().regex(timeRegex, 'Geçersiz saat'),
     endTime: z.string().regex(timeRegex, 'Geçersiz saat'),
+    expectedTotalPrice: z.number().finite().min(0, 'Geçersiz fiyat'),
     notes: z.string().max(500, 'Not en fazla 500 karakter olabilir').optional(),
   })
   .refine(

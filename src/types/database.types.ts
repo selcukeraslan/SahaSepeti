@@ -598,6 +598,18 @@ export interface Database {
     }
     Views: Record<string, never>
     Functions: {
+      create_marketplace_reservation: {
+        Args: {
+          p_court_id: string
+          p_venue_id: string
+          p_reservation_date: string
+          p_start_time: string
+          p_end_time: string
+          p_expected_total_price: number
+          p_notes?: string | null
+        }
+        Returns: Json
+      }
       save_venue_customer: { Args: { p_input: Json }; Returns: string }
       delete_venue_customer: { Args: { p_id: string }; Returns: undefined }
       search_venue_customers: {
@@ -637,6 +649,8 @@ export interface Database {
           comment: string | null
           created_at: string
           reviewer_name: string
+          owner_reply: string | null
+          owner_reply_at: string | null
         }[]
       }
       get_venue_rating_summaries: {

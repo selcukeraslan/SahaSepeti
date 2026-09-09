@@ -5,6 +5,8 @@ export interface VenueReview {
   comment: string | null
   created_at: string
   reviewer_name: string
+  owner_reply: string | null
+  owner_reply_at: string | null
 }
 
 /** Bir tesisin puan özeti */

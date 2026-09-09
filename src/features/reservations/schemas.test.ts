@@ -7,6 +7,7 @@ const base = {
   date: '2026-08-06',
   startTime: '19:00',
   endTime: '20:00',
+  expectedTotalPrice: 1200,
 }
 
 describe('createReservationSchema', () => {

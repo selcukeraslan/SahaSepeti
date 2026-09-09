@@ -23,10 +23,18 @@ interface ActiveSlot {
 
 const CHIP_BASE = 'rounded-lg px-2 py-1.5 text-center text-xs font-medium leading-tight transition-colors'
 
-function SlotChip({ slot, onOpen }: { slot: ScheduleSlot; onOpen: () => void }) {
+function SlotChip({ slot, onOpen, disabled = false }: { slot: ScheduleSlot; onOpen: () => void; disabled?: boolean }) {
   const time = formatTime(slot.startTime)
 
   if (slot.status === 'available') {
+    if (disabled) {
+      return (
+        <div className={cn(CHIP_BASE, 'cursor-default border border-slate-200 text-slate-400 dark:border-ink-700 dark:text-ink-500')}>
+          {time}
+          <span className="block text-[10px] font-normal">pasif</span>
+        </div>
+      )
+    }
     return (
       <button
         type="button"
@@ -235,8 +243,8 @@ export function DashboardCalendar() {
 
         {schedule && schedule.length === 0 && (
           <EmptyState
-            title="Aktif saha yok"
-            description="Bu tesiste rezervasyona açık saha bulunmuyor. Tesis panelinden saha ekleyin."
+            title="Saha yok"
+            description="Bu tesiste henüz saha bulunmuyor. Tesis panelinden saha ekleyin."
             action={
               <Link to={`/panel/tesisler/${venueId}`}>
                 <Button variant="outline">Tesisi Yönet</Button>
@@ -252,14 +260,30 @@ export function DashboardCalendar() {
           >
             <div className="flex items-center gap-2">
               <h2 className="font-semibold text-slate-900 dark:text-ink-50">{court.courtName}</h2>
+              <span className={cn(
+                'rounded-full px-2 py-0.5 text-[10px] font-semibold',
+                court.isActive
+                  ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+                  : 'bg-slate-100 text-slate-500 dark:bg-ink-800 dark:text-ink-400',
+              )}>
+                {court.isActive ? 'Aktif' : 'Pasif'}
+              </span>
               {court.isIndoor && (
                 <span className="text-xs text-slate-400 dark:text-ink-500">(Kapalı saha)</span>
               )}
             </div>
 
-            {court.isClosedToday ? (
-              <p className="mt-3 text-sm text-slate-400 dark:text-ink-500">Bu gün kapalı.</p>
-            ) : court.slots.length === 0 ? (
+            {court.isClosedToday && (
+              <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:bg-amber-500/10 dark:text-amber-300">
+                Bu gün tesis kapalı. Mevcut kayıtlar aşağıda gösteriliyor; yeni rezervasyon eklenemez.
+              </p>
+            )}
+            {!court.isActive && (
+              <p className="mt-2 rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-600 dark:bg-ink-800 dark:text-ink-400">
+                Bu saha pasif. Yeni rezervasyon eklenemez; mevcut kayıtlar gösteriliyor.
+              </p>
+            )}
+            {court.slots.length === 0 ? (
               <p className="mt-3 text-sm text-slate-400 dark:text-ink-500">Tanımlı slot yok.</p>
             ) : (
               <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6">
@@ -267,6 +291,7 @@ export function DashboardCalendar() {
                   <SlotChip
                     key={slot.startTime}
                     slot={slot}
+                    disabled={!court.isActive}
                     onOpen={() => openSlot(court.courtId, court.courtName, slot)}
                   />
                 ))}

@@ -37,6 +37,10 @@ export function ReservationDialog({
   const [notes, setNotes] = useState('')
 
   const handleConfirm = () => {
+    if (slot.price === null) {
+      toast('Bu saat için güncel fiyat bulunamadı. Lütfen başka bir saat seçin.', 'error')
+      return
+    }
     createReservation.mutate(
       {
         courtId: court.id,
@@ -44,6 +48,7 @@ export function ReservationDialog({
         date,
         startTime: slot.startTime,
         endTime: slot.endTime,
+        expectedTotalPrice: slot.price,
         notes: notes || undefined,
       },
       {
