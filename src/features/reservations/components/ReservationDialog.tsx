@@ -10,6 +10,7 @@ import { formatDateLong, formatPrice } from '@/lib/format'
 import type { TimeSlot } from '@/features/venues/services/slots'
 import type { CourtWithPrices, VenueDetail } from '@/features/venues/types'
 import { useCreateReservation } from '../hooks/useReservations'
+import { ReservationPriceChangedError } from '../services/priceQuote'
 
 export interface ReservationDialogProps {
   venue: VenueDetail
@@ -35,9 +36,12 @@ export function ReservationDialog({
   const { toast } = useToast()
   const createReservation = useCreateReservation()
   const [notes, setNotes] = useState('')
+  const [quotedPrice, setQuotedPrice] = useState(slot.price)
+  const [priceChanged, setPriceChanged] = useState(false)
 
   const handleConfirm = () => {
-    if (slot.price === null) {
+    if (createReservation.isPending) return
+    if (quotedPrice === null) {
       toast('Bu saat için güncel fiyat bulunamadı. Lütfen başka bir saat seçin.', 'error')
       return
     }
@@ -48,7 +52,7 @@ export function ReservationDialog({
         date,
         startTime: slot.startTime,
         endTime: slot.endTime,
-        expectedTotalPrice: slot.price,
+        expectedTotalPrice: quotedPrice,
         notes: notes || undefined,
       },
       {
@@ -59,6 +63,10 @@ export function ReservationDialog({
           navigate('/rezervasyonlarim')
         },
         onError: (error) => {
+          if (error instanceof ReservationPriceChangedError) {
+            setQuotedPrice(error.currentTotalPrice)
+            setPriceChanged(true)
+          }
           toast(error.message, 'error')
         },
       },
@@ -89,13 +97,18 @@ export function ReservationDialog({
         <div className="flex items-center justify-between border-t border-slate-200 dark:border-ink-800 pt-3">
           <span className="text-sm text-slate-500 dark:text-ink-400">Toplam</span>
           <span className="text-lg font-bold text-slate-900 dark:text-ink-50">
-            {slot.price !== null ? formatPrice(slot.price) : '—'}
+            {quotedPrice !== null ? formatPrice(quotedPrice) : '—'}
           </span>
         </div>
       </div>
 
       {user ? (
         <>
+          {priceChanged && <p role="alert" className="mt-3 rounded-xl bg-amber-50 p-3 text-sm text-amber-800 dark:bg-amber-950 dark:text-amber-200">
+            {quotedPrice === null
+              ? 'Fiyat değişti ancak güncel tutar alınamadı. Pencereyi kapatıp sayfayı yenileyin.'
+              : 'Fiyat güncellendi. Henüz rezervasyon oluşturulmadı; yukarıdaki yeni tutarı onaylayarak devam edebilirsiniz.'}
+          </p>}
           <div className="mt-4">
             <Textarea
               label="Not (isteğe bağlı)"
@@ -116,9 +129,10 @@ export function ReservationDialog({
             <Button
               className="flex-1"
               isLoading={createReservation.isPending}
+              disabled={quotedPrice === null}
               onClick={handleConfirm}
             >
-              Rezervasyonu Onayla
+              {priceChanged ? 'Güncel Fiyatı Onayla' : 'Rezervasyonu Onayla'}
             </Button>
           </div>
         </>

@@ -149,6 +149,7 @@ export function VenueDetail() {
       </section>
       {activeCourt && selectedSlot && (
         <ReservationDialog
+          key={`${activeCourt.id}-${date}-${selectedSlot.startTime}`}
           venue={venue}
           court={activeCourt}
           date={date}

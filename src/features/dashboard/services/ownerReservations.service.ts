@@ -36,8 +36,8 @@ export async function listOwnerReservations(
     )
     .eq('is_block', false)
     .eq('series_superseded', false)
-    .order('reservation_date', { ascending: false })
-    .order('start_time', { ascending: false })
+    .order('created_at', { ascending: false })
+    .order('id', { ascending: false })
     .limit(200)
 
   if (filters.venueId) query = query.eq('venue_id', filters.venueId)
