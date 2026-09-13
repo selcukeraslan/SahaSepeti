@@ -42,17 +42,17 @@ select throws_ok($$insert into reservations(court_id, venue_id, customer_id, res
   'P0001', 'Aynı anda en fazla 3 bekleyen rezervasyonunuz olabilir', 'Dördüncü bekleyen rezervasyon reddedilir');
 
 
-select throws_ok($insert into reservations(court_id,venue_id,customer_id,reservation_date,start_time,end_time,status)
-values ('14000000-0000-4000-8000-000000000005','14000000-0000-4000-8000-000000000004',auth.uid(),current_date+4,'08:00','09:00','confirmed')$,
+select throws_ok($$insert into reservations(court_id,venue_id,customer_id,reservation_date,start_time,end_time,status)
+values ('14000000-0000-4000-8000-000000000005','14000000-0000-4000-8000-000000000004',auth.uid(),current_date+4,'08:00','09:00','confirmed')$$,
 'P0001','Aynı anda en fazla 3 bekleyen rezervasyonunuz olabilir','Sahte confirmed kota atlayamaz');
-select throws_ok($insert into reservations(court_id,venue_id,customer_id,reservation_date,start_time,end_time,status)
-values ('14000000-0000-4000-8000-000000000005','14000000-0000-4000-8000-000000000004',auth.uid(),current_date+4,'08:00','09:00','cancelled')$,
+select throws_ok($$insert into reservations(court_id,venue_id,customer_id,reservation_date,start_time,end_time,status)
+values ('14000000-0000-4000-8000-000000000005','14000000-0000-4000-8000-000000000004',auth.uid(),current_date+4,'08:00','09:00','cancelled')$$,
 'P0001','Aynı anda en fazla 3 bekleyen rezervasyonunuz olabilir','Sahte cancelled kota atlayamaz');
-select throws_ok($insert into reservations(court_id,venue_id,customer_id,reservation_date,start_time,end_time)
-values ('14000000-0000-4000-8000-000000000005','14000000-0000-4000-8000-000000000004','14000000-0000-4000-8000-000000000001',current_date+4,'08:00','09:00')$,
+select throws_ok($$insert into reservations(court_id,venue_id,customer_id,reservation_date,start_time,end_time)
+values ('14000000-0000-4000-8000-000000000005','14000000-0000-4000-8000-000000000004','14000000-0000-4000-8000-000000000001',current_date+4,'08:00','09:00')$$,
 'P0001','Aynı anda en fazla 3 bekleyen rezervasyonunuz olabilir','Başka customer_id gerçek kullanıcının kotasını atlayamaz');
-select throws_ok($insert into reservations(court_id,venue_id,customer_id,reservation_date,start_time,end_time,status)
-values ('14000000-0000-4000-8000-000000000005','14000000-0000-4000-8000-000000000004',auth.uid(),current_date+31,'08:00','09:00','confirmed')$,
+select throws_ok($$insert into reservations(court_id,venue_id,customer_id,reservation_date,start_time,end_time,status)
+values ('14000000-0000-4000-8000-000000000005','14000000-0000-4000-8000-000000000004',auth.uid(),current_date+31,'08:00','09:00','confirmed')$$,
 'P0001','Rezervasyonlar en fazla 30 gün öncesinden yapılabilir','Sahte durum 30 gün sınırını atlayamaz');
 
 reset role;

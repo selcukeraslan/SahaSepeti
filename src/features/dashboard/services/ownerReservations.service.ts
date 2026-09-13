@@ -88,7 +88,7 @@ export async function updateReservationStatus(
     update.cancelled_at = new Date().toISOString()
     update.cancellation_reason = 'Tesis tarafından iptal edildi'
   }
-  const { error } = await supabase.from('reservations').update(update).eq('id', reservationId)
+  const { error } = await supabase.from('reservations').update(update).eq('id', reservationId).select('id').single()
   if (error) {
     if (error.message.includes('Gelecekteki rezervasyon')) {
       throw new Error('Rezervasyon, bitiş saatinden önce tamamlanamaz')

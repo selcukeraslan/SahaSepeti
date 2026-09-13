@@ -5,6 +5,17 @@
  */
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
+export type StaffRole = 'manager' | 'reception' | 'viewer'
+export type VenueStaffRow = {
+  id: string; venue_id: string; user_id: string; role: StaffRole
+  created_at: string; updated_at: string
+}
+export type StaffInviteRow = {
+  id: string; venue_id: string; email: string; role: StaffRole; token_hash: string
+  invited_by: string; expires_at: string; accepted_at: string | null; revoked_at: string | null
+  created_at: string; updated_at: string
+}
+
 export type ReservationSeriesRow = {
   id: string; venue_id: string; court_id: string; name: string; guest_name: string
   guest_phone: string | null; weekday: number; start_time: string; end_time: string
@@ -22,6 +33,18 @@ export type VenueCustomerRow = {
 export interface Database {
   public: {
     Tables: {
+      venue_staff: {
+        Row: VenueStaffRow
+        Insert: Pick<VenueStaffRow, 'venue_id' | 'user_id' | 'role'> & Partial<VenueStaffRow>
+        Update: Partial<VenueStaffRow>
+        Relationships: []
+      }
+      staff_invites: {
+        Row: StaffInviteRow
+        Insert: Pick<StaffInviteRow, 'venue_id' | 'email' | 'role' | 'token_hash' | 'invited_by'> & Partial<StaffInviteRow>
+        Update: Partial<StaffInviteRow>
+        Relationships: []
+      }
       reservation_notification_deliveries: {
         Row: { reservation_id: string; owner_id: string; request_body: Json | null; started_at: string; sent_at: string | null; created_at: string; updated_at: string }
         Insert: { reservation_id: string; owner_id: string; request_body?: Json | null; started_at?: string; sent_at?: string | null; created_at?: string; updated_at?: string }
@@ -606,6 +629,16 @@ export interface Database {
     }
     Views: Record<string, never>
     Functions: {
+      list_panel_venues: { Args: Record<string, never>; Returns: { id: string; name: string; role: string }[] }
+      list_venue_staff: { Args: { p_venue_id: string }; Returns: { id: string; venue_id: string; user_id: string; role: string; full_name: string; created_at: string }[] }
+      get_panel_schedule: { Args: { p_venue_id: string; p_date: string }; Returns: {
+        id: string; series_id: string | null; source: Database['public']['Enums']['reservation_source']; court_id: string
+        start_time: string; end_time: string; status: Database['public']['Enums']['reservation_status']; is_block: boolean
+        no_show: boolean; guest_name: string | null; guest_phone: string | null; notes: string | null; profiles: Json
+      }[] }
+      has_venue_permission: { Args: { p_venue_id: string; p_permission: string }; Returns: boolean }
+      manage_venue_staff: { Args: { p_input: Json }; Returns: Json }
+      accept_staff_invite: { Args: { p_token: string }; Returns: string }
       create_marketplace_reservation: {
         Args: {
           p_court_id: string

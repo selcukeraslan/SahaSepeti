@@ -12,6 +12,7 @@ import {
   User,
 } from 'lucide-react'
 import { useAuth } from '@/features/auth/hooks/useAuth'
+import { usePanelAccess } from '@/features/staff/hooks/usePanelAccess'
 import { signOut } from '@/features/auth/services/auth.service'
 import { Button } from '@/components/ui/Button'
 import { Sheet } from '@/components/ui/Sheet'
@@ -32,6 +33,8 @@ function navLinkClass({ isActive }: { isActive: boolean }): string {
 
 export function Header() {
   const { user, profile } = useAuth()
+  const access = usePanelAccess()
+  const hasPanel = profile?.role === 'venue_owner' || Boolean(access.data?.length)
   const navigate = useNavigate()
   const { toast } = useToast()
   const [menuOpen, setMenuOpen] = useState(false)
@@ -74,7 +77,7 @@ export function Header() {
               Favorilerim
             </NavLink>
           )}
-          {profile?.role === 'venue_owner' && (
+          {hasPanel && (
             <NavLink to="/panel" className={navLinkClass}>
               Tesis Paneli
             </NavLink>
@@ -171,7 +174,7 @@ export function Header() {
               Favorilerim
             </Link>
           )}
-          {profile?.role === 'venue_owner' && (
+          {hasPanel && (
             <Link
               to="/panel"
               onClick={closeMenu}
