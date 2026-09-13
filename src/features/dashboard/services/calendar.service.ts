@@ -57,13 +57,7 @@ export async function listOwnerDaySchedule(venueId: string, date: string): Promi
       .returns<ScheduleCourtRow[]>(),
     supabase.from('opening_hours').select('*').eq('venue_id', venueId).returns<OpeningHour[]>(),
     supabase
-      .from('reservations')
-      .select(
-        'id, series_id, court_id, start_time, end_time, status, source, is_block, no_show, guest_name, guest_phone, notes, profiles!reservations_customer_id_fkey(full_name, phone)',
-      )
-      .eq('venue_id', venueId)
-      .eq('reservation_date', date)
-      .neq('status', 'cancelled')
+      .rpc('get_panel_schedule', { p_venue_id: venueId, p_date: date })
       .returns<ScheduleReservationRow[]>(),
   ])
 
@@ -213,6 +207,7 @@ export async function setReservationNoShow(reservationId: string, value: boolean
     .from('reservations')
     .update({ no_show: value })
     .eq('id', reservationId)
+    .select('id').single()
   if (error) {
     if (error.message.includes('No-show yalnızca başlamış')) {
       throw new Error('No-show yalnızca rezervasyon başladıktan sonra işaretlenebilir')
@@ -223,6 +218,6 @@ export async function setReservationNoShow(reservationId: string, value: boolean
 
 /** Blok veya misafir kaydını sil (RLS: yalnızca owner, yalnızca blok/misafir). */
 export async function deleteOwnerReservation(reservationId: string): Promise<void> {
-  const { error } = await supabase.from('reservations').delete().eq('id', reservationId)
+  const { error } = await supabase.from('reservations').delete().eq('id', reservationId).select('id').single()
   if (error) throw new Error('Kayıt silinemedi')
 }

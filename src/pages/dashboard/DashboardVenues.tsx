@@ -8,8 +8,10 @@ import { QueryErrorState } from '@/components/ui/QueryErrorState'
 import { useToast } from '@/components/ui/useToast'
 import { useMyVenues, useVenueMutations } from '@/features/dashboard/hooks/useDashboard'
 import { VENUE_STATUS_LABELS, VENUE_STATUS_VARIANTS } from '@/features/dashboard/types'
+import { useAuth } from '@/features/auth/hooks/useAuth'
 
 export function DashboardVenues() {
+  const { profile } = useAuth()
   const { data: venues, isLoading, isError, isFetching, refetch } = useMyVenues()
   const { submit } = useVenueMutations()
   const { toast } = useToast()
@@ -25,12 +27,12 @@ export function DashboardVenues() {
     <div>
       <div className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-bold text-slate-900 dark:text-ink-50">Tesislerim</h1>
-        <Link to="/panel/tesisler/yeni">
+        {profile?.role === 'venue_owner' && <Link to="/panel/tesisler/yeni">
           <Button size="sm">
             <Plus className="size-4" aria-hidden />
             Yeni Tesis
           </Button>
-        </Link>
+        </Link>}
       </div>
 
       <div className="mt-5 space-y-3">

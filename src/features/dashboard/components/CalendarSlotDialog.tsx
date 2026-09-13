@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
+import { usePanelScope } from '@/features/staff/hooks/usePanelAccess'
+import { can } from '@/features/staff/permissions'
 import { recordManualBookingDuration } from '../services/bookingMetrics'
 import { SeriesManager } from './SeriesManager'
 import { CalendarPlus, Trash2, Wrench } from 'lucide-react'
@@ -25,6 +27,8 @@ interface CalendarSlotDialogProps {
 }
 
 export function CalendarSlotDialog({ open, onClose, venueId, courtId, courtName, date, slot }: CalendarSlotDialogProps) {
+  const scope = usePanelScope()
+  const writable = can(scope?.role, 'reservations.write')
   const { addManual, addBlock, remove, setNoShow } = useScheduleMutations()
   const { toast } = useToast()
   const [mode, setMode] = useState<'manual' | 'block'>('manual')
@@ -78,14 +82,14 @@ export function CalendarSlotDialog({ open, onClose, venueId, courtId, courtName,
         )}
         {reservation.notes && <p className="mt-3 rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-600 dark:bg-ink-950 dark:text-ink-300">{reservation.notes}</p>}
         <div className="mt-5 flex flex-wrap gap-2">
-          {reservation.seriesId && <SeriesManager seriesId={reservation.seriesId}
+          {writable && reservation.seriesId && <SeriesManager seriesId={reservation.seriesId}
             reservationId={reservation.id} customerName={reservation.customerName} inline onSaved={onClose} />}
-          {!reservation.isBlock && (
+          {writable && !reservation.isBlock && (
             <Button variant={reservation.noShow ? 'outline' : 'secondary'} className="flex-1" isLoading={setNoShow.isPending} onClick={handleNoShow}>
               {reservation.noShow ? "No-show'u kaldır" : 'Gelmedi (No-show)'}
             </Button>
           )}
-          {reservation.deletable && (
+          {writable && reservation.deletable && (
             <Button variant="danger" className="flex-1" isLoading={remove.isPending} onClick={handleDelete}>
               <Trash2 className="size-4" aria-hidden />
               {reservation.isBlock ? 'Bloğu Kaldır' : 'Sil'}
@@ -95,6 +99,10 @@ export function CalendarSlotDialog({ open, onClose, venueId, courtId, courtName,
       </Dialog>
     )
   }
+
+  if (!writable) return <Dialog open={open} onClose={onClose} title={`${courtName} · ${timeLabel}`}>
+    <p className="text-sm">Bu saat boş. Hesabınız yalnızca görüntüleme yetkisine sahip.</p>
+  </Dialog>
 
   const submitManual = (fields: ManualReservationFields) => {
     addManual.mutate(

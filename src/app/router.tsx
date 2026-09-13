@@ -1,6 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom'
 import { PageShell } from '@/components/layout/PageShell'
-import { RequireRole } from '@/app/guards'
+import { RequireAuth, RequireRole } from '@/app/guards'
 
 export const router = createBrowserRouter([
   {
@@ -24,6 +24,7 @@ export const router = createBrowserRouter([
         lazy: async () => ({ Component: (await import('@/pages/Contact')).Contact }),
       },
       { path: '/giris', lazy: async () => ({ Component: (await import('@/pages/Login')).Login }) },
+      { path: '/personel-davet', lazy: async () => ({ Component: (await import('@/pages/StaffInvite')).StaffInvite }) },
       { path: '/sifremi-unuttum', lazy: async () => ({ Component: (await import('@/pages/ForgotPassword')).ForgotPassword }) },
       { path: '/sifre-yenile', lazy: async () => ({ Component: (await import('@/pages/ResetPassword')).ResetPassword }) },
       { path: '/dogrulama-maili', lazy: async () => ({ Component: (await import('@/pages/ResendConfirmation')).ResendConfirmation }) },
@@ -47,7 +48,7 @@ export const router = createBrowserRouter([
         ],
       },
       {
-        element: <RequireRole role="venue_owner" />,
+        element: <RequireAuth />,
         children: [
           {
             path: '/panel',
@@ -55,6 +56,7 @@ export const router = createBrowserRouter([
               Component: (await import('@/pages/dashboard/DashboardLayout')).DashboardLayout,
             }),
             children: [
+              { path: 'personel', lazy: async () => ({ Component: (await import('@/pages/dashboard/DashboardStaff')).DashboardStaff }) },
               {
                 index: true,
                 lazy: async () => ({

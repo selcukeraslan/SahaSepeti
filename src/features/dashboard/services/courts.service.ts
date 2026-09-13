@@ -54,12 +54,13 @@ export async function updateCourt(courtId: string, input: CourtInput): Promise<v
       capacity: data.capacity ?? null,
     })
     .eq('id', courtId)
+    .select('id').single()
 
   if (error) throw new Error('Saha güncellenemedi')
 }
 
 export async function setCourtActive(courtId: string, isActive: boolean): Promise<void> {
-  const { error } = await supabase.from('courts').update({ is_active: isActive }).eq('id', courtId)
+  const { error } = await supabase.from('courts').update({ is_active: isActive }).eq('id', courtId).select('id').single()
   if (error) throw new Error('Saha durumu güncellenemedi')
 }
 
@@ -117,6 +118,6 @@ export async function createPriceRule(courtId: string, input: PriceRuleInput): P
 }
 
 export async function deletePriceRule(ruleId: string): Promise<void> {
-  const { error } = await supabase.from('price_rules').delete().eq('id', ruleId)
+  const { error } = await supabase.from('price_rules').delete().eq('id', ruleId).select('id').single()
   if (error) throw new Error('Fiyat kuralı silinemedi')
 }

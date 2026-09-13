@@ -52,7 +52,7 @@ select is((select count(*)::int from venue_customers where venue_id='16000000-00
 select ok(not has_function_privilege('authenticated','public.save_venue_customer_internal(jsonb)','EXECUTE'),'İç fonksiyon dışarıya kapalı');
 
 select set_config('request.jwt.claim.sub','16000000-0000-4000-8000-000000000002',true);
-select throws_ok($select delete_venue_customer(current_setting('test.deleted_customer_id')::uuid)$,
+select throws_ok($$select delete_venue_customer(current_setting('test.deleted_customer_id')::uuid)$$,
  'P0001','Müşteri silme yetkiniz yok','Diğer owner silemez');
 select is((select count(*)::int from venue_customers where venue_id='16000000-0000-4000-8000-000000000004'),0,'Diğer owner müşteri okuyamaz');
 select throws_ok($$select search_venue_customers('16000000-0000-4000-8000-000000000004')$$,

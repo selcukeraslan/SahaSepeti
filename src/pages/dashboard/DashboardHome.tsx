@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { useAuth } from '@/features/auth/hooks/useAuth'
 import { Link } from 'react-router-dom'
 import { Building2, CalendarCheck2, CalendarClock, Plus } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/Card'
@@ -15,6 +16,7 @@ import { nowInIstanbul } from '@/features/venues/services/slots'
 import { formatDateShort, formatPrice, formatTime } from '@/lib/format'
 
 export function DashboardHome() {
+  const { profile } = useAuth()
   const { data: venues, isLoading: venuesLoading } = useMyVenues()
   const { data: reservations, isLoading: reservationsLoading } = useOwnerReservations({})
 
@@ -35,12 +37,12 @@ export function DashboardHome() {
     <div>
       <div className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-bold text-slate-900 dark:text-ink-50">Genel Bakış</h1>
-        <Link to="/panel/tesisler/yeni">
+        {profile?.role === 'venue_owner' && <Link to="/panel/tesisler/yeni">
           <Button size="sm">
             <Plus className="size-4" aria-hidden />
             Yeni Tesis
           </Button>
-        </Link>
+        </Link>}
       </div>
 
       {/* Özet kartları */}

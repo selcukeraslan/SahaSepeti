@@ -1,4 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useAuth } from '@/features/auth/hooks/useAuth'
+import { usePanelScope } from '@/features/staff/hooks/usePanelAccess'
 import type { ReservationStatus } from '@/types/database.types'
 import {
   createBlockSlot,
@@ -40,15 +42,19 @@ import type {
 } from '../schemas'
 
 export function useMyVenues() {
-  return useQuery({ queryKey: ['my-venues'], queryFn: listMyVenues })
+  const scope = usePanelScope()
+  const { user } = useAuth()
+  return useQuery({ queryKey: ['my-venues', user?.id, scope?.venueId], queryFn: async () => {
+    const venues = await listMyVenues()
+    return scope?.venueId ? venues.filter(v => v.id === scope.venueId) : venues
+  }, enabled: Boolean(user) })
 }
 
 export function useVenueMutations() {
   const queryClient = useQueryClient()
-  const invalidate = () => {
-    void queryClient.invalidateQueries({ queryKey: ['my-venues'] })
-    void queryClient.invalidateQueries({ queryKey: ['venues'] })
-    void queryClient.invalidateQueries({ queryKey: ['venue'] })
+  const invalidate = async () => {
+    await Promise.all(['panel-access','my-venues','venues','venue'].map(key =>
+      queryClient.invalidateQueries({ queryKey: [key] })))
   }
 
   const create = useMutation({
@@ -151,9 +157,13 @@ export function usePriceRuleMutations(courtId: string | undefined) {
 }
 
 export function useOwnerReservations(filters: OwnerReservationFilters) {
+  const scope = usePanelScope()
+  const { user } = useAuth()
+  const scopedFilters = { ...filters, venueId: scope?.venueId || filters.venueId }
   return useQuery({
-    queryKey: ['owner-reservations', filters],
-    queryFn: () => listOwnerReservations(filters),
+    queryKey: ['owner-reservations', user?.id, scopedFilters],
+    queryFn: () => listOwnerReservations(scopedFilters),
+    enabled: Boolean(scopedFilters.venueId),
     // Owner farklı cihazdan gelen rezervasyon/onay değişikliklerini kaçırmamalı.
     staleTime: 10_000,
     refetchInterval: 30_000,
@@ -162,9 +172,13 @@ export function useOwnerReservations(filters: OwnerReservationFilters) {
 }
 
 export function useOwnerStats(venueId?: string) {
+  const scope = usePanelScope()
+  const { user } = useAuth()
+  const selectedId = scope?.venueId || venueId
   return useQuery({
-    queryKey: ['owner-stats', venueId ?? 'all'],
-    queryFn: () => listOwnerReservationsForStats(venueId),
+    queryKey: ['owner-stats', user?.id, selectedId],
+    queryFn: () => listOwnerReservationsForStats(selectedId),
+    enabled: Boolean(selectedId),
     staleTime: 60_000,
     refetchInterval: 60_000,
     refetchOnWindowFocus: true,
@@ -197,8 +211,10 @@ export function useUpdateReservationStatus() {
 // ---------- Takvim / manuel rezervasyon / blok / no-show ----------
 
 export function useOwnerDaySchedule(venueId: string | undefined, date: string) {
+  const scope = usePanelScope()
+  const { user } = useAuth()
   return useQuery({
-    queryKey: ['owner-schedule', venueId ?? '', date],
+    queryKey: ['owner-schedule', user?.id, scope?.role, venueId ?? '', date],
     queryFn: () => listOwnerDaySchedule(venueId ?? '', date),
     enabled: Boolean(venueId),
     // Takvim tesis sahibinin ana operasyon ekranıdır; kısa aralıkta yenilenir.

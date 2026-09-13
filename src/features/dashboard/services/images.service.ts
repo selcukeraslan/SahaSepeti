@@ -61,7 +61,7 @@ export async function uploadVenueImage(venueId: string, file: File): Promise<Ven
 }
 
 export async function deleteVenueImage(image: VenueImage): Promise<void> {
-  const { error: dbError } = await supabase.from('venue_images').delete().eq('id', image.id)
+  const { error: dbError } = await supabase.from('venue_images').delete().eq('id', image.id).select('id').single()
   if (dbError) throw new Error('Görsel silinemedi')
 
   await supabase.storage.from(BUCKET).remove([image.storage_path])
@@ -93,5 +93,6 @@ export async function setCoverImage(venueId: string, url: string): Promise<void>
     .from('venues')
     .update({ cover_image_url: url })
     .eq('id', venueId)
+    .select('id').single()
   if (error) throw new Error('Kapak görseli güncellenemedi')
 }

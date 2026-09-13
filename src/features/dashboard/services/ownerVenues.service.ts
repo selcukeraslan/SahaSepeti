@@ -2,6 +2,7 @@ import { supabase } from '@/lib/supabase'
 import { slugifyUnique } from '@/lib/utils'
 import type { Sport, Venue } from '@/types/database.types'
 import { venueSchema, type VenueInput } from '../schemas'
+import { listPanelVenues } from '@/features/staff/services/staff.service'
 
 export interface OwnerVenue extends Venue {
   sports: Sport[]
@@ -11,10 +12,13 @@ export async function listMyVenues(): Promise<OwnerVenue[]> {
   const { data: auth } = await supabase.auth.getUser()
   if (!auth.user) throw new Error('Giriş yapmalısınız')
 
+  const accessible = await listPanelVenues()
+  if (!accessible.length) return []
+
   const { data, error } = await supabase
     .from('venues')
     .select('*, venue_sports(sports(*))')
-    .eq('owner_id', auth.user.id)
+    .in('id', accessible.map(venue => venue.id))
     .order('created_at', { ascending: false })
 
   if (error) throw new Error('Tesisler yüklenemedi')
@@ -105,6 +109,7 @@ export async function updateVenue(venueId: string, input: VenueInput): Promise<v
       longitude: data.longitude,
     })
     .eq('id', venueId)
+    .select('id').single()
 
   if (error) throw new Error('Tesis güncellenemedi')
   await syncVenueSports(venueId, data.sportIds)
@@ -112,6 +117,6 @@ export async function updateVenue(venueId: string, input: VenueInput): Promise<v
 
 /** Tesisi admin onayına gönderir (draft/rejected → pending). */
 export async function submitVenueForApproval(venueId: string): Promise<void> {
-  const { error } = await supabase.from('venues').update({ status: 'pending' }).eq('id', venueId)
+  const { error } = await supabase.from('venues').update({ status: 'pending' }).eq('id', venueId).select('id').single()
   if (error) throw new Error('Tesis onaya gönderilemedi')
 }

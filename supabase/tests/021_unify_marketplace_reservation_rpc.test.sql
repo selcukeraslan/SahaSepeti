@@ -47,12 +47,12 @@ select is(create_marketplace_reservation('14000000-0000-4000-8000-000000000005',
  (select id::text from reservations where client_request_id='21000000-0000-4000-8000-000000000001'),
  'Tekrar aynı rezervasyonu döndürür');
 select is((select count(*)::int from reservations where customer_id=auth.uid()),2,'Tekrar yeni kayıt üretmez');
-select throws_ok($select create_marketplace_reservation('14000000-0000-4000-8000-000000000005',
+select throws_ok($$select create_marketplace_reservation('14000000-0000-4000-8000-000000000005',
  '14000000-0000-4000-8000-000000000004',current_date+3,'08:00','09:00',1000,null,
- '21000000-0000-4000-8000-000000000001')$,
+ '21000000-0000-4000-8000-000000000001')$$,
  'P0001','İstek kimliği farklı bir rezervasyon için kullanılmış','Aynı anahtar başka slot için kullanılamaz');
-select throws_ok($update reservations set client_request_id=null
- where client_request_id='21000000-0000-4000-8000-000000000001'$,
+select throws_ok($$update reservations set client_request_id=null
+ where client_request_id='21000000-0000-4000-8000-000000000001'$$,
  'P0001','Rezervasyon istek kimliği değiştirilemez','İstek kimliği korunur');
 
 reset role;
