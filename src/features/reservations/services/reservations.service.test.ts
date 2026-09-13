@@ -24,6 +24,17 @@ const input = {
 }
 
 describe('createReservation', () => {
+  it('RPC imza çakışmasında teknik veritabanı detaylarını göstermez', async () => {
+    supabaseMocks.rpc.mockResolvedValue({ data: null, error: { code: 'PGRST203', message: 'function signatures' } })
+    await expect(createReservation(input)).rejects.toThrow('Rezervasyon servisi güncelleniyor.')
+  })
+  it('fiyat değiştiğinde güncel sunucu fiyatını taşır ve otomatik yeniden denemez', async () => {
+    supabaseMocks.rpc.mockResolvedValue({
+      data: null, error: { code: 'P0002', details: '{"currentTotalPrice":1500}' },
+    })
+    await expect(createReservation(input)).rejects.toMatchObject({ currentTotalPrice: 1500 })
+    expect(supabaseMocks.rpc).toHaveBeenCalledTimes(1)
+  })
   it('istemcinin kaynak ve referans alanlarını DB isteğine taşımaz', async () => {
     supabaseMocks.rpc.mockResolvedValue({ data: { id: 'reservation-1', source: 'marketplace' }, error: null })
     await createReservation({ ...input, ...{

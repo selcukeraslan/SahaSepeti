@@ -22,6 +22,12 @@ export type VenueCustomerRow = {
 export interface Database {
   public: {
     Tables: {
+      reservation_notification_deliveries: {
+        Row: { reservation_id: string; owner_id: string; request_body: Json | null; started_at: string; sent_at: string | null; created_at: string; updated_at: string }
+        Insert: { reservation_id: string; owner_id: string; request_body?: Json | null; started_at?: string; sent_at?: string | null; created_at?: string; updated_at?: string }
+        Update: { request_body?: Json | null; sent_at?: string | null; updated_at?: string }
+        Relationships: []
+      }
       venue_customers: {
         Row: VenueCustomerRow
         Insert: Pick<VenueCustomerRow, 'venue_id' | 'normalized_phone' | 'display_name'> & Partial<VenueCustomerRow>
@@ -377,6 +383,7 @@ export interface Database {
           occurrence_date: string | null
           series_superseded: boolean
           guest_reference: string | null
+          client_request_id: string | null
           external_provider: string | null
           external_reservation_id: string | null
           created_at: string
@@ -407,6 +414,7 @@ export interface Database {
           occurrence_date?: string | null
           series_superseded?: boolean
           guest_reference?: string | null
+          client_request_id?: string | null
           external_provider?: string | null
           external_reservation_id?: string | null
           created_at?: string
@@ -607,6 +615,7 @@ export interface Database {
           p_end_time: string
           p_expected_total_price: number
           p_notes?: string | null
+          p_request_id?: string | null
         }
         Returns: Json
       }

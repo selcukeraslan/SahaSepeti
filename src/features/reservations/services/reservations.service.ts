@@ -7,6 +7,7 @@ import {
   type CreateReservationInput,
 } from '../schemas'
 import type { ReservationWithVenue } from '../types'
+import { priceChangedError } from './priceQuote'
 
 /** Postgres exclusion constraint ihlali (çakışan rezervasyon) */
 const EXCLUSION_VIOLATION = '23P01'
@@ -32,11 +33,14 @@ export async function createReservation(input: CreateReservationInput): Promise<
   })
 
   if (error) {
+    if (error.code === 'PGRST203' || error.code === 'PGRST202') {
+      throw new Error('Rezervasyon servisi güncelleniyor. Lütfen kısa süre sonra tekrar deneyin.')
+    }
     if (error.code === EXCLUSION_VIOLATION) {
       throw new Error('Bu saat az önce doldu. Lütfen başka bir saat seçin.')
     }
     if (error.code === 'P0002') {
-      throw new Error('Fiyat değişti. Güncel fiyatı kontrol edip tekrar deneyin.')
+      throw priceChangedError(error.details)
     }
     throw new Error(error.message || 'Rezervasyon oluşturulamadı')
   }

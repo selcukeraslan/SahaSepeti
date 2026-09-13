@@ -1,0 +1,12 @@
+begin;
+create extension if not exists pgtap with schema extensions;
+set search_path = public, extensions;
+select plan(6);
+select ok((select relrowsecurity from pg_class where oid='public.reservation_notification_deliveries'::regclass),'RLS açık');
+select ok(not has_table_privilege('anon','public.reservation_notification_deliveries','SELECT'),'Anon okuyamaz');
+select ok(not has_table_privilege('authenticated','public.reservation_notification_deliveries','SELECT'),'Oturumlu istemci okuyamaz');
+select ok(not has_table_privilege('authenticated','public.reservation_notification_deliveries','INSERT'),'İstemci gönderim kaydı yazamaz');
+select ok(not has_table_privilege('authenticated','public.reservation_notification_deliveries','UPDATE'),'İstemci gönderildi bilgisini değiştiremez');
+select ok(has_table_privilege('service_role','public.reservation_notification_deliveries','INSERT,SELECT,UPDATE'),'Yalnızca servis teslimat yönetir');
+select * from finish();
+rollback;
